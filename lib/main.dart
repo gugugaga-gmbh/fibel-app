@@ -8,6 +8,7 @@ import 'core/theme/app_theme.dart';
 import 'features/home/home_screen.dart';
 import 'features/parents/parent_dashboard_screen.dart';
 import 'features/phonics/anlaut_table_screen.dart';
+import 'features/reading/stage_story_screen.dart';
 import 'features/reading/word_sentence_builder_screen.dart';
 import 'features/rewards/sticker_album_screen.dart';
 import 'features/syllables/syllable_practice_screen.dart';
@@ -36,6 +37,13 @@ final _router = GoRouter(
     GoRoute(
       path: '/werkstatt',
       builder: (context, state) => const AnlautKeyboardScreen(),
+    ),
+    GoRoute(
+      path: '/stories',
+      builder: (context, state) {
+        final initialStage = state.extra as int?;
+        return StageStoryScreen(initialStage: initialStage);
+      },
     ),
     GoRoute(
       path: '/stickers',

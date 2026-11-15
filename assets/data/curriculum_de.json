@@ -7278,6 +7278,14 @@
       "voiceText": "Roaaar! Du bist stark wie ein Löwe!"
     },
     {
+      "id": "st_bee",
+      "name": "Summende Biene",
+      "emoji": "🐝",
+      "requiredStars": 6,
+      "category": "Waldfreunde",
+      "voiceText": "Summ, summ! Fleißig wie eine kleine Biene!"
+    },
+    {
       "id": "st_rocket",
       "name": "Lese-Rakete",
       "emoji": "🚀",
@@ -7310,6 +7318,14 @@
       "voiceText": "Hoch lebe das Lese-Königskind!"
     },
     {
+      "id": "st_astronaut",
+      "name": "Silben-Astronaut",
+      "emoji": "🧑‍🚀",
+      "requiredStars": 18,
+      "category": "Abenteuer & Weltraum",
+      "voiceText": "Bereit für den Abflug zu neuen Lese-Welten!"
+    },
+    {
       "id": "st_unicorn",
       "name": "Zauber-Einhorn",
       "emoji": "🦄",
@@ -7334,6 +7350,14 @@
       "voiceText": "Die Tore der großen Silben-Burg öffnen sich!"
     },
     {
+      "id": "st_phoenix",
+      "name": "Goldener Feuervogel",
+      "emoji": "🐦‍🔥",
+      "requiredStars": 30,
+      "category": "Märchenschloss",
+      "voiceText": "Der goldene Feuervogel leuchtet für dich!"
+    },
+    {
       "id": "st_compass",
       "name": "Wort-Entdecker",
       "emoji": "🧭",
@@ -7348,6 +7372,14 @@
       "requiredStars": 36,
       "category": "Lese-Meister",
       "voiceText": "Herzlichen Glückwunsch! Du bist ein echter Fibel-Profi!"
+    },
+    {
+      "id": "st_book_king",
+      "name": "Geschichten-König",
+      "emoji": "📚",
+      "requiredStars": 40,
+      "category": "Lese-Meister",
+      "voiceText": "Du hast schon ganze Lese-Abenteuer gemeistert!"
     },
     {
       "id": "st_medal",
@@ -7372,6 +7404,826 @@
       "requiredStars": 64,
       "category": "Lese-Meister",
       "voiceText": "Unglaublich! Du hast den funkelnden Meister-Kristall erreicht!"
+    }
+  ],
+  "stageStories": [
+    {
+      "id": "story_stage_1",
+      "stage": 1,
+      "title": "Mimi und Leo am See",
+      "emoji": "🌊",
+      "sentences": [
+        {
+          "text": "Mimi ist am See.",
+          "emoji": "🌊",
+          "distractorEmojis": [
+            "🚂",
+            "🚀"
+          ],
+          "words": [
+            {
+              "fullWord": "Mimi",
+              "syllables": [
+                "Mi",
+                "mi"
+              ]
+            },
+            {
+              "fullWord": "ist",
+              "syllables": [
+                "ist"
+              ]
+            },
+            {
+              "fullWord": "am",
+              "syllables": [
+                "am"
+              ]
+            },
+            {
+              "fullWord": "See.",
+              "syllables": [
+                "See."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Oma und Leo malen.",
+          "emoji": "🎨",
+          "distractorEmojis": [
+            "⚽",
+            "🐟"
+          ],
+          "words": [
+            {
+              "fullWord": "Oma",
+              "syllables": [
+                "O",
+                "ma"
+              ]
+            },
+            {
+              "fullWord": "und",
+              "syllables": [
+                "und"
+              ]
+            },
+            {
+              "fullWord": "Leo",
+              "syllables": [
+                "Le",
+                "o"
+              ]
+            },
+            {
+              "fullWord": "malen.",
+              "syllables": [
+                "ma",
+                "len."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ein Lama liest im Gras.",
+          "emoji": "🦙",
+          "distractorEmojis": [
+            "⛄",
+            "👑"
+          ],
+          "words": [
+            {
+              "fullWord": "Ein",
+              "syllables": [
+                "Ein"
+              ]
+            },
+            {
+              "fullWord": "Lama",
+              "syllables": [
+                "La",
+                "ma"
+              ]
+            },
+            {
+              "fullWord": "liest",
+              "syllables": [
+                "liest"
+              ]
+            },
+            {
+              "fullWord": "im",
+              "syllables": [
+                "im"
+              ]
+            },
+            {
+              "fullWord": "Gras.",
+              "syllables": [
+                "Gras."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Alle lachen in der Sonne.",
+          "emoji": "☀️",
+          "distractorEmojis": [
+            "🌧️",
+            "🌙"
+          ],
+          "words": [
+            {
+              "fullWord": "Alle",
+              "syllables": [
+                "Al",
+                "le"
+              ]
+            },
+            {
+              "fullWord": "lachen",
+              "syllables": [
+                "la",
+                "chen"
+              ]
+            },
+            {
+              "fullWord": "in",
+              "syllables": [
+                "in"
+              ]
+            },
+            {
+              "fullWord": "der",
+              "syllables": [
+                "der"
+              ]
+            },
+            {
+              "fullWord": "Sonne.",
+              "syllables": [
+                "Son",
+                "ne."
+              ]
+            }
+          ]
+        }
+      ],
+      "question": "Wer liest in der Geschichte gemütlich im Gras?",
+      "answerEmoji": "🦙",
+      "answerText": "Das Lama",
+      "distractorOptions": [
+        {
+          "emoji": "🐧",
+          "text": "Der Pinguin"
+        },
+        {
+          "emoji": "🦖",
+          "text": "Der Dino"
+        }
+      ]
+    },
+    {
+      "id": "story_stage_2",
+      "stage": 2,
+      "title": "Fips und der rote Ball",
+      "emoji": "🦊",
+      "sentences": [
+        {
+          "text": "Fips läuft in den Wald.",
+          "emoji": "🌲",
+          "distractorEmojis": [
+            "🚢",
+            "🏜️"
+          ],
+          "words": [
+            {
+              "fullWord": "Fips",
+              "syllables": [
+                "Fips"
+              ]
+            },
+            {
+              "fullWord": "läuft",
+              "syllables": [
+                "läuft"
+              ]
+            },
+            {
+              "fullWord": "in",
+              "syllables": [
+                "in"
+              ]
+            },
+            {
+              "fullWord": "den",
+              "syllables": [
+                "den"
+              ]
+            },
+            {
+              "fullWord": "Wald.",
+              "syllables": [
+                "Wald."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Dort rollt ein roter Ball.",
+          "emoji": "⚽",
+          "distractorEmojis": [
+            "🍎",
+            "🎈"
+          ],
+          "words": [
+            {
+              "fullWord": "Dort",
+              "syllables": [
+                "Dort"
+              ]
+            },
+            {
+              "fullWord": "rollt",
+              "syllables": [
+                "rollt"
+              ]
+            },
+            {
+              "fullWord": "ein",
+              "syllables": [
+                "ein"
+              ]
+            },
+            {
+              "fullWord": "roter",
+              "syllables": [
+                "ro",
+                "ter"
+              ]
+            },
+            {
+              "fullWord": "Ball.",
+              "syllables": [
+                "Ball."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Der kleine Hund bellt laut.",
+          "emoji": "🐶",
+          "distractorEmojis": [
+            "🐱",
+            "🐸"
+          ],
+          "words": [
+            {
+              "fullWord": "Der",
+              "syllables": [
+                "Der"
+              ]
+            },
+            {
+              "fullWord": "kleine",
+              "syllables": [
+                "klei",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "Hund",
+              "syllables": [
+                "Hund"
+              ]
+            },
+            {
+              "fullWord": "bellt",
+              "syllables": [
+                "bellt"
+              ]
+            },
+            {
+              "fullWord": "laut.",
+              "syllables": [
+                "laut."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Fips und der Hund toben.",
+          "emoji": "🦊",
+          "distractorEmojis": [
+            "🛸",
+            "🎸"
+          ],
+          "words": [
+            {
+              "fullWord": "Fips",
+              "syllables": [
+                "Fips"
+              ]
+            },
+            {
+              "fullWord": "und",
+              "syllables": [
+                "und"
+              ]
+            },
+            {
+              "fullWord": "der",
+              "syllables": [
+                "der"
+              ]
+            },
+            {
+              "fullWord": "Hund",
+              "syllables": [
+                "Hund"
+              ]
+            },
+            {
+              "fullWord": "toben.",
+              "syllables": [
+                "to",
+                "ben."
+              ]
+            }
+          ]
+        }
+      ],
+      "question": "Was findet Fips im Wald?",
+      "answerEmoji": "⚽",
+      "answerText": "Einen Ball",
+      "distractorOptions": [
+        {
+          "emoji": "👑",
+          "text": "Eine Krone"
+        },
+        {
+          "emoji": "🚀",
+          "text": "Eine Rakete"
+        }
+      ]
+    },
+    {
+      "id": "story_stage_3",
+      "stage": 3,
+      "title": "Fina und der Sternenschatz",
+      "emoji": "🦉",
+      "sentences": [
+        {
+          "text": "Eule Fina wacht in der Nacht.",
+          "emoji": "🦉",
+          "distractorEmojis": [
+            "🐓",
+            "🦋"
+          ],
+          "words": [
+            {
+              "fullWord": "Eule",
+              "syllables": [
+                "Eu",
+                "le"
+              ]
+            },
+            {
+              "fullWord": "Fina",
+              "syllables": [
+                "Fi",
+                "na"
+              ]
+            },
+            {
+              "fullWord": "wacht",
+              "syllables": [
+                "wacht"
+              ]
+            },
+            {
+              "fullWord": "in",
+              "syllables": [
+                "in"
+              ]
+            },
+            {
+              "fullWord": "der",
+              "syllables": [
+                "der"
+              ]
+            },
+            {
+              "fullWord": "Nacht.",
+              "syllables": [
+                "Nacht."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ein heller Stern scheint auf das Schiff.",
+          "emoji": "🌟",
+          "distractorEmojis": [
+            "🌵",
+            "🥨"
+          ],
+          "words": [
+            {
+              "fullWord": "Ein",
+              "syllables": [
+                "Ein"
+              ]
+            },
+            {
+              "fullWord": "heller",
+              "syllables": [
+                "hel",
+                "ler"
+              ]
+            },
+            {
+              "fullWord": "Stern",
+              "syllables": [
+                "Stern"
+              ]
+            },
+            {
+              "fullWord": "scheint",
+              "syllables": [
+                "scheint"
+              ]
+            },
+            {
+              "fullWord": "auf",
+              "syllables": [
+                "auf"
+              ]
+            },
+            {
+              "fullWord": "das",
+              "syllables": [
+                "das"
+              ]
+            },
+            {
+              "fullWord": "Schiff.",
+              "syllables": [
+                "Schiff."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Auf dem Schiff glitzert ein Schatz.",
+          "emoji": "💎",
+          "distractorEmojis": [
+            "🧦",
+            "🧹"
+          ],
+          "words": [
+            {
+              "fullWord": "Auf",
+              "syllables": [
+                "Auf"
+              ]
+            },
+            {
+              "fullWord": "dem",
+              "syllables": [
+                "dem"
+              ]
+            },
+            {
+              "fullWord": "Schiff",
+              "syllables": [
+                "Schiff"
+              ]
+            },
+            {
+              "fullWord": "glitzert",
+              "syllables": [
+                "glit",
+                "zert"
+              ]
+            },
+            {
+              "fullWord": "ein",
+              "syllables": [
+                "ein"
+              ]
+            },
+            {
+              "fullWord": "Schatz.",
+              "syllables": [
+                "Schatz."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Fina freut sich über das Buch.",
+          "emoji": "📖",
+          "distractorEmojis": [
+            "🛞",
+            "🪣"
+          ],
+          "words": [
+            {
+              "fullWord": "Fina",
+              "syllables": [
+                "Fi",
+                "na"
+              ]
+            },
+            {
+              "fullWord": "freut",
+              "syllables": [
+                "freut"
+              ]
+            },
+            {
+              "fullWord": "sich",
+              "syllables": [
+                "sich"
+              ]
+            },
+            {
+              "fullWord": "über",
+              "syllables": [
+                "ü",
+                "ber"
+              ]
+            },
+            {
+              "fullWord": "das",
+              "syllables": [
+                "das"
+              ]
+            },
+            {
+              "fullWord": "Buch.",
+              "syllables": [
+                "Buch."
+              ]
+            }
+          ]
+        }
+      ],
+      "question": "Worüber freut sich Eule Fina am Ende?",
+      "answerEmoji": "📖",
+      "answerText": "Über das Buch",
+      "distractorOptions": [
+        {
+          "emoji": "☂️",
+          "text": "Über den Schirm"
+        },
+        {
+          "emoji": "🧀",
+          "text": "Über den Käse"
+        }
+      ]
+    },
+    {
+      "id": "story_stage_4",
+      "stage": 4,
+      "title": "Das Fest im Zauberwald",
+      "emoji": "🏰",
+      "sentences": [
+        {
+          "text": "Heute feiern alle Tiere im Zauberwald.",
+          "emoji": "🎉",
+          "distractorEmojis": [
+            "❄️",
+            "💤"
+          ],
+          "words": [
+            {
+              "fullWord": "Heute",
+              "syllables": [
+                "Heu",
+                "te"
+              ]
+            },
+            {
+              "fullWord": "feiern",
+              "syllables": [
+                "fei",
+                "ern"
+              ]
+            },
+            {
+              "fullWord": "alle",
+              "syllables": [
+                "al",
+                "le"
+              ]
+            },
+            {
+              "fullWord": "Tiere",
+              "syllables": [
+                "Tie",
+                "re"
+              ]
+            },
+            {
+              "fullWord": "im",
+              "syllables": [
+                "im"
+              ]
+            },
+            {
+              "fullWord": "Zauberwald.",
+              "syllables": [
+                "Zau",
+                "ber",
+                "wald."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Das Zebra tanzt fröhlich an der Quelle.",
+          "emoji": "🦓",
+          "distractorEmojis": [
+            "🦈",
+            "🐌"
+          ],
+          "words": [
+            {
+              "fullWord": "Das",
+              "syllables": [
+                "Das"
+              ]
+            },
+            {
+              "fullWord": "Zebra",
+              "syllables": [
+                "Ze",
+                "bra"
+              ]
+            },
+            {
+              "fullWord": "tanzt",
+              "syllables": [
+                "tanzt"
+              ]
+            },
+            {
+              "fullWord": "fröhlich",
+              "syllables": [
+                "fröh",
+                "lich"
+              ]
+            },
+            {
+              "fullWord": "an",
+              "syllables": [
+                "an"
+              ]
+            },
+            {
+              "fullWord": "der",
+              "syllables": [
+                "der"
+              ]
+            },
+            {
+              "fullWord": "Quelle.",
+              "syllables": [
+                "Quel",
+                "le."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Ein bunter Vogel singt ein schönes Lied.",
+          "emoji": "🐦",
+          "distractorEmojis": [
+            "🪨",
+            "🪑"
+          ],
+          "words": [
+            {
+              "fullWord": "Ein",
+              "syllables": [
+                "Ein"
+              ]
+            },
+            {
+              "fullWord": "bunter",
+              "syllables": [
+                "bun",
+                "ter"
+              ]
+            },
+            {
+              "fullWord": "Vogel",
+              "syllables": [
+                "Vo",
+                "gel"
+              ]
+            },
+            {
+              "fullWord": "singt",
+              "syllables": [
+                "singt"
+              ]
+            },
+            {
+              "fullWord": "ein",
+              "syllables": [
+                "ein"
+              ]
+            },
+            {
+              "fullWord": "schönes",
+              "syllables": [
+                "schö",
+                "nes"
+              ]
+            },
+            {
+              "fullWord": "Lied.",
+              "syllables": [
+                "Lied."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Der König ruft: Ihr seid echte Lese-Profis!",
+          "emoji": "👑",
+          "distractorEmojis": [
+            "🧤",
+            "🕯️"
+          ],
+          "words": [
+            {
+              "fullWord": "Der",
+              "syllables": [
+                "Der"
+              ]
+            },
+            {
+              "fullWord": "König",
+              "syllables": [
+                "Kö",
+                "nig"
+              ]
+            },
+            {
+              "fullWord": "ruft:",
+              "syllables": [
+                "ruft:"
+              ]
+            },
+            {
+              "fullWord": "Ihr",
+              "syllables": [
+                "Ihr"
+              ]
+            },
+            {
+              "fullWord": "seid",
+              "syllables": [
+                "seid"
+              ]
+            },
+            {
+              "fullWord": "echte",
+              "syllables": [
+                "ech",
+                "te"
+              ]
+            },
+            {
+              "fullWord": "Lese-Profis!",
+              "syllables": [
+                "Le",
+                "se-",
+                "Pro",
+                "fis!"
+              ]
+            }
+          ]
+        }
+      ],
+      "question": "Wer tanzt fröhlich an der Quelle?",
+      "answerEmoji": "🦓",
+      "answerText": "Das Zebra",
+      "distractorOptions": [
+        {
+          "emoji": "🐊",
+          "text": "Das Krokodil"
+        },
+        {
+          "emoji": "🐪",
+          "text": "Das Kamel"
+        }
+      ]
     }
   ]
 }

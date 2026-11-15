@@ -36,11 +36,30 @@ class _WordSentenceBuilderScreenState
   bool? _comprehensionCorrect;
   bool _bonusAwarded = false;
 
+  // Blitzlesen (Sichtwörter) state
+  int _flashIdx = 0;
+  bool _flashVisible = true;
+  bool? _flashCorrect;
+  bool _flashBonusAwarded = false;
+  late List<String> _flashEmojiChoices;
+
+  static const _fallbackDistractorEmojis = [
+    '🎈',
+    '⚽',
+    '🍎',
+    '🚂',
+    '🌞',
+    '🐟',
+    '🚀',
+    '👑',
+  ];
+
   @override
   void initState() {
     super.initState();
     _setupPuzzle();
     _setupSentenceQuiz();
+    _setupFlashWord();
   }
 
   void _setupPuzzle() {
@@ -74,19 +93,48 @@ class _WordSentenceBuilderScreenState
       ..shuffle(Random(77 + _sentenceIdx));
   }
 
+  void _setupFlashWord() {
+    final words = widget.unit.words;
+    if (words.isEmpty) {
+      _flashEmojiChoices = [];
+      return;
+    }
+    final target = words[_flashIdx % words.length];
+    final otherEmojis = words
+        .where((w) => w.emoji.isNotEmpty && w.emoji != target.emoji)
+        .map((w) => w.emoji)
+        .toList();
+    for (final fb in _fallbackDistractorEmojis) {
+      if (otherEmojis.length >= 2) break;
+      if (fb != target.emoji && !otherEmojis.contains(fb)) {
+        otherEmojis.add(fb);
+      }
+    }
+    _flashEmojiChoices = [target.emoji, ...otherEmojis.take(2)]
+      ..shuffle(Random(55 + _flashIdx));
+    _flashVisible = true;
+    _flashCorrect = null;
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      if (!mounted) return;
+      setState(() => _flashVisible = false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final unit = widget.unit;
     final progress = ref.watch(progressProvider);
     final targetWord = unit.words.isNotEmpty ? unit.words[_wordIdx] : null;
     final bonusDone = progress.isBonusCompleted('sentence_quiz:${unit.id}');
+    final flashDone = progress.isBonusCompleted('flash_reading:${unit.id}');
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Wörter & Sätze: ${unit.letter}'),
           bottom: TabBar(
+            isScrollable: true,
             tabs: [
               const Tab(
                 icon: Icon(Icons.extension_rounded),
@@ -103,6 +151,13 @@ class _WordSentenceBuilderScreenState
                 ),
                 text: 'Satz-Rätsel ⭐',
               ),
+              Tab(
+                icon: Icon(
+                  flashDone ? Icons.stars_rounded : Icons.bolt_rounded,
+                  color: flashDone ? AppColors.starGold : null,
+                ),
+                text: 'Blitzlesen ⚡',
+              ),
             ],
           ),
         ),
@@ -111,6 +166,7 @@ class _WordSentenceBuilderScreenState
             _buildPuzzleTab(unit, targetWord, progress.settings),
             _buildSentencesTab(unit, progress.settings),
             _buildSentenceQuizTab(unit, bonusDone),
+            _buildFlashReadingTab(unit, progress.settings),
           ],
         ),
       ),
@@ -247,6 +303,7 @@ class _WordSentenceBuilderScreenState
       final matches = _chosenSyllables.join() == target.fullWord;
       if (matches) {
         setState(() => _wordSolved = true);
+        await ref.read(audioServiceProvider).playSuccessChime();
         await ref
             .read(audioServiceProvider)
             .speakWord('Super! ${target.fullWord}');
@@ -254,6 +311,8 @@ class _WordSentenceBuilderScreenState
             .read(progressProvider.notifier)
             .completeModule(unit.id, ModuleType.reading);
       } else {
+        await ref.read(audioServiceProvider).playGentleHintChime();
+        await ref.read(progressProvider.notifier).recordMistake(unit.id);
         Future.delayed(const Duration(milliseconds: 600), () {
           if (!mounted) return;
           setState(() => _chosenSyllables.clear());
@@ -518,6 +577,162 @@ class _WordSentenceBuilderScreenState
     );
   }
 
+  Widget _buildFlashReadingTab(LessonUnit unit, AppSettings settings) {
+    if (unit.words.isEmpty) {
+      return const Center(child: Text('Keine Wörter vorhanden.'));
+    }
+    final target = unit.words[_flashIdx % unit.words.length];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          MascotBanner(
+            character: MascotCharacter.fina,
+            message:
+                'Blitzlesen: Schau genau hin! Das Wort blitzt kurz auf – welches Bild passt dazu?',
+            onTap: () =>
+                ref.read(audioServiceProvider).speakWord(target.fullWord),
+          ),
+          const SizedBox(height: 20),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(minHeight: 84),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF3F4F6),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Center(
+                      child: _flashVisible || _flashCorrect == true
+                          ? SyllableTextWidget(
+                              syllables: target.syllables,
+                              fontSize: 40,
+                              showArcs: settings.showSyllableArcs,
+                              showVowelCrowns: settings.showVowelCrowns,
+                            )
+                          : const Text(
+                              '⚡ Welches Wort hast du gesehen?',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4B5563),
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      setState(() => _flashVisible = true);
+                      Future.delayed(const Duration(milliseconds: 1400), () {
+                        if (!mounted) return;
+                        setState(() => _flashVisible = false);
+                      });
+                    },
+                    icon: const Icon(Icons.bolt_rounded),
+                    label: const Text('Noch einmal kurz aufblitzen'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Tippe auf das passende Bild:',
+            style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: _flashEmojiChoices.map((emoji) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: ElevatedButton(
+                    onPressed: () => _onSelectFlashEmoji(unit, target, emoji),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      side: const BorderSide(
+                        color: AppColors.syllableBlue,
+                        width: 2.5,
+                      ),
+                    ),
+                    child: Text(emoji, style: const TextStyle(fontSize: 44)),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          if (_flashCorrect != null) ...[
+            const SizedBox(height: 18),
+            Text(
+              _flashCorrect!
+                  ? (_flashBonusAwarded
+                      ? 'Blitzschnell erkannt! +1 Bonus-Stern! ⚡🌟'
+                      : 'Blitzschnell! Das war „${target.fullWord}“! ⭐')
+                  : 'Lass das Wort noch einmal aufblitzen!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: _flashCorrect!
+                    ? AppColors.successGreen
+                    : AppColors.syllableRed,
+              ),
+            ),
+            if (_flashCorrect! && unit.words.length > 1) ...[
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _flashIdx = (_flashIdx + 1) % unit.words.length;
+                    _setupFlashWord();
+                  });
+                },
+                icon: const Icon(Icons.arrow_forward_rounded),
+                label: const Text('Nächstes Blitz-Wort'),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _onSelectFlashEmoji(
+    LessonUnit unit,
+    SyllableWord target,
+    String chosenEmoji,
+  ) async {
+    final isRight = chosenEmoji == target.emoji;
+    if (isRight) {
+      await ref.read(audioServiceProvider).playSuccessChime();
+      final newly = await ref
+          .read(progressProvider.notifier)
+          .awardBonusStar('flash_reading:${unit.id}');
+      await ref.read(audioServiceProvider).speakWord('Super! ${target.fullWord}');
+      if (mounted) {
+        setState(() {
+          _flashCorrect = true;
+          _flashBonusAwarded = newly;
+        });
+      }
+    } else {
+      await ref.read(audioServiceProvider).playGentleHintChime();
+      await ref.read(progressProvider.notifier).recordMistake(unit.id);
+      if (mounted) {
+        setState(() => _flashCorrect = false);
+      }
+    }
+  }
+
   Future<void> _onSelectSentenceWord(
     SentenceItem sentence,
     String wordText,
@@ -531,8 +746,11 @@ class _WordSentenceBuilderScreenState
       final built = _chosenSentenceWords.join(' ');
       if (built == sentence.text) {
         setState(() => _sentenceOrderSolved = true);
+        await ref.read(audioServiceProvider).playSuccessChime();
         await ref.read(audioServiceProvider).speakWord(sentence.text);
       } else {
+        await ref.read(audioServiceProvider).playGentleHintChime();
+        await ref.read(progressProvider.notifier).recordMistake(widget.unit.id);
         Future.delayed(const Duration(milliseconds: 700), () {
           if (!mounted) return;
           setState(() => _chosenSentenceWords.clear());
@@ -548,6 +766,7 @@ class _WordSentenceBuilderScreenState
   ) async {
     final isRight = chosenEmoji == sentence.emoji;
     if (isRight) {
+      await ref.read(audioServiceProvider).playSuccessChime();
       final newlyAwarded = await ref
           .read(progressProvider.notifier)
           .awardBonusStar('sentence_quiz:${unit.id}');
@@ -564,6 +783,8 @@ class _WordSentenceBuilderScreenState
         });
       }
     } else {
+      await ref.read(audioServiceProvider).playGentleHintChime();
+      await ref.read(progressProvider.notifier).recordMistake(unit.id);
       setState(() => _comprehensionCorrect = false);
       await ref.read(audioServiceProvider).speakWord(sentence.text);
     }

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/curriculum/curriculum_models.dart';
@@ -26,6 +27,17 @@ class ParentDashboardScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text('Fehler: $e')),
         data: (curriculum) {
           final totalUnits = curriculum.units.length;
+          final reviewUnitIds = progress.unitsNeedingReview();
+          final reviewLetters = reviewUnitIds
+              .map(
+                (id) => curriculum.units
+                    .where((u) => u.id == id)
+                    .map((u) => u.letter)
+                    .firstOrNull,
+              )
+              .whereType<String>()
+              .toList();
+
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -120,7 +132,7 @@ class ParentDashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
 
-              // 2. Kompetenz-Auswertung
+              // 2. Kompetenz-Auswertung & Förderempfehlungen
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -166,6 +178,34 @@ class ParentDashboardScreen extends ConsumerWidget {
                         total: totalUnits,
                         color: AppColors.foxOrange,
                       ),
+                      const SizedBox(height: 8),
+                      _CompetenceRow(
+                        label: '5. Lesepass-Geschichten (Stufen 1–4)',
+                        done: progress.completedStageStories.length,
+                        total: curriculum.stageStories.isEmpty
+                            ? 4
+                            : curriculum.stageStories.length,
+                        color: const Color(0xFF7E57C2),
+                      ),
+                      const Divider(height: 24),
+                      const Text(
+                        'Pädagogische Förderempfehlung:',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _buildDiagnosticRecommendation(
+                          progress,
+                          reviewLetters,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF374151),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -188,7 +228,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'Regulär schaltet sich eine Stufe frei, sobald in der Vorstufe mindestens 70 % der Sterne erreicht wurden.',
+                        'Standardmäßig sind alle Stufen mit sanfter Empfehlung frei wählbar. Optional kann unten der strikte Stufen-Sperrmodus (70 %-Regel) aktiviert werden.',
                         style: TextStyle(
                           fontSize: 13,
                           color: Color(0xFF4B5563),
@@ -278,13 +318,41 @@ class ParentDashboardScreen extends ConsumerWidget {
                                   settings.copyWith(showVowelCrowns: v),
                                 ),
                       ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          'Strikter Stufen-Sperrmodus (70 %-Regel)',
+                        ),
+                        subtitle: const Text(
+                          'Wenn aus: Sanfte Empfehlung, alle Buchstaben frei wählbar',
+                        ),
+                        value: settings.strictStageLock,
+                        onChanged: (v) =>
+                            ref.read(progressProvider.notifier).updateSettings(
+                                  settings.copyWith(strictStageLock: v),
+                                ),
+                      ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          'Linkshänder-Modus beim Nachspuren (🤚)',
+                        ),
+                        subtitle: const Text(
+                          'Platziert Linienhaus-Hilfen & Vorlage rechts statt links',
+                        ),
+                        value: settings.leftHandedMode,
+                        onChanged: (v) =>
+                            ref.read(progressProvider.notifier).updateSettings(
+                                  settings.copyWith(leftHandedMode: v),
+                                ),
+                      ),
                     ],
                   ),
                 ),
               ),
               const SizedBox(height: 16),
 
-              // 5. Zurücksetzen
+              // 5. Offline-Sicherung & Zurücksetzen
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -292,7 +360,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Datenverwaltung',
+                        'Datenverwaltung & Offline-Backup',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -303,6 +371,18 @@ class ParentDashboardScreen extends ConsumerWidget {
                         spacing: 12,
                         runSpacing: 8,
                         children: [
+                          OutlinedButton.icon(
+                            onPressed: () =>
+                                _showExportDialog(context, ref),
+                            icon: const Icon(Icons.upload_file_rounded),
+                            label: const Text('Offline-Backup exportieren'),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: () =>
+                                _showImportDialog(context, ref),
+                            icon: const Icon(Icons.download_rounded),
+                            label: const Text('Offline-Backup importieren'),
+                          ),
                           OutlinedButton.icon(
                             onPressed: () async {
                               await ref
@@ -339,6 +419,129 @@ class ParentDashboardScreen extends ConsumerWidget {
           );
         },
       ),
+    );
+  }
+
+  String _buildDiagnosticRecommendation(
+    ChildProgress progress,
+    List<String> reviewLetters,
+  ) {
+    if (reviewLetters.isNotEmpty) {
+      return '🔁 Gezieltes Wiederholen empfohlen bei: ${reviewLetters.join(', ')}. '
+          'Das „Tägliche Training“ auf dem Startbildschirm wählt diese Laute automatisch bevorzugt aus.';
+    }
+
+    final phonics = progress.completedCountForModuleType(ModuleType.phonics);
+    final tracing = progress.completedCountForModuleType(ModuleType.tracing);
+    final syllables =
+        progress.completedCountForModuleType(ModuleType.syllables);
+    final reading = progress.completedCountForModuleType(ModuleType.reading);
+
+    if (phonics == 0 && tracing == 0 && syllables == 0 && reading == 0) {
+      return '🌱 Start-Tipp: Beginnt gemeinsam in Stufe 1 mit den Dauerlauten M, A, O, I und L.';
+    }
+    if (tracing < phonics && tracing <= syllables) {
+      return '✍️ Schreib-Tipp: Das Hören klappt schon prima! Als Nächstes lohnt sich das Nachspuren im Linienhaus (Groß, Klein & Frei).';
+    }
+    if (syllables <= reading) {
+      return '👏 Silben-Tipp: Übt das Silben-Klatschen und den Silbenteppich, um das flüssige Lesen weiter zu stärken.';
+    }
+    return '🌟 Toller Lernfortschritt! Probiert als Nächstes ein Stufen-Abenteuer im Lesepass oder das Blitzlesen aus.';
+  }
+
+  void _showExportDialog(BuildContext context, WidgetRef ref) {
+    final jsonStr = ref.read(progressProvider.notifier).exportProgressJson();
+    Clipboard.setData(ClipboardData(text: jsonStr));
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Offline-Backup (JSON)'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Der Lernstand wurde in die Zwischenablage kopiert und kann lokal gesichert werden:',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              constraints: const BoxConstraints(maxHeight: 160),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SingleChildScrollView(
+                child: SelectableText(
+                  jsonStr,
+                  style: const TextStyle(fontSize: 11),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Fertig'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showImportDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    String? errorText;
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              title: const Text('Offline-Backup importieren'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: controller,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      labelText: 'JSON-Backup hier einfügen',
+                      errorText: errorText,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Abbrechen'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final ok = await ref
+                        .read(progressProvider.notifier)
+                        .importProgressJson(controller.text.trim());
+                    if (ok) {
+                      if (ctx.mounted) Navigator.of(ctx).pop();
+                    } else {
+                      setDialogState(() {
+                        errorText = 'Ungültiges JSON-Format.';
+                      });
+                    }
+                  },
+                  child: const Text('Importieren'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 

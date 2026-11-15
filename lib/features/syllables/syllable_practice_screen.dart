@@ -363,6 +363,7 @@ class _SyllablePracticeScreenState
     setState(() => _clapCorrect = isRight);
 
     if (isRight) {
+      await ref.read(audioServiceProvider).playSuccessChime();
       await ref
           .read(audioServiceProvider)
           .speakWord('Richtig! ${target.syllables.join(' - ')}');
@@ -383,6 +384,8 @@ class _SyllablePracticeScreenState
         }
       }
     } else {
+      await ref.read(audioServiceProvider).playGentleHintChime();
+      await ref.read(progressProvider.notifier).recordMistake(unit.id);
       await ref.read(audioServiceProvider).speakWord(target.fullWord);
     }
   }

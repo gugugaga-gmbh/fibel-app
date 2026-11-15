@@ -232,6 +232,7 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
     setState(() => _lastAnswerCorrect = correct);
 
     if (correct) {
+      await ref.read(audioServiceProvider).playSuccessChime();
       await ref.read(audioServiceProvider).speakWord('Richtig! ${item.word}');
       if (_quizIndex + 1 < unit.soundQuiz.length) {
         Future.delayed(const Duration(milliseconds: 900), () {
@@ -250,6 +251,8 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
         }
       }
     } else {
+      await ref.read(audioServiceProvider).playGentleHintChime();
+      await ref.read(progressProvider.notifier).recordMistake(unit.id);
       await ref.read(audioServiceProvider).speakWord(item.word);
     }
   }

@@ -12,12 +12,16 @@ class AppSettings {
   final bool soundEnabled;
   final bool showSyllableArcs;
   final bool showVowelCrowns;
+  final bool strictStageLock;
+  final bool leftHandedMode;
 
   const AppSettings({
     this.speechSpeed = SpeechSpeed.normal,
     this.soundEnabled = true,
     this.showSyllableArcs = true,
     this.showVowelCrowns = true,
+    this.strictStageLock = false,
+    this.leftHandedMode = false,
   });
 
   double get wordRate => switch (speechSpeed) {
@@ -31,12 +35,16 @@ class AppSettings {
     bool? soundEnabled,
     bool? showSyllableArcs,
     bool? showVowelCrowns,
+    bool? strictStageLock,
+    bool? leftHandedMode,
   }) {
     return AppSettings(
       speechSpeed: speechSpeed ?? this.speechSpeed,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       showSyllableArcs: showSyllableArcs ?? this.showSyllableArcs,
       showVowelCrowns: showVowelCrowns ?? this.showVowelCrowns,
+      strictStageLock: strictStageLock ?? this.strictStageLock,
+      leftHandedMode: leftHandedMode ?? this.leftHandedMode,
     );
   }
 
@@ -45,6 +53,8 @@ class AppSettings {
         'soundEnabled': soundEnabled,
         'showSyllableArcs': showSyllableArcs,
         'showVowelCrowns': showVowelCrowns,
+        'strictStageLock': strictStageLock,
+        'leftHandedMode': leftHandedMode,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic>? json) {
@@ -59,6 +69,8 @@ class AppSettings {
       soundEnabled: (json['soundEnabled'] as bool?) ?? true,
       showSyllableArcs: (json['showSyllableArcs'] as bool?) ?? true,
       showVowelCrowns: (json['showVowelCrowns'] as bool?) ?? true,
+      strictStageLock: (json['strictStageLock'] as bool?) ?? false,
+      leftHandedMode: (json['leftHandedMode'] as bool?) ?? false,
     );
   }
 }
@@ -73,6 +85,8 @@ class ChildProfile {
   final Map<String, Set<String>> tracingStepsByUnit;
   final Set<String> completedBonuses;
   final Set<int> unlockedStagesOverride;
+  final Map<String, int> mistakeCountsByUnit;
+  final Set<int> completedStageStories;
   final int dailyGoalTarget;
   final int dailyCompletedCount;
   final String lastActiveDate;
@@ -89,6 +103,8 @@ class ChildProfile {
     this.tracingStepsByUnit = const {},
     this.completedBonuses = const {},
     this.unlockedStagesOverride = const {},
+    this.mistakeCountsByUnit = const {},
+    this.completedStageStories = const {},
     this.dailyGoalTarget = 3,
     this.dailyCompletedCount = 0,
     this.lastActiveDate = '',
@@ -106,6 +122,8 @@ class ChildProfile {
     Map<String, Set<String>>? tracingStepsByUnit,
     Set<String>? completedBonuses,
     Set<int>? unlockedStagesOverride,
+    Map<String, int>? mistakeCountsByUnit,
+    Set<int>? completedStageStories,
     int? dailyGoalTarget,
     int? dailyCompletedCount,
     String? lastActiveDate,
@@ -124,6 +142,9 @@ class ChildProfile {
       completedBonuses: completedBonuses ?? this.completedBonuses,
       unlockedStagesOverride:
           unlockedStagesOverride ?? this.unlockedStagesOverride,
+      mistakeCountsByUnit: mistakeCountsByUnit ?? this.mistakeCountsByUnit,
+      completedStageStories:
+          completedStageStories ?? this.completedStageStories,
       dailyGoalTarget: dailyGoalTarget ?? this.dailyGoalTarget,
       dailyCompletedCount: dailyCompletedCount ?? this.dailyCompletedCount,
       lastActiveDate: lastActiveDate ?? this.lastActiveDate,
@@ -148,6 +169,8 @@ class ChildProfile {
       ),
       'completedBonuses': completedBonuses.toList(),
       'unlockedStagesOverride': unlockedStagesOverride.toList(),
+      'mistakeCountsByUnit': mistakeCountsByUnit,
+      'completedStageStories': completedStageStories.toList(),
       'dailyGoalTarget': dailyGoalTarget,
       'dailyCompletedCount': dailyCompletedCount,
       'lastActiveDate': lastActiveDate,
@@ -162,6 +185,11 @@ class ChildProfile {
       return raw.map(
         (k, v) => MapEntry(k, (v as List<dynamic>).cast<String>().toSet()),
       );
+    }
+
+    Map<String, int> parseIntMap(String field) {
+      final raw = (json[field] as Map<String, dynamic>?) ?? {};
+      return raw.map((k, v) => MapEntry(k, (v as num).toInt()));
     }
 
     return ChildProfile(
@@ -179,6 +207,11 @@ class ChildProfile {
           .toSet(),
       unlockedStagesOverride:
           ((json['unlockedStagesOverride'] as List<dynamic>?) ?? [])
+              .map((e) => (e as num).toInt())
+              .toSet(),
+      mistakeCountsByUnit: parseIntMap('mistakeCountsByUnit'),
+      completedStageStories:
+          ((json['completedStageStories'] as List<dynamic>?) ?? [])
               .map((e) => (e as num).toInt())
               .toSet(),
       dailyGoalTarget: (json['dailyGoalTarget'] as num?)?.toInt() ?? 3,
@@ -242,6 +275,8 @@ class ChildProgress {
       activeProfile.tracingStepsByUnit;
   Set<String> get completedBonuses => activeProfile.completedBonuses;
   Set<int> get unlockedStagesOverride => activeProfile.unlockedStagesOverride;
+  Map<String, int> get mistakeCountsByUnit => activeProfile.mistakeCountsByUnit;
+  Set<int> get completedStageStories => activeProfile.completedStageStories;
   int get dailyGoalTarget => activeProfile.dailyGoalTarget;
   int get dailyCompletedCount => activeProfile.dailyCompletedCount;
   int get streakDays => activeProfile.streakDays;
@@ -259,6 +294,11 @@ class ChildProgress {
     return completedBonuses.contains(bonusKey);
   }
 
+  bool isStageStoryCompleted(int stage) {
+    return completedStageStories.contains(stage) ||
+        completedBonuses.contains('stage_story:$stage');
+  }
+
   int completedCountForUnit(String unitId) {
     return completedModulesByUnit[unitId]?.length ?? 0;
   }
@@ -269,6 +309,15 @@ class ChildProgress {
       if (modules.contains(module.name)) count++;
     }
     return count;
+  }
+
+  /// Returns unit IDs sorted by mistake frequency (for adaptive practice & diagnostics).
+  List<String> unitsNeedingReview({int limit = 5}) {
+    final entries = mistakeCountsByUnit.entries
+        .where((e) => e.value > 0)
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return entries.take(limit).map((e) => e.key).toList();
   }
 
   /// Calculates (earnedCoreStars, maxCoreStars, ratio) for a given curriculum stage.
@@ -292,14 +341,23 @@ class ChildProgress {
     );
   }
 
-  /// Strict 70% progression rule: Stage 1 is always unlocked.
-  /// Stage n > 1 unlocks when Stage n-1 has >= 70% of core module stars
+  /// Pedagogical 70% progression status: Stage 1 is always unlocked.
+  /// Stage n > 1 reaches unlocked status when Stage n-1 has >= 70% of core module stars
   /// OR when unlocked via teacher override in ParentDashboard.
   bool isStageUnlocked(int stage, List<LessonUnit> allUnits) {
     if (stage <= 1) return true;
     if (unlockedStagesOverride.contains(stage)) return true;
     final prev = stageProgress(stage - 1, allUnits);
     return prev.ratio >= 0.70;
+  }
+
+  /// Returns true when the child can open units in [stage].
+  /// By default (`!settings.strictStageLock`), all stages are freely selectable
+  /// with a gentle recommendation badge. When `strictStageLock` is enabled in
+  /// the Parent Dashboard, `isStageUnlocked` is enforced.
+  bool isStageAccessible(int stage, List<LessonUnit> allUnits) {
+    if (!settings.strictStageLock) return true;
+    return isStageUnlocked(stage, allUnits);
   }
 
   ChildProgress copyWith({
@@ -535,8 +593,7 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
   Future<void> deleteProfile(String profileId) async {
     if (state.profiles.length <= 1) return;
     _mutated = true;
-    final remaining =
-        state.profiles.where((p) => p.id != profileId).toList();
+    final remaining = state.profiles.where((p) => p.id != profileId).toList();
     final nextActive = state.activeProfileId == profileId
         ? remaining.first.id
         : state.activeProfileId;
@@ -557,9 +614,22 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
       );
       final unitSet = currentMap.putIfAbsent(unitId, () => <String>{});
       final isNew = unitSet.add(module.name);
+
+      // Reduce mistake counter when a child successfully completes a module
+      final nextMistakes = Map<String, int>.from(profile.mistakeCountsByUnit);
+      if (nextMistakes.containsKey(unitId)) {
+        final decreased = nextMistakes[unitId]! - 1;
+        if (decreased <= 0) {
+          nextMistakes.remove(unitId);
+        } else {
+          nextMistakes[unitId] = decreased;
+        }
+      }
+
       var updated = profile.copyWith(
         totalStars: isNew ? profile.totalStars + 1 : profile.totalStars,
         completedModulesByUnit: currentMap,
+        mistakeCountsByUnit: nextMistakes,
       );
       if (isNew) {
         updated = _recordDailyActivity(updated);
@@ -567,6 +637,45 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
       return updated;
     });
     await _repo.saveProgress(state);
+  }
+
+  /// Records a mistake for adaptive review and diagnostic feedback in ParentDashboard.
+  Future<void> recordMistake(String unitId) async {
+    _mutated = true;
+    state = state.updateActive((profile) {
+      final next = Map<String, int>.from(profile.mistakeCountsByUnit);
+      next[unitId] = (next[unitId] ?? 0) + 1;
+      return profile.copyWith(mistakeCountsByUnit: next);
+    });
+    await _repo.saveProgress(state);
+  }
+
+  /// Marks a stage story as read & understood, awarding +2 bonus stars on first completion.
+  Future<bool> completeStageStory(int stage) async {
+    _mutated = true;
+    bool newlyCompleted = false;
+    state = state.updateActive((profile) {
+      if (profile.completedStageStories.contains(stage)) {
+        return profile;
+      }
+      newlyCompleted = true;
+      final nextStories = Set<int>.from(profile.completedStageStories)
+        ..add(stage);
+      final nextBonuses = Set<String>.from(profile.completedBonuses)
+        ..add('stage_story:$stage');
+      var updated = profile.copyWith(
+        totalStars: profile.totalStars + 2,
+        bonusStars: profile.bonusStars + 2,
+        completedStageStories: nextStories,
+        completedBonuses: nextBonuses,
+      );
+      updated = _recordDailyActivity(updated);
+      return updated;
+    });
+    if (newlyCompleted) {
+      await _repo.saveProgress(state);
+    }
+    return newlyCompleted;
   }
 
   /// Records completion of a tracing sub-step ('upper', 'lower', 'freehand').
@@ -596,7 +705,7 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
   }
 
   /// Awards bonus star(s) for completing optional challenges (e.g. Silben-Klatschen,
-  /// Satz-Rätsel, Anlaut-Werkstatt Wort-Rätsel). Returns true if newly awarded.
+  /// Satz-Rätsel, Blitzlesen, Anlaut-Werkstatt Wort-Rätsel). Returns true if newly awarded.
   Future<bool> awardBonusStar(String bonusKey, {int stars = 1}) async {
     _mutated = true;
     bool newlyAwarded = false;
@@ -639,6 +748,25 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
     _mutated = true;
     state = state.copyWith(settings: newSettings);
     await _repo.saveProgress(state);
+  }
+
+  /// Exports all profiles and settings as a formatted JSON string for offline backup.
+  String exportProgressJson() {
+    return const JsonEncoder.withIndent('  ').convert(state.toJson());
+  }
+
+  /// Imports profiles and settings from a JSON backup string (100% offline).
+  Future<bool> importProgressJson(String rawJson) async {
+    try {
+      final decoded = jsonDecode(rawJson) as Map<String, dynamic>;
+      final imported = ChildProgress.fromJson(decoded);
+      _mutated = true;
+      state = imported;
+      await _repo.saveProgress(state);
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> resetActiveProfileProgress() async {
