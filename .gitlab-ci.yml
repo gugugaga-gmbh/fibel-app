@@ -1,0 +1,70 @@
+stages:
+  - analyze
+  - test
+  - e2e
+  - build
+
+variables:
+  PUB_CACHE: "$CI_PROJECT_DIR/.pub-cache"
+  ANDROID_COMPILE_SDK: "35"
+  ANDROID_BUILD_TOOLS: "35.0.0"
+  ANDROID_SDK_ROOT: "/opt/android-sdk"
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}-flutter"
+  paths:
+    - .pub-cache/
+    - .dart_tool/
+
+default:
+  image: ghcr.io/cirruslabs/flutter:stable
+  before_script:
+    - flutter --version
+    - flutter pub get
+
+analyze:
+  stage: analyze
+  script:
+    - flutter analyze
+
+unit_and_widget_tests:
+  stage: test
+  script:
+    - flutter test --coverage
+  artifacts:
+    when: always
+    paths:
+      - coverage/
+    expire_in: 7 days
+
+e2e_android_emulator:
+  stage: e2e
+  image: ghcr.io/cirruslabs/flutter:stable
+  script:
+    - |
+      echo "Setting up headless Android Emulator for E2E tests..."
+      yes | sdkmanager --licenses > /dev/null 2>&1 || true
+      sdkmanager "system-images;android-34;google_apis;x86_64" "platforms;android-34" "emulator"
+      echo "no" | avdmanager create avd -n fibel_e2e_avd -k "system-images;android-34;google_apis;x86_64" --force
+      $ANDROID_SDK_ROOT/emulator/emulator -avd fibel_e2e_avd -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect &
+      EMULATOR_PID=$!
+      adb wait-for-device
+      timeout 180 bash -c 'until adb shell getprop sys.boot_completed | grep -q "1"; do sleep 3; done'
+      adb shell settings put global window_animation_scale 0
+      adb shell settings put global transition_animation_scale 0
+      adb shell settings put global animator_duration_scale 0
+      flutter test integration_test/app_e2e_test.dart -d emulator-5554
+      kill $EMULATOR_PID || true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+
+build_android_apk:
+  stage: build
+  script:
+    - flutter build apk --release
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/app-release.apk
+    expire_in: 30 days
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
