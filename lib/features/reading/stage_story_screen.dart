@@ -7,6 +7,7 @@ import '../../core/curriculum/curriculum_repository.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
+import '../../core/widgets/stage_certificate_dialog.dart';
 import '../../core/widgets/syllable_text_widget.dart';
 
 class StageStoryScreen extends ConsumerStatefulWidget {
@@ -123,7 +124,7 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
                 )
               else
                 Expanded(
-                  child: _buildStoryBody(story, progress),
+                  child: _buildStoryBody(story, progress, curriculum.units),
                 ),
             ],
           );
@@ -132,10 +133,16 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
     );
   }
 
-  Widget _buildStoryBody(StageStory story, ChildProgress progress) {
+  Widget _buildStoryBody(
+    StageStory story,
+    ChildProgress progress,
+    List<LessonUnit> allUnits,
+  ) {
     final sentences = story.sentences;
     final isAtQuiz = _sentenceIndex >= sentences.length;
     final storyCompleted = progress.isStageStoryCompleted(story.stage);
+    final certEarned =
+        progress.isStageCertificateEarned(story.stage, allUnits);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -224,7 +231,7 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
             _buildSentencePage(sentences[_sentenceIndex], sentences.length,
                 progress.settings)
           else
-            _buildComprehensionQuiz(story, storyCompleted),
+            _buildComprehensionQuiz(story, certEarned, progress, allUnits),
         ],
       ),
     );
@@ -334,7 +341,12 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
     );
   }
 
-  Widget _buildComprehensionQuiz(StageStory story, bool alreadyDone) {
+  Widget _buildComprehensionQuiz(
+    StageStory story,
+    bool certEarned,
+    ChildProgress progress,
+    List<LessonUnit> allUnits,
+  ) {
     return Column(
       children: [
         Card(
@@ -413,6 +425,26 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
             ),
           ),
         ],
+        if (certEarned || _quizCorrect == true) ...[
+          const SizedBox(height: 14),
+          ElevatedButton.icon(
+            onPressed: () {
+              StageCertificateDialog.show(
+                context,
+                stage: story.stage,
+                story: story,
+                progress: progress,
+                allUnits: allUnits,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.starGold,
+              foregroundColor: const Color(0xFF1F2937),
+            ),
+            icon: const Icon(Icons.emoji_events_rounded),
+            label: Text('Lese-Urkunde Stufe ${story.stage} ansehen 🏆'),
+          ),
+        ],
         const SizedBox(height: 12),
         TextButton.icon(
           onPressed: () => setState(() {
@@ -429,7 +461,7 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
   Future<void> _checkStoryAnswer(StageStory story, StoryChoice chosen) async {
     final isRight = chosen.text == story.answerText;
     if (isRight) {
-      await ref.read(audioServiceProvider).playSuccessChime();
+      await ref.read(audioServiceProvider).playCelebrationFanfare();
       final newly = await ref
           .read(progressProvider.notifier)
           .completeStageStory(story.stage);

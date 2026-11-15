@@ -7,6 +7,7 @@ import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../../core/widgets/parental_gate_dialog.dart';
+import '../../core/widgets/stage_certificate_dialog.dart';
 
 class StickerAlbumScreen extends ConsumerStatefulWidget {
   const StickerAlbumScreen({super.key});
@@ -61,6 +62,59 @@ class _StickerAlbumScreenState extends ConsumerState<StickerAlbumScreen> {
                   character: MascotCharacter.fips,
                   message:
                       'Du hast schon ${progress.totalStars} Sterne gesammelt! Tippe auf deine freigeschalteten Sticker!',
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(
+                  children: [1, 2, 3, 4].map((stage) {
+                    final earned = progress.isStageCertificateEarned(
+                      stage,
+                      curriculum.units,
+                    );
+                    final story = curriculum.storyForStage(stage);
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ActionChip(
+                        avatar: Text(
+                          earned ? '🏆' : '🔒',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        label: Text(
+                          'Urkunde Stufe $stage',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: earned
+                                ? const Color(0xFF1F2937)
+                                : const Color(0xFF6B7280),
+                          ),
+                        ),
+                        backgroundColor: earned
+                            ? AppColors.starGold.withValues(alpha: 0.22)
+                            : Colors.white,
+                        onPressed: () {
+                          if (earned) {
+                            ref
+                                .read(audioServiceProvider)
+                                .playCelebrationFanfare();
+                            StageCertificateDialog.show(
+                              context,
+                              stage: stage,
+                              story: story,
+                              progress: progress,
+                              allUnits: curriculum.units,
+                            );
+                          } else {
+                            ref.read(audioServiceProvider).speakWord(
+                                  'Lies die Geschichte von Stufe $stage im Lesepass oder sammle die Stufen-Sterne für diese Urkunde!',
+                                );
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
               SingleChildScrollView(

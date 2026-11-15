@@ -23,6 +23,11 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
   bool _riddleSolved = false;
   bool _riddleBonusNewlyEarned = false;
 
+  int _dictationIdx = 1;
+  bool _dictationSolved = false;
+  bool _dictationBonusNewlyEarned = false;
+  bool _showDictationHint = false;
+
   /// Simple heuristic German syllable splitter for free writing preview.
   static List<String> splitIntoSyllables(String word) {
     final trimmed = word.trim();
@@ -59,6 +64,7 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
   void _onKeyTap(
     AnlautEntry entry, {
     SyllableWord? activeRiddle,
+    SyllableWord? activeDictation,
   }) {
     ref.read(audioServiceProvider).speakPhoneme(entry.phoneme);
     setState(() {
@@ -75,9 +81,17 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
         _onRiddleSolved(activeRiddle);
       }
     }
+
+    if (activeDictation != null && !_dictationSolved) {
+      if (_typedText.trim().toLowerCase() ==
+          activeDictation.fullWord.toLowerCase()) {
+        _onDictationSolved(activeDictation);
+      }
+    }
   }
 
   Future<void> _onRiddleSolved(SyllableWord target) async {
+    await ref.read(audioServiceProvider).playSuccessChime();
     final newly = await ref
         .read(progressProvider.notifier)
         .awardBonusStar('anlaut_riddle:${target.fullWord}');
@@ -88,6 +102,22 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
       setState(() {
         _riddleSolved = true;
         _riddleBonusNewlyEarned = newly;
+      });
+    }
+  }
+
+  Future<void> _onDictationSolved(SyllableWord target) async {
+    await ref.read(audioServiceProvider).playSuccessChime();
+    final newly = await ref
+        .read(progressProvider.notifier)
+        .awardBonusStar('anlaut_dictation:${target.fullWord}');
+    await ref
+        .read(audioServiceProvider)
+        .speakWord('Spitzen-Ohren! Du hast ${target.fullWord} richtig gehört!');
+    if (mounted) {
+      setState(() {
+        _dictationSolved = true;
+        _dictationBonusNewlyEarned = newly;
       });
     }
   }
@@ -105,7 +135,7 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
     final progress = ref.watch(progressProvider);
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Anlaut-Werkstatt'),
@@ -118,6 +148,10 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
               Tab(
                 icon: Icon(Icons.lightbulb_rounded),
                 text: 'Wort-Rätsel ⭐',
+              ),
+              Tab(
+                icon: Icon(Icons.headphones_rounded),
+                text: 'Hör-Diktat 🎧⭐',
               ),
             ],
           ),
@@ -151,6 +185,9 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
             final activeRiddle = riddleWords.isNotEmpty
                 ? riddleWords[_riddleIdx % riddleWords.length]
                 : null;
+            final activeDictation = riddleWords.isNotEmpty
+                ? riddleWords[_dictationIdx % riddleWords.length]
+                : null;
 
             return TabBarView(
               children: [
@@ -158,11 +195,20 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
                   keys: keys,
                   progress: progress,
                   riddleTarget: null,
+                  dictationTarget: null,
                 ),
                 _buildWorkspace(
                   keys: keys,
                   progress: progress,
                   riddleTarget: activeRiddle,
+                  dictationTarget: null,
+                  totalRiddles: riddleWords.length,
+                ),
+                _buildWorkspace(
+                  keys: keys,
+                  progress: progress,
+                  riddleTarget: null,
+                  dictationTarget: activeDictation,
                   totalRiddles: riddleWords.length,
                 ),
               ],
@@ -177,6 +223,7 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
     required List<AnlautEntry> keys,
     required ChildProgress progress,
     required SyllableWord? riddleTarget,
+    required SyllableWord? dictationTarget,
     int totalRiddles = 0,
   }) {
     final words = _typedText
@@ -189,18 +236,20 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
-          child: riddleTarget == null
-              ? MascotBanner(
-                  character: MascotCharacter.fips,
-                  message:
-                      'Tippe auf die Anlaut-Bilder und schreibe eigene Wörter!',
-                  onTap: _typedText.trim().isNotEmpty
-                      ? () => ref
-                          .read(audioServiceProvider)
-                          .speakWord(_typedText.trim())
-                      : null,
-                )
-              : _buildRiddleHeader(riddleTarget, totalRiddles),
+          child: riddleTarget != null
+              ? _buildRiddleHeader(riddleTarget, totalRiddles)
+              : (dictationTarget != null
+                  ? _buildDictationHeader(dictationTarget, totalRiddles)
+                  : MascotBanner(
+                      character: MascotCharacter.fips,
+                      message:
+                          'Tippe auf die Anlaut-Bilder und schreibe eigene Wörter!',
+                      onTap: _typedText.trim().isNotEmpty
+                          ? () => ref
+                              .read(audioServiceProvider)
+                              .speakWord(_typedText.trim())
+                          : null,
+                    )),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -223,7 +272,9 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
                           ? Text(
                               riddleTarget != null
                                   ? 'Schreibe das Wort für ${riddleTarget.emoji}…'
-                                  : 'Dein Wort erscheint hier in Silbenfarben…',
+                                  : (dictationTarget != null
+                                      ? 'Tippe auf „Wort hören“ und schreibe, was du hörst…'
+                                      : 'Dein Wort erscheint hier in Silbenfarben…'),
                               style: const TextStyle(color: Color(0xFF6B7280)),
                             )
                           : Wrap(
@@ -282,6 +333,7 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
                               : () => setState(() {
                                     _typedText = '';
                                     _riddleSolved = false;
+                                    _dictationSolved = false;
                                   }),
                           icon: const Icon(Icons.delete_outline_rounded),
                         ),
@@ -328,7 +380,11 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
               final isVowel = entry.isVowel;
               return InkWell(
                 borderRadius: BorderRadius.circular(16),
-                onTap: () => _onKeyTap(entry, activeRiddle: riddleTarget),
+                onTap: () => _onKeyTap(
+                  entry,
+                  activeRiddle: riddleTarget,
+                  activeDictation: dictationTarget,
+                ),
                 child: Container(
                   decoration: BoxDecoration(
                     color: isVowel
@@ -429,6 +485,103 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
                         },
                         icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                         label: const Text('Nächstes Rätsel'),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDictationHeader(SyllableWord target, int totalRiddles) {
+    final syllableHint =
+        '${target.syllables.length} ${target.syllables.length == 1 ? "Silbe" : "Silben"} • ${target.fullWord.length} Buchstaben';
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.foxOrange.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.foxOrange.withValues(alpha: 0.45)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () =>
+                ref.read(audioServiceProvider).speakWord(target.fullWord),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                _dictationSolved || _showDictationHint ? target.emoji : '🎧',
+                style: const TextStyle(fontSize: 40),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _dictationSolved
+                      ? (_dictationBonusNewlyEarned
+                          ? 'Spitzen-Ohren! „${target.fullWord}“ richtig gehört! +1 ⭐'
+                          : 'Richtig gehört! Das Wort heißt „${target.fullWord}“! ⭐')
+                      : 'Hör-Diktat: Hör genau zu und schreibe das Wort ($syllableHint)',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: _dictationSolved
+                        ? AppColors.successGreen
+                        : const Color(0xFF1F2937),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => ref
+                          .read(audioServiceProvider)
+                          .speakWord(target.fullWord),
+                      icon: const Icon(Icons.volume_up_rounded, size: 18),
+                      label: const Text('Wort hören'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => ref
+                          .read(audioServiceProvider)
+                          .speakWord(target.syllables.join(' . ')),
+                      icon: const Icon(Icons.graphic_eq_rounded, size: 18),
+                      label: const Text('Silben hören'),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => setState(
+                        () => _showDictationHint = !_showDictationHint,
+                      ),
+                      icon: const Icon(Icons.visibility_outlined, size: 18),
+                      label: const Text('Bild-Tipp'),
+                    ),
+                    if (totalRiddles > 1)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _dictationIdx = (_dictationIdx + 1) % totalRiddles;
+                            _typedText = '';
+                            _dictationSolved = false;
+                            _dictationBonusNewlyEarned = false;
+                            _showDictationHint = false;
+                          });
+                        },
+                        icon: const Icon(Icons.arrow_forward_rounded, size: 18),
+                        label: const Text('Nächstes'),
                       ),
                   ],
                 ),

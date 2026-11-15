@@ -7404,6 +7404,38 @@
       "requiredStars": 64,
       "category": "Lese-Meister",
       "voiceText": "Unglaublich! Du hast den funkelnden Meister-Kristall erreicht!"
+    },
+    {
+      "id": "st_rhyme_fox",
+      "name": "Reim-Detektiv",
+      "emoji": "🕵️",
+      "requiredStars": 76,
+      "category": "Lese-Meister",
+      "voiceText": "Spitze! Als Reim-Detektiv findest du jedes Reimwort!"
+    },
+    {
+      "id": "st_feather",
+      "name": "Zauber-Feder",
+      "emoji": "🪶",
+      "requiredStars": 88,
+      "category": "Lese-Meister",
+      "voiceText": "Mit der goldenen Zauber-Feder schreibst du wie ein Profi!"
+    },
+    {
+      "id": "st_owl_professor",
+      "name": "Eulen-Professor",
+      "emoji": "🎓",
+      "requiredStars": 100,
+      "category": "Lese-Meister",
+      "voiceText": "Hundert Sterne! Eule Fina verleiht dir den Eulen-Professor-Hut!"
+    },
+    {
+      "id": "st_sun_champion",
+      "name": "Sternen-Legende",
+      "emoji": "🌟",
+      "requiredStars": 115,
+      "category": "Lese-Meister",
+      "voiceText": "Du bist eine strahlende Sternen-Legende der ersten Klasse!"
     }
   ],
   "stageStories": [
@@ -8223,6 +8255,128 @@
           "emoji": "🐪",
           "text": "Das Kamel"
         }
+      ]
+    }
+  ],
+  "rhymePairs": [
+    {
+      "id": "rhyme_1_sonne_tonne",
+      "stage": 1,
+      "targetWord": "Sonne",
+      "targetSyllables": ["Son", "ne"],
+      "targetEmoji": "☀️",
+      "matchingWord": "Tonne",
+      "matchingSyllables": ["Ton", "ne"],
+      "matchingEmoji": "🛢️",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "🍎", "text": "Apfel" },
+        { "emoji": "🐟", "text": "Fisch" }
+      ]
+    },
+    {
+      "id": "rhyme_1_hose_rose",
+      "stage": 1,
+      "targetWord": "Hose",
+      "targetSyllables": ["Ho", "se"],
+      "targetEmoji": "👖",
+      "matchingWord": "Rose",
+      "matchingSyllables": ["Ro", "se"],
+      "matchingEmoji": "🌹",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "🐭", "text": "Maus" },
+        { "emoji": "🚂", "text": "Lok" }
+      ]
+    },
+    {
+      "id": "rhyme_2_hund_mund",
+      "stage": 2,
+      "targetWord": "Hund",
+      "targetSyllables": ["Hund"],
+      "targetEmoji": "🐶",
+      "matchingWord": "Mund",
+      "matchingSyllables": ["Mund"],
+      "matchingEmoji": "👄",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "⚽", "text": "Ball" },
+        { "emoji": "🌳", "text": "Baum" }
+      ]
+    },
+    {
+      "id": "rhyme_2_hut_wut",
+      "stage": 2,
+      "targetWord": "Hut",
+      "targetSyllables": ["Hut"],
+      "targetEmoji": "🎩",
+      "matchingWord": "Mut",
+      "matchingSyllables": ["Mut"],
+      "matchingEmoji": "🦁",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "🐸", "text": "Frosch" },
+        { "emoji": "⛺", "text": "Zelt" }
+      ]
+    },
+    {
+      "id": "rhyme_3_maus_haus",
+      "stage": 3,
+      "targetWord": "Maus",
+      "targetSyllables": ["Maus"],
+      "targetEmoji": "🐭",
+      "matchingWord": "Haus",
+      "matchingSyllables": ["Haus"],
+      "matchingEmoji": "🏠",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "🦉", "text": "Eule" },
+        { "emoji": "🚢", "text": "Schiff" }
+      ]
+    },
+    {
+      "id": "rhyme_3_fisch_tisch",
+      "stage": 3,
+      "targetWord": "Fisch",
+      "targetSyllables": ["Fisch"],
+      "targetEmoji": "🐟",
+      "matchingWord": "Tisch",
+      "matchingSyllables": ["Tisch"],
+      "matchingEmoji": "🪑",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "👑", "text": "Krone" },
+        { "emoji": "🍦", "text": "Eis" }
+      ]
+    },
+    {
+      "id": "rhyme_4_zelt_welt",
+      "stage": 4,
+      "targetWord": "Zelt",
+      "targetSyllables": ["Zelt"],
+      "targetEmoji": "⛺",
+      "matchingWord": "Welt",
+      "matchingSyllables": ["Welt"],
+      "matchingEmoji": "🌍",
+      "isMinimalPair": true,
+      "distractors": [
+        { "emoji": "🦓", "text": "Zebra" },
+        { "emoji": "🚀", "text": "Rakete" }
+      ]
+    },
+    {
+      "id": "rhyme_4_krone_bohne",
+      "stage": 4,
+      "targetWord": "Krone",
+      "targetSyllables": ["Kro", "ne"],
+      "targetEmoji": "👑",
+      "matchingWord": "Bohne",
+      "matchingSyllables": ["Boh", "ne"],
+      "matchingEmoji": "🫘",
+      "isMinimalPair": false,
+      "distractors": [
+        { "emoji": "🐧", "text": "Pinguin" },
+        { "emoji": "🏰", "text": "Schloss" }
       ]
     }
   ]

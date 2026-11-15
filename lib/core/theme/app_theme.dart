@@ -15,28 +15,29 @@ class AppColors {
 }
 
 class AppTheme {
-  static ThemeData buildTheme() {
+  static ThemeData buildTheme({bool highContrast = false}) {
+    final bgColor = highContrast ? Colors.white : AppColors.paperBackground;
     final base = ThemeData(
       useMaterial3: true,
       fontFamily: 'Andika',
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.syllableBlue,
-        surface: AppColors.paperBackground,
+        surface: bgColor,
       ),
-      scaffoldBackgroundColor: AppColors.paperBackground,
+      scaffoldBackgroundColor: bgColor,
     );
 
     return base.copyWith(
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.paperBackground,
+      appBarTheme: AppBarTheme(
+        backgroundColor: bgColor,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           color: Color(0xFF1F2937),
           fontSize: 22,
           fontWeight: FontWeight.w700,
         ),
-        iconTheme: IconThemeData(color: Color(0xFF1F2937), size: 28),
+        iconTheme: const IconThemeData(color: Color(0xFF1F2937), size: 28),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -53,9 +54,12 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         color: AppColors.cardSurface,
-        elevation: 2,
+        elevation: highContrast ? 0 : 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
+          side: highContrast
+              ? const BorderSide(color: Color(0xFF1F2937), width: 2)
+              : BorderSide.none,
         ),
       ),
     );

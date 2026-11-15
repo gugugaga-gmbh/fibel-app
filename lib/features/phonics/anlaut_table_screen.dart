@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/audio_service.dart';
@@ -6,6 +7,7 @@ import '../../core/curriculum/curriculum_repository.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
+import '../../core/widgets/syllable_text_widget.dart';
 
 class AnlautTableScreen extends ConsumerStatefulWidget {
   final LessonUnit? unit;
@@ -22,13 +24,18 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
   bool _quizFinished = false;
   AnlautCategory? _selectedCategory;
 
+  // Reim-Detektiv & Minimalpaare state
+  int _rhymeIndex = 0;
+  bool? _rhymeAnswerCorrect;
+  bool _rhymeBonusNewlyEarned = false;
+
   @override
   Widget build(BuildContext context) {
     final curriculumAsync = ref.watch(curriculumProvider);
     final unit = widget.unit;
 
     return DefaultTabController(
-      length: unit != null ? 2 : 1,
+      length: unit != null ? 3 : 2,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -36,29 +43,44 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
                 ? 'Laute hören: ${unit.letter} ${unit.lowercase}'
                 : 'Anlauttabelle',
           ),
-          bottom: unit != null
-              ? const TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.train_rounded), text: 'Laut-Zug'),
-                    Tab(
-                      icon: Icon(Icons.grid_view_rounded),
-                      text: 'Anlauttabelle',
-                    ),
-                  ],
-                )
-              : null,
+          bottom: TabBar(
+            tabs: [
+              if (unit != null)
+                const Tab(icon: Icon(Icons.train_rounded), text: 'Laut-Zug'),
+              const Tab(
+                icon: Icon(Icons.grid_view_rounded),
+                text: 'Anlauttabelle',
+              ),
+              const Tab(
+                icon: Icon(Icons.music_note_rounded),
+                text: 'Reim-Detektiv ⭐',
+              ),
+            ],
+          ),
         ),
         body: curriculumAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Fehler: $e')),
           data: (curriculum) {
+            final stageRhymes = unit != null
+                ? curriculum.rhymesForStage(unit.stage)
+                : curriculum.rhymePairs;
+            final effectiveRhymes =
+                stageRhymes.isNotEmpty ? stageRhymes : curriculum.rhymePairs;
+
             if (unit == null) {
-              return _buildAnlautGrid(curriculum.anlautTable);
+              return TabBarView(
+                children: [
+                  _buildAnlautGrid(curriculum.anlautTable),
+                  _buildRhymeDetectiveTab(effectiveRhymes),
+                ],
+              );
             }
             return TabBarView(
               children: [
                 _buildSoundTrainQuiz(unit),
                 _buildAnlautGrid(curriculum.anlautTable),
+                _buildRhymeDetectiveTab(effectiveRhymes),
               ],
             );
           },
@@ -390,6 +412,204 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
         ),
       ],
     );
+  }
+
+  Widget _buildRhymeDetectiveTab(List<RhymePairItem> rhymes) {
+    if (rhymes.isEmpty) {
+      return const Center(child: Text('Keine Reim-Aufgaben vorhanden.'));
+    }
+
+    final settings = ref.watch(progressProvider).settings;
+    final item = rhymes[_rhymeIndex % rhymes.length];
+    final choices = <StoryChoice>[
+      StoryChoice(emoji: item.matchingEmoji, text: item.matchingWord),
+      ...item.distractors,
+    ]..shuffle(Random(item.id.hashCode));
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          MascotBanner(
+            character: MascotCharacter.fina,
+            message:
+                'Reim-Detektiv: Welches Wort klingt fast genauso und reimt sich auf „${item.targetWord}“?',
+            onTap: () =>
+                ref.read(audioServiceProvider).speakWord(item.targetWord),
+          ),
+          const SizedBox(height: 12),
+          if (item.isMinimalPair)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.owlTeal.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                '👂 Minimalpaar: Nur der erste Laut ändert sich!',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.owlTeal,
+                ),
+              ),
+            ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () =>
+                ref.read(audioServiceProvider).speakWord(item.targetWord),
+            child: Card(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 36, vertical: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      item.targetEmoji,
+                      style: const TextStyle(fontSize: 68),
+                    ),
+                    const SizedBox(height: 8),
+                    SyllableTextWidget(
+                      syllables: item.targetSyllables,
+                      fontSize: 34,
+                      showArcs: settings.showSyllableArcs,
+                      showVowelCrowns: settings.showVowelCrowns,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.volume_up_rounded,
+                          size: 20,
+                          color: AppColors.syllableBlue,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Aufgabe ${(_rhymeIndex % rhymes.length) + 1} von ${rhymes.length}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Tippe auf das passende Reimwort:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          for (final choice in choices)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () =>
+                      _checkRhymeAnswer(item, choice, rhymes.length),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF1F2937),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 14,
+                    ),
+                    side: const BorderSide(
+                      color: AppColors.syllableBlue,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(choice.emoji, style: const TextStyle(fontSize: 34)),
+                      const SizedBox(width: 14),
+                      Text(
+                        choice.text,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          if (_rhymeAnswerCorrect != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              _rhymeAnswerCorrect!
+                  ? (_rhymeBonusNewlyEarned
+                      ? 'Spitze! „${item.targetWord} – ${item.matchingWord}“ reimt sich! +1 ⭐'
+                      : 'Richtig! „${item.targetWord} – ${item.matchingWord}“ klingt gleich! ⭐')
+                  : 'Sprich beide Wörter laut aus und hör auf das Ende!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _rhymeAnswerCorrect!
+                    ? AppColors.successGreen
+                    : AppColors.syllableRed,
+              ),
+            ),
+          ],
+          if (rhymes.length > 1) ...[
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => setState(() {
+                _rhymeIndex = (_rhymeIndex + 1) % rhymes.length;
+                _rhymeAnswerCorrect = null;
+                _rhymeBonusNewlyEarned = false;
+              }),
+              icon: const Icon(Icons.arrow_forward_rounded),
+              label: const Text('Nächstes Reim-Rätsel'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _checkRhymeAnswer(
+    RhymePairItem item,
+    StoryChoice chosen,
+    int totalRhymes,
+  ) async {
+    final isRight = chosen.text == item.matchingWord;
+    if (isRight) {
+      await ref.read(audioServiceProvider).playSuccessChime();
+      final newly = await ref
+          .read(progressProvider.notifier)
+          .awardBonusStar('rhyme_quiz:${item.id}');
+      await ref.read(audioServiceProvider).speakWord(
+            'Super! ${item.targetWord} und ${item.matchingWord}',
+          );
+      if (mounted) {
+        setState(() {
+          _rhymeAnswerCorrect = true;
+          _rhymeBonusNewlyEarned = newly;
+        });
+      }
+    } else {
+      await ref.read(audioServiceProvider).playGentleHintChime();
+      await ref
+          .read(audioServiceProvider)
+          .speakWord('${item.targetWord}. ${chosen.text}');
+      if (mounted) {
+        setState(() {
+          _rhymeAnswerCorrect = false;
+          _rhymeBonusNewlyEarned = false;
+        });
+      }
+    }
   }
 }
 

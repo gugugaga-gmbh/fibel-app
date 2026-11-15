@@ -12,16 +12,16 @@ Login, ohne Werbung.
 
 | Modul | Inhalt |
 | --- | --- |
-| 1. Laute hören | Interaktive Anlauttabelle (37 Laute, Filter nach Silbenkönigen 👑, Mitlauten & Mehrgraphemen) und „Laut-Zug“ |
-| 2. Nachspuren & Schreiben | 3-stufiges Schreiben im Dreilinien-Haus (Groß, Klein & Frei schreiben) mit Richtungspfeilen sowie eigene **Anlaut-Werkstatt** („Lesen durch Schreiben“ & Wort-Rätsel) |
-| 3. Silben schwingen | Zweifarbige Silben (Blau/Rot) mit Silbenbögen, Silbenkönig-Kronen, Silbenteppich und „Silben klatschen“-Bonusquiz |
-| 4. Wörter & Sätze | Silben-Puzzle zum Wörterbauen, erste Sätze mit Vorlesefunktion sowie „Satz-Rätsel“ (Satzbau & Sinnverständnis-Bildcheck) |
-| 5. Belohnung & Lernpfad | Tagesziel & Lern-Serie 🔥, adaptives „Tägliches Training“, 16 sprechende Sticker in 4 Themenwelten |
+| 1. Laute hören | Interaktive Anlauttabelle (37 Laute, Filter nach Silbenkönigen 👑, Mitlauten & Mehrgraphemen), „Laut-Zug“ und **„Reim-Detektiv“** (Reimwörter & Minimalpaare) |
+| 2. Nachspuren & Schreiben | 3-stufiges Schreiben im Dreilinien-Haus (Groß, Klein & Frei schreiben, inkl. Linkshänder-Modus) sowie **Anlaut-Werkstatt** (Freies Schreiben, Wort-Rätsel & akustisches **Hör-Diktat 🎧**) |
+| 3. Silben schwingen | Zweifarbige Silben (Blau/Rot) mit Silbenbögen, Silbenteppich, „Silben klatschen“ und **„Silbenkönige 👑“**-Training |
+| 4. Wörter, Sätze & Geschichten | Silben-Puzzle, erste Sätze, „Satz-Rätsel“, „Blitzlesen“ sowie **Lesepass & Stufen-Geschichten** (Stufen 1–4) |
+| 5. Belohnung & Urkunden | Einstellbares Tagesziel & Lern-Serie 🔥, adaptives „Tägliches Training“, **24 sprechende Sticker** und **Lese-Urkunden 🏆** für jede gemeisterte Stufe |
 
-- **33 Lektionen in 4 Stufen:** Strikter Lernpfad (Freischaltung ab 70 % der Sterne der Vorstufe) für alle Buchstaben A–Z, Umlaute (`Ä, Ö, Ü`) und Mehrgrapheme (`Ei, Au, Sch, Eu, Ch, St, Sp, Qu`)
-- **Schulschrift:** Andika (lokal eingebunden, kindgerechte `a`/`g`-Formen)
-- **Sprachausgabe:** deutsche Text-to-Speech-Stimme des Geräts (Geschwindigkeit anpassbar)
-- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Mehrkind-Profile verwalten, Kompetenz-Statistiken einsehen, Stufen manuell freischalten und Didaktik-/Audio-Hilfen konfigurieren
+- **33 Lektionen in 4 Stufen:** Sanfte Stufen-Empfehlung (oder optional strikte 70-%-Regel) für alle Buchstaben A–Z, Umlaute (`Ä, Ö, Ü`) und Mehrgrapheme (`Ei, Au, Sch, Eu, Ch, St, Sp, Qu`)
+- **Schulschrift & Barrierefreiheit:** Andika (lokal eingebunden, kindgerechte `a`/`g`-Formen), optional vergrößerte Leseschrift (+15 %) und erhöhter Kontrast-Modus
+- **Sprachausgabe & Offline-Audio:** lautgetreue deutsche Phonetik-Abbildung, Offline-WAV-Chimes & Feier-Fanfare (Geschwindigkeit anpassbar)
+- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Mehrkind-Profile, Kompetenz-Diagnostik & Förderempfehlung, kopierbarer **Lernbericht & Lese-Pass**, Offline-JSON-Backup sowie Stufen-Freischaltung
 
 ## Schnellstart
 

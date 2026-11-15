@@ -14,6 +14,8 @@ class AppSettings {
   final bool showVowelCrowns;
   final bool strictStageLock;
   final bool leftHandedMode;
+  final bool highContrastMode;
+  final bool largeTextMode;
 
   const AppSettings({
     this.speechSpeed = SpeechSpeed.normal,
@@ -22,6 +24,8 @@ class AppSettings {
     this.showVowelCrowns = true,
     this.strictStageLock = false,
     this.leftHandedMode = false,
+    this.highContrastMode = false,
+    this.largeTextMode = false,
   });
 
   double get wordRate => switch (speechSpeed) {
@@ -30,6 +34,8 @@ class AppSettings {
         SpeechSpeed.fast => 0.50,
       };
 
+  double get textScaleFactor => largeTextMode ? 1.15 : 1.0;
+
   AppSettings copyWith({
     SpeechSpeed? speechSpeed,
     bool? soundEnabled,
@@ -37,6 +43,8 @@ class AppSettings {
     bool? showVowelCrowns,
     bool? strictStageLock,
     bool? leftHandedMode,
+    bool? highContrastMode,
+    bool? largeTextMode,
   }) {
     return AppSettings(
       speechSpeed: speechSpeed ?? this.speechSpeed,
@@ -45,6 +53,8 @@ class AppSettings {
       showVowelCrowns: showVowelCrowns ?? this.showVowelCrowns,
       strictStageLock: strictStageLock ?? this.strictStageLock,
       leftHandedMode: leftHandedMode ?? this.leftHandedMode,
+      highContrastMode: highContrastMode ?? this.highContrastMode,
+      largeTextMode: largeTextMode ?? this.largeTextMode,
     );
   }
 
@@ -55,6 +65,8 @@ class AppSettings {
         'showVowelCrowns': showVowelCrowns,
         'strictStageLock': strictStageLock,
         'leftHandedMode': leftHandedMode,
+        'highContrastMode': highContrastMode,
+        'largeTextMode': largeTextMode,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic>? json) {
@@ -71,6 +83,8 @@ class AppSettings {
       showVowelCrowns: (json['showVowelCrowns'] as bool?) ?? true,
       strictStageLock: (json['strictStageLock'] as bool?) ?? false,
       leftHandedMode: (json['leftHandedMode'] as bool?) ?? false,
+      highContrastMode: (json['highContrastMode'] as bool?) ?? false,
+      largeTextMode: (json['largeTextMode'] as bool?) ?? false,
     );
   }
 }
@@ -358,6 +372,75 @@ class ChildProgress {
   bool isStageAccessible(int stage, List<LessonUnit> allUnits) {
     if (!settings.strictStageLock) return true;
     return isStageUnlocked(stage, allUnits);
+  }
+
+  /// Returns true when a child has earned the Lese-Urkunde for [stage]
+  /// (either by completing the stage story or reaching >= 70% of stage stars).
+  bool isStageCertificateEarned(int stage, List<LessonUnit> allUnits) {
+    if (isStageStoryCompleted(stage)) return true;
+    final stats = stageProgress(stage, allUnits);
+    return stats.max > 0 && stats.ratio >= 0.70;
+  }
+
+  /// Generates a human-readable, offline Markdown/text report of the active child's
+  /// learning progress, competencies, and earned stage certificates.
+  String generateParentReport(CurriculumData curriculum) {
+    final p = activeProfile;
+    final totalUnits = curriculum.units.length;
+    final phonics = completedCountForModuleType(ModuleType.phonics);
+    final tracing = completedCountForModuleType(ModuleType.tracing);
+    final syllables = completedCountForModuleType(ModuleType.syllables);
+    final reading = completedCountForModuleType(ModuleType.reading);
+    final stories = completedStageStories.length;
+
+    final buf = StringBuffer()
+      ..writeln('=== FIPS & FINA – LERNBERICHT & LESE-PASS ===')
+      ..writeln('Kind: ${p.avatarEmoji} ${p.name}')
+      ..writeln(
+        'Sterne gesamt: ${p.totalStars} ⭐ (davon ${p.bonusStars} Bonus-Sterne)',
+      )
+      ..writeln(
+        'Tagesziel: ${p.dailyCompletedCount}/${p.dailyGoalTarget} • Lernserie: ${p.streakDays} Tage 🔥',
+      )
+      ..writeln('')
+      ..writeln('--- KOMPETENZBEREICHE ---')
+      ..writeln('1. Laute hören (Anlaut-Zug): $phonics / $totalUnits')
+      ..writeln('2. Schreiben (Linienhaus):   $tracing / $totalUnits')
+      ..writeln('3. Silben schwingen:         $syllables / $totalUnits')
+      ..writeln('4. Wörter & Sätze lesen:     $reading / $totalUnits')
+      ..writeln(
+        '5. Lesepass-Geschichten:     $stories / ${curriculum.stageStories.length}',
+      )
+      ..writeln('')
+      ..writeln('--- STUFEN-FORTSCHRITT & URKUNDEN ---');
+
+    for (final stage in [1, 2, 3, 4]) {
+      final st = stageProgress(stage, curriculum.units);
+      final pct = (st.ratio * 100).round();
+      final cert = isStageCertificateEarned(stage, curriculum.units)
+          ? '🏆 Urkunde erreicht'
+          : '⏳ In Arbeit';
+      buf.writeln('Stufe $stage: ${st.earned}/${st.max} ⭐ ($pct %) – $cert');
+    }
+
+    final reviewIds = unitsNeedingReview();
+    if (reviewIds.isNotEmpty) {
+      final letters = reviewIds
+          .map(
+            (id) => curriculum.units
+                .where((u) => u.id == id)
+                .map((u) => u.letter)
+                .firstOrNull,
+          )
+          .whereType<String>()
+          .toList();
+      if (letters.isNotEmpty) {
+        buf
+          ..writeln('')
+          ..writeln('Übungs-Empfehlung (Laute): ${letters.join(', ')}');
+      }
+    }
+    return buf.toString().trim();
   }
 
   ChildProgress copyWith({
@@ -747,6 +830,13 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
   Future<void> updateSettings(AppSettings newSettings) async {
     _mutated = true;
     state = state.copyWith(settings: newSettings);
+    await _repo.saveProgress(state);
+  }
+
+  Future<void> updateDailyGoalTarget(int target) async {
+    final clamped = target.clamp(1, 10);
+    _mutated = true;
+    state = state.updateActive((p) => p.copyWith(dailyGoalTarget: clamped));
     await _repo.saveProgress(state);
   }
 

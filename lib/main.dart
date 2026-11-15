@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'core/curriculum/curriculum_models.dart';
+import 'core/storage/progress_repository.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/home_screen.dart';
 import 'features/parents/parent_dashboard_screen.dart';
@@ -84,16 +85,27 @@ final _router = GoRouter(
   ],
 );
 
-class FibelApp extends StatelessWidget {
+class FibelApp extends ConsumerWidget {
   const FibelApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(progressProvider).settings;
+
     return MaterialApp.router(
       title: 'Fips & Fina – Lesen & Schreiben',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.buildTheme(),
+      theme: AppTheme.buildTheme(highContrast: settings.highContrastMode),
       routerConfig: _router,
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(
+            textScaler: TextScaler.linear(settings.textScaleFactor),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

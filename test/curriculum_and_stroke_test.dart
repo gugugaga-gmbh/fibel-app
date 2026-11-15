@@ -1,4 +1,5 @@
 import 'package:fibel_app/core/audio/audio_service.dart';
+import 'package:fibel_app/core/curriculum/curriculum_models.dart';
 import 'package:fibel_app/core/curriculum/curriculum_repository.dart';
 import 'package:fibel_app/core/storage/progress_repository.dart';
 import 'package:fibel_app/features/writing/stroke_validator.dart';
@@ -10,7 +11,7 @@ void main() {
 
   group('CurriculumRepository', () {
     test(
-        'loads curriculum_de.json with 33 units across 4 stages, 37 anlaute, 20 stickers and 4 stage stories',
+        'loads curriculum_de.json with 33 units across 4 stages, 37 anlaute, 24 stickers, 4 stage stories and 8 rhyme pairs',
         () async {
       final repo = CurriculumRepository();
       final data = await repo.loadCurriculum();
@@ -22,8 +23,9 @@ void main() {
       expect(data.unitsForStage(3).length, 7);
       expect(data.unitsForStage(4).length, 7);
       expect(data.anlautTable.length, 37);
-      expect(data.stickers.length, 20);
+      expect(data.stickers.length, 24);
       expect(data.stageStories.length, 4);
+      expect(data.rhymePairs.length, 8);
 
       for (final stage in [1, 2, 3, 4]) {
         final story = data.storyForStage(stage);
@@ -34,7 +36,22 @@ void main() {
             expect(w.syllables.join(), w.fullWord);
           }
         }
+        expect(data.rhymesForStage(stage), isNotEmpty);
       }
+
+      for (final r in data.rhymePairs) {
+        expect(r.targetSyllables.join(), r.targetWord);
+        expect(r.matchingSyllables.join(), r.matchingWord);
+        expect(r.distractors.length, greaterThanOrEqualTo(2));
+      }
+    });
+
+    test('SyllableWord.extractVowelKing extracts vowels and diphthongs', () {
+      expect(SyllableWord.extractVowelKing('Maus'), 'au');
+      expect(SyllableWord.extractVowelKing('Eis'), 'Ei');
+      expect(SyllableWord.extractVowelKing('Son'), 'o');
+      expect(SyllableWord.extractVowelKing('Tie'), 'ie');
+      expect(SyllableWord.extractVowelKing('Bä'), 'ä');
     });
   });
 
@@ -168,10 +185,29 @@ void main() {
       await notifier.completeModule('unit_02_a', ModuleType.phonics);
       expect(notifier.state.mistakeCountsByUnit['unit_02_a'], 1);
 
-      // Stage story completion awards +2 bonus stars once
+      // Stage story completion awards +2 bonus stars once and unlocks stage certificate
+      expect(notifier.state.isStageCertificateEarned(1, curriculum.units), isFalse);
       expect(await notifier.completeStageStory(1), isTrue);
       expect(await notifier.completeStageStory(1), isFalse);
       expect(notifier.state.isStageStoryCompleted(1), isTrue);
+      expect(notifier.state.isStageCertificateEarned(1, curriculum.units), isTrue);
+
+      // Customizable daily goal target & accessibility settings
+      await notifier.updateDailyGoalTarget(5);
+      expect(notifier.state.dailyGoalTarget, 5);
+      await notifier.updateSettings(
+        notifier.state.settings.copyWith(
+          highContrastMode: true,
+          largeTextMode: true,
+        ),
+      );
+      expect(notifier.state.settings.highContrastMode, isTrue);
+      expect(notifier.state.settings.textScaleFactor, 1.15);
+
+      // Offline parent & teacher learning report
+      final report = notifier.state.generateParentReport(curriculum);
+      expect(report, contains('FIPS & FINA – LERNBERICHT'));
+      expect(report, contains('🏆 Urkunde erreicht'));
 
       // Bonus star awarded once per key
       expect(await notifier.awardBonusStar('syllable_clap:unit_01_m'), isTrue);

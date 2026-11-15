@@ -77,6 +77,19 @@ class SyllableWord {
     return RegExp(r'[aeiouäöüyAEIOUÄÖÜY]').hasMatch(syllable);
   }
 
+  /// Extracts the primary vowel or diphthong (Silbenkönig) of a German syllable.
+  static String extractVowelKing(String syllable) {
+    final lower = syllable.toLowerCase();
+    for (final diphthong in const ['ei', 'au', 'eu', 'äu', 'ie']) {
+      final idx = lower.indexOf(diphthong);
+      if (idx >= 0) {
+        return syllable.substring(idx, idx + diphthong.length);
+      }
+    }
+    final match = RegExp(r'[aeiouäöüyAEIOUÄÖÜY]+').firstMatch(syllable);
+    return match?.group(0) ?? '';
+  }
+
   factory SyllableWord.fromJson(Map<String, dynamic> json) {
     return SyllableWord(
       fullWord: json['fullWord'] as String,
@@ -335,12 +348,62 @@ class StageStory {
   }
 }
 
+class RhymePairItem {
+  final String id;
+  final int stage;
+  final String targetWord;
+  final List<String> targetSyllables;
+  final String targetEmoji;
+  final String matchingWord;
+  final List<String> matchingSyllables;
+  final String matchingEmoji;
+  final bool isMinimalPair;
+  final List<StoryChoice> distractors;
+
+  const RhymePairItem({
+    required this.id,
+    required this.stage,
+    required this.targetWord,
+    required this.targetSyllables,
+    required this.targetEmoji,
+    required this.matchingWord,
+    required this.matchingSyllables,
+    required this.matchingEmoji,
+    this.isMinimalPair = false,
+    this.distractors = const [],
+  });
+
+  factory RhymePairItem.fromJson(Map<String, dynamic> json) {
+    final targetWord = json['targetWord'] as String;
+    final matchingWord = json['matchingWord'] as String;
+    return RhymePairItem(
+      id: json['id'] as String,
+      stage: (json['stage'] as num?)?.toInt() ?? 1,
+      targetWord: targetWord,
+      targetSyllables: ((json['targetSyllables'] as List<dynamic>?) ??
+              [targetWord])
+          .cast<String>(),
+      targetEmoji: (json['targetEmoji'] as String?) ?? '🎵',
+      matchingWord: matchingWord,
+      matchingSyllables: ((json['matchingSyllables'] as List<dynamic>?) ??
+              [matchingWord])
+          .cast<String>(),
+      matchingEmoji: (json['matchingEmoji'] as String?) ?? '⭐',
+      isMinimalPair: (json['isMinimalPair'] as bool?) ?? false,
+      distractors: ((json['distractors'] as List<dynamic>?) ?? [])
+          .map((e) => StoryChoice.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
 class CurriculumData {
   final String version;
   final List<AnlautEntry> anlautTable;
   final List<LessonUnit> units;
   final List<StickerItem> stickers;
   final List<StageStory> stageStories;
+  final List<RhymePairItem> rhymePairs;
 
   const CurriculumData({
     required this.version,
@@ -348,6 +411,7 @@ class CurriculumData {
     required this.units,
     required this.stickers,
     this.stageStories = const [],
+    this.rhymePairs = const [],
   });
 
   List<LessonUnit> unitsForStage(int stage) {
@@ -361,6 +425,10 @@ class CurriculumData {
     return null;
   }
 
+  List<RhymePairItem> rhymesForStage(int stage) {
+    return rhymePairs.where((r) => r.stage == stage).toList();
+  }
+
   factory CurriculumData.fromJson(Map<String, dynamic> json) {
     final units = (json['units'] as List<dynamic>)
         .map((e) => LessonUnit.fromJson(e as Map<String, dynamic>))
@@ -368,6 +436,7 @@ class CurriculumData {
       ..sort((a, b) => a.order.compareTo(b.order));
 
     final rawStories = (json['stageStories'] as List<dynamic>?) ?? const [];
+    final rawRhymes = (json['rhymePairs'] as List<dynamic>?) ?? const [];
 
     return CurriculumData(
       version: json['version'] as String,
@@ -382,6 +451,9 @@ class CurriculumData {
           .map((e) => StageStory.fromJson(e as Map<String, dynamic>))
           .toList()
         ..sort((a, b) => a.stage.compareTo(b.stage)),
+      rhymePairs: rawRhymes
+          .map((e) => RhymePairItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }
