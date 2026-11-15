@@ -36,7 +36,6 @@ dependencies:
   shared_preferences: ^2.3.3
   flutter_tts: ^4.2.0
   just_audio: ^0.9.42
-  google_fonts: ^6.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -68,6 +67,7 @@ flutter:
 
   assets:
     - assets/data/curriculum_de.json
+    - assets/fonts/OFL.txt
 
   fonts:
     - family: Andika

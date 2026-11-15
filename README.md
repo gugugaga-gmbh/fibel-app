@@ -78,4 +78,5 @@ auf dem Gerät gespeichert.
 
 ## Lizenzen
 
-- Schriftart **Andika**: SIL Open Font License 1.1
+- Schriftart **Andika** (© SIL International): SIL Open Font License 1.1 –
+  siehe [`assets/fonts/OFL.txt`](assets/fonts/OFL.txt)

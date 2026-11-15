@@ -34,8 +34,9 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
   Illustrationen, Texte oder Wortlisten aus den Original-Heften verwenden.
 - Maskottchen sind die eigenen Figuren **Fips (Fuchs)** und **Fina (Eule)**
   (`lib/core/widgets/mascot_widget.dart`).
-- Schriftart **Andika** steht unter der SIL Open Font License 1.1 – bei
-  Weitergabe die Lizenz beilegen.
+- Schriftart **Andika** steht unter der SIL Open Font License 1.1. Der
+  Lizenztext liegt in `assets/fonts/OFL.txt`, wird mit der App gebündelt und in
+  `main.dart` über `LicenseRegistry` registriert – nicht entfernen.
 
 ## 4. Architektur
 
@@ -115,9 +116,8 @@ lib/
 
 ## 8. Bekannte offene Punkte
 
-- `just_audio` und `google_fonts` stehen in `pubspec.yaml`, werden aber nicht
-  genutzt. `google_fonts` sollte entfernt werden (Offline-Regel); `just_audio`
-  ist für künftige Phonem-Aufnahmen (`assets/audio/phonemes/`) vorgesehen.
+- `just_audio` steht in `pubspec.yaml`, wird aber noch nicht genutzt – es ist
+  für künftige Phonem-Aufnahmen (`assets/audio/phonemes/`) vorgesehen.
 - Einzellaute werden derzeit per TTS gesprochen und klingen teils wie
   Buchstabennamen. Ziel: echte Lautaufnahmen.
 - Kein iOS-Build-Job in der Pipeline (benötigt macOS-Runner).

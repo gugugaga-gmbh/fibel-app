@@ -1,4 +1,6 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'core/curriculum/curriculum_models.dart';
@@ -12,6 +14,10 @@ import 'features/writing/letter_tracing_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  LicenseRegistry.addLicense(() async* {
+    final ofl = await rootBundle.loadString('assets/fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['Andika'], ofl);
+  });
   runApp(const ProviderScope(child: FibelApp()));
 }
 
