@@ -13,10 +13,10 @@ void main() {
       final repo = CurriculumRepository();
       final data = await repo.loadCurriculum();
 
-      expect(data.units.length, 10);
+      expect(data.units.length, 26);
       expect(data.units.first.letter, 'M');
-      expect(data.anlautTable.length, greaterThanOrEqualTo(26));
-      expect(data.stickers.length, greaterThanOrEqualTo(5));
+      expect(data.anlautTable.length, 34);
+      expect(data.stickers.length, 8);
     });
   });
 

@@ -45,6 +45,7 @@ void main() {
   testWidgets('FibelApp loads HomeScreen with units', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ProviderScope(child: FibelApp()));
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 150)));
     await tester.pumpAndSettle();
 
     expect(find.text('Fips & Fina – Lese-Welt'), findsOneWidget);

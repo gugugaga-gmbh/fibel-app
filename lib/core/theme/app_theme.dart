@@ -18,6 +18,7 @@ class AppTheme {
   static ThemeData buildTheme() {
     final base = ThemeData(
       useMaterial3: true,
+      fontFamily: 'Andika',
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.syllableBlue,
         surface: AppColors.paperBackground,
