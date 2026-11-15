@@ -373,6 +373,7 @@ class _TracingCanvasPainter extends CustomPainter {
   final double pulseValue;
   final Color strokeColor;
   final bool showGuidePath;
+  final bool labelsOnRight;
 
   _TracingCanvasPainter({
     required this.referenceStrokes,
@@ -380,6 +381,7 @@ class _TracingCanvasPainter extends CustomPainter {
     required this.pulseValue,
     required this.strokeColor,
     required this.showGuidePath,
+    this.labelsOnRight = false,
   });
 
   @override
@@ -433,7 +435,8 @@ class _TracingCanvasPainter extends CustomPainter {
         ),
         textDirection: TextDirection.ltr,
       )..layout();
-      tp.paint(canvas, Offset(8, y));
+      final dx = labelsOnRight ? (size.width - tp.width - 8) : 8.0;
+      tp.paint(canvas, Offset(dx, y));
     }
   }
 

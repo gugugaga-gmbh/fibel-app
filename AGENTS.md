@@ -44,25 +44,26 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
 lib/
 ├── main.dart                     # ProviderScope + GoRouter (Routen)
 ├── core/
-│   ├── audio/                    # AudioService (flutter_tts, de-DE)
+│   ├── audio/                    # AudioService (just_audio + flutter_tts, de-DE, Offline-Chimes)
 │   ├── curriculum/               # Modelle + Laden von curriculum_de.json
-│   ├── storage/                  # ProgressRepository / ProgressNotifier
+│   ├── storage/                  # ProgressRepository / ProgressNotifier (inkl. Fehler-Tracking & JSON-Backup)
 │   ├── theme/                    # AppColors, AppTheme (Andika)
 │   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog
 └── features/
-    ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel & Stufen-Filter
-    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Mehrkind-Profile & Einstellungen)
+    ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel, Tour & Stufen-Filter
+    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Diagnose, Förderempfehlung, Backup)
     ├── phonics/                  # Modul 1: Anlauttabelle & Laut-Zug
-    ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei), StrokeValidator & Anlaut-Werkstatt
+    ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei, Links-/Rechtshänder) & Anlaut-Werkstatt
     ├── syllables/                # Modul 3: Silbenbögen, Silbenteppich & Silben-Klatschen
-    ├── reading/                  # Modul 4: Silben-Puzzle, erste Sätze & Satz-Rätsel
+    ├── reading/                  # Modul 4: Silben-Puzzle, erste Sätze, Satz-Rätsel, Blitzlesen & Stufen-Geschichten
     └── rewards/                  # Modul 5: Sticker-Album & Kategorien
 ```
 
 - **State Management:** `flutter_riverpod` (2.x, `StateNotifierProvider`,
   `FutureProvider`).
 - **Navigation:** `go_router`. Lektionen werden als `extra` (`LessonUnit`) an
-  die Modul-Routen `/unit/:id/{phonics|tracing|syllables|reading}` übergeben.
+  die Modul-Routen `/unit/:id/{phonics|tracing|syllables|reading}` übergeben;
+  Stufen-Geschichten liegen unter `/stories`.
 - **Imports:** In Flutter ≥ 3.47 ist `package:flutter/material.dart` veraltet.
   Immer `package:material_ui/material_ui.dart` verwenden.
 
@@ -84,7 +85,8 @@ lib/
   Rot (`AppColors.syllableRed`) – nicht ändern.
 - **Laut-Quiz** (`soundQuiz.position`): nur `start`, `middle` oder `end`.
 - Nach Änderungen die Zählungen in `test/curriculum_and_stroke_test.dart`
-  anpassen (aktuell 33 Lektionen in 4 Stufen, 37 Anlaute, 16 Sticker).
+  anpassen (aktuell 33 Lektionen in 4 Stufen, 37 Anlaute, 20 Sticker,
+  4 Stufen-Geschichten).
 
 ## 6. Tests
 
@@ -117,8 +119,8 @@ lib/
 
 ## 8. Bekannte offene Punkte
 
-- `just_audio` steht in `pubspec.yaml`, wird aber noch nicht genutzt – es ist
-  für künftige Phonem-Aufnahmen (`assets/audio/phonemes/`) vorgesehen.
-- Einzellaute werden derzeit per TTS gesprochen und klingen teils wie
-  Buchstabennamen. Ziel: echte Lautaufnahmen.
+- `AudioService` prüft zuerst lokale Phonem-Aufnahmen unter
+  `assets/audio/phonemes/<slug>.{mp3,wav}` via `just_audio` und nutzt als
+  Fallback eine lautgetreue Phonetik-Abbildung für `flutter_tts`. Studio-Aufnahmen
+  können jederzeit unter `assets/audio/phonemes/` abgelegt werden.
 - Kein iOS-Build-Job in der Pipeline (benötigt macOS-Runner).

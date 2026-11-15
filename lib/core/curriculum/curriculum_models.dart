@@ -276,21 +276,89 @@ class StickerItem {
   }
 }
 
+class StoryChoice {
+  final String emoji;
+  final String text;
+
+  const StoryChoice({
+    required this.emoji,
+    required this.text,
+  });
+
+  factory StoryChoice.fromJson(Map<String, dynamic> json) {
+    return StoryChoice(
+      emoji: (json['emoji'] as String?) ?? '📖',
+      text: (json['text'] as String?) ?? '',
+    );
+  }
+}
+
+class StageStory {
+  final String id;
+  final int stage;
+  final String title;
+  final String emoji;
+  final List<SentenceItem> sentences;
+  final String question;
+  final String answerEmoji;
+  final String answerText;
+  final List<StoryChoice> distractorOptions;
+
+  const StageStory({
+    required this.id,
+    required this.stage,
+    required this.title,
+    required this.emoji,
+    required this.sentences,
+    required this.question,
+    required this.answerEmoji,
+    required this.answerText,
+    this.distractorOptions = const [],
+  });
+
+  factory StageStory.fromJson(Map<String, dynamic> json) {
+    return StageStory(
+      id: json['id'] as String,
+      stage: (json['stage'] as num).toInt(),
+      title: json['title'] as String,
+      emoji: (json['emoji'] as String?) ?? '📖',
+      sentences: (json['sentences'] as List<dynamic>)
+          .map((e) => SentenceItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      question: (json['question'] as String?) ?? '',
+      answerEmoji: (json['answerEmoji'] as String?) ?? '⭐',
+      answerText: (json['answerText'] as String?) ?? '',
+      distractorOptions: ((json['distractorOptions'] as List<dynamic>?) ?? [])
+          .map((e) => StoryChoice.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
 class CurriculumData {
   final String version;
   final List<AnlautEntry> anlautTable;
   final List<LessonUnit> units;
   final List<StickerItem> stickers;
+  final List<StageStory> stageStories;
 
   const CurriculumData({
     required this.version,
     required this.anlautTable,
     required this.units,
     required this.stickers,
+    this.stageStories = const [],
   });
 
   List<LessonUnit> unitsForStage(int stage) {
     return units.where((u) => u.stage == stage).toList();
+  }
+
+  StageStory? storyForStage(int stage) {
+    for (final s in stageStories) {
+      if (s.stage == stage) return s;
+    }
+    return null;
   }
 
   factory CurriculumData.fromJson(Map<String, dynamic> json) {
@@ -298,6 +366,8 @@ class CurriculumData {
         .map((e) => LessonUnit.fromJson(e as Map<String, dynamic>))
         .toList()
       ..sort((a, b) => a.order.compareTo(b.order));
+
+    final rawStories = (json['stageStories'] as List<dynamic>?) ?? const [];
 
     return CurriculumData(
       version: json['version'] as String,
@@ -308,6 +378,10 @@ class CurriculumData {
       stickers: (json['stickers'] as List<dynamic>)
           .map((e) => StickerItem.fromJson(e as Map<String, dynamic>))
           .toList(),
+      stageStories: rawStories
+          .map((e) => StageStory.fromJson(e as Map<String, dynamic>))
+          .toList()
+        ..sort((a, b) => a.stage.compareTo(b.stage)),
     );
   }
 }

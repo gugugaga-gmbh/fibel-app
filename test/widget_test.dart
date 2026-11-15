@@ -2,6 +2,7 @@ import 'package:fibel_app/core/theme/app_theme.dart';
 import 'package:fibel_app/core/widgets/parental_gate_dialog.dart';
 import 'package:fibel_app/core/widgets/syllable_text_widget.dart';
 import 'package:fibel_app/features/parents/parent_dashboard_screen.dart';
+import 'package:fibel_app/features/reading/stage_story_screen.dart';
 import 'package:fibel_app/features/writing/anlaut_keyboard_screen.dart';
 import 'package:fibel_app/main.dart';
 import 'package:material_ui/material_ui.dart';
@@ -56,6 +57,7 @@ void main() {
     expect(find.text('Fips & Fina – Lese-Welt'), findsOneWidget);
     expect(find.text('Anlauttabelle'), findsOneWidget);
     expect(find.text('Werkstatt'), findsOneWidget);
+    expect(find.text('Geschichten'), findsOneWidget);
     expect(find.text('Sticker'), findsOneWidget);
     expect(find.text('Stufe 1'), findsOneWidget);
     expect(find.text('M'), findsOneWidget);
@@ -85,6 +87,26 @@ void main() {
     expect(find.text('A'), findsOneWidget);
   });
 
+  testWidgets('StageStoryScreen loads stage stories and toggles syllable help',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          home: StageStoryScreen(initialStage: 1),
+        ),
+      ),
+    );
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 150)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lesepass & Geschichten'), findsOneWidget);
+    expect(find.textContaining('Mimi und Leo am See'), findsWidgets);
+    expect(find.text('Silben-Hilfe'), findsOneWidget);
+  });
+
   testWidgets('ParentDashboardScreen renders profiles, stats and settings',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -102,7 +124,13 @@ void main() {
 
     expect(find.text('Eltern- & Lehrkräftebereich'), findsOneWidget);
     expect(find.text('Kinder-Profile'), findsOneWidget);
-    expect(find.textContaining('Lernstufen & Lehrkraft-Freischaltung'),
-        findsOneWidget);
+    expect(
+      find.textContaining('Lernstufen & Lehrkraft-Freischaltung'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Pädagogische Förderempfehlung'),
+      findsOneWidget,
+    );
   });
 }
