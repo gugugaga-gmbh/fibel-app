@@ -12,17 +12,16 @@ Login, ohne Werbung.
 
 | Modul | Inhalt |
 | --- | --- |
-| 1. Laute hören | Interaktive Anlauttabelle (34 Laute) und „Laut-Zug“: Wo hörst du den Laut – Anfang, Mitte oder Ende? |
-| 2. Nachspuren & Schreiben | Groß- und Kleinbuchstaben im Dreilinien-Haus (Dach, Wohnung, Keller) mit Startpunkt, Strichnummern und toleranter Prüfung |
-| 3. Silben schwingen | Zweifarbige Silben (Blau/Rot) mit Silbenbögen zum Antippen, Silbenteppich |
-| 4. Wörter & Sätze | Silben-Puzzle zum Wörterbauen, erste Sätze mit Vorlesefunktion |
-| 5. Belohnung | Sterne, Sticker-Album, Maskottchen Fips (Fuchs) & Fina (Eule) |
+| 1. Laute hören | Interaktive Anlauttabelle (37 Laute, Filter nach Silbenkönigen 👑, Mitlauten & Mehrgraphemen) und „Laut-Zug“ |
+| 2. Nachspuren & Schreiben | 3-stufiges Schreiben im Dreilinien-Haus (Groß, Klein & Frei schreiben) mit Richtungspfeilen sowie eigene **Anlaut-Werkstatt** („Lesen durch Schreiben“ & Wort-Rätsel) |
+| 3. Silben schwingen | Zweifarbige Silben (Blau/Rot) mit Silbenbögen, Silbenkönig-Kronen, Silbenteppich und „Silben klatschen“-Bonusquiz |
+| 4. Wörter & Sätze | Silben-Puzzle zum Wörterbauen, erste Sätze mit Vorlesefunktion sowie „Satz-Rätsel“ (Satzbau & Sinnverständnis-Bildcheck) |
+| 5. Belohnung & Lernpfad | Tagesziel & Lern-Serie 🔥, adaptives „Tägliches Training“, 16 sprechende Sticker in 4 Themenwelten |
 
-- **26 Lektionen:** alle Buchstaben A–Z, Umlaute, `Sch`, `Ei`/`Au`
+- **33 Lektionen in 4 Stufen:** Strikter Lernpfad (Freischaltung ab 70 % der Sterne der Vorstufe) für alle Buchstaben A–Z, Umlaute (`Ä, Ö, Ü`) und Mehrgrapheme (`Ei, Au, Sch, Eu, Ch, St, Sp, Qu`)
 - **Schulschrift:** Andika (lokal eingebunden, kindgerechte `a`/`g`-Formen)
-- **Sprachausgabe:** deutsche Text-to-Speech-Stimme des Geräts
-- **Elternbereich:** geschützt durch eine Rechenaufgabe; Fortschritt einsehen
-  und zurücksetzen
+- **Sprachausgabe:** deutsche Text-to-Speech-Stimme des Geräts (Geschwindigkeit anpassbar)
+- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Mehrkind-Profile verwalten, Kompetenz-Statistiken einsehen, Stufen manuell freischalten und Didaktik-/Audio-Hilfen konfigurieren
 
 ## Schnellstart
 

@@ -50,12 +50,13 @@ lib/
 │   ├── theme/                    # AppColors, AppTheme (Andika)
 │   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog
 └── features/
-    ├── home/                     # Lernwelt mit Buchstaben-Karten
+    ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel & Stufen-Filter
+    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Mehrkind-Profile & Einstellungen)
     ├── phonics/                  # Modul 1: Anlauttabelle & Laut-Zug
-    ├── writing/                  # Modul 2: Nachspuren im Dreilinien-Haus + StrokeValidator
-    ├── syllables/                # Modul 3: Silbenbögen & Silbenteppich
-    ├── reading/                  # Modul 4: Silben-Puzzle & erste Sätze
-    └── rewards/                  # Modul 5: Sticker-Album & Elternbereich
+    ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei), StrokeValidator & Anlaut-Werkstatt
+    ├── syllables/                # Modul 3: Silbenbögen, Silbenteppich & Silben-Klatschen
+    ├── reading/                  # Modul 4: Silben-Puzzle, erste Sätze & Satz-Rätsel
+    └── rewards/                  # Modul 5: Sticker-Album & Kategorien
 ```
 
 - **State Management:** `flutter_riverpod` (2.x, `StateNotifierProvider`,
@@ -68,14 +69,14 @@ lib/
 ## 5. Curriculum (`assets/data/curriculum_de.json`)
 
 - **Neue Inhalte immer hier pflegen, nicht im Dart-Code.**
-- Lektionen (`units`) werden nach `order` sortiert. Die Reihenfolge folgt dem
-  Silbenprinzip: zuerst Dauerlaute und Vokale (`M, A, O, I, L, S, E …`), damit
-  früh lesbare Silben/Wörter entstehen.
+- Lektionen (`units`) werden nach `order` sortiert und in 4 Stufen (`stage: 1..4`)
+  gegliedert. Die Reihenfolge folgt dem Silbenprinzip: zuerst Dauerlaute und
+  Vokale (`M, A, O, I, L, S, E …`), damit früh lesbare Silben/Wörter entstehen.
 - **Schreibpfade** (`upperStrokes`/`lowerStrokes`): normierte Koordinaten
   `[x, y]` im Bereich `0.0–1.0`. Das Dreilinien-Haus liegt bei
   `y = 0.12` (Dach), `0.35` (Mittellinie), `0.65` (Grundlinie), `0.90` (Keller).
   Großbuchstaben: `0.12–0.65`; Kleinbuchstaben ohne Ober-/Unterlänge:
-  `0.35–0.65`; Unterlängen (g, j, p) reichen bis `~0.90`.
+  `0.35–0.65`; Unterlängen (g, j, p, q) reichen bis `~0.90`.
 - **Silben** (`syllables`): Silbentrennung nach deutscher Rechtschreibung. Die
   Verkettung aller Silben eines Wortes **muss exakt `fullWord` ergeben** (das
   Silben-Puzzle prüft `join() == fullWord`).
@@ -83,7 +84,7 @@ lib/
   Rot (`AppColors.syllableRed`) – nicht ändern.
 - **Laut-Quiz** (`soundQuiz.position`): nur `start`, `middle` oder `end`.
 - Nach Änderungen die Zählungen in `test/curriculum_and_stroke_test.dart`
-  anpassen (aktuell 26 Lektionen, 34 Anlaute, 8 Sticker).
+  anpassen (aktuell 33 Lektionen in 4 Stufen, 37 Anlaute, 16 Sticker).
 
 ## 6. Tests
 
