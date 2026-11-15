@@ -20,6 +20,7 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
   int _quizIndex = 0;
   bool? _lastAnswerCorrect;
   bool _quizFinished = false;
+  AnlautCategory? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,10 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
               ? const TabBar(
                   tabs: [
                     Tab(icon: Icon(Icons.train_rounded), text: 'Laut-Zug'),
-                    Tab(icon: Icon(Icons.grid_view_rounded), text: 'Anlauttabelle'),
+                    Tab(
+                      icon: Icon(Icons.grid_view_rounded),
+                      text: 'Anlauttabelle',
+                    ),
                   ],
                 )
               : null,
@@ -80,7 +84,8 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
               Text(
                 'Super gehört! Du hast alle ${unit.letter}-Laute gefunden!',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
@@ -95,25 +100,56 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
     }
 
     final item = unit.soundQuiz[_quizIndex];
+    final total = unit.soundQuiz.length;
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
           MascotBanner(
             character: MascotCharacter.fina,
-            message:
-                'Wo hörst du das „${unit.phoneme}“ in „${item.word}“?',
+            message: 'Wo hörst du das „${unit.phoneme}“ in „${item.word}“?',
             onTap: () => ref.read(audioServiceProvider).speakWord(item.word),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(total, (idx) {
+              final done = idx < _quizIndex;
+              final active = idx == _quizIndex;
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: done
+                      ? AppColors.successGreen
+                      : (active
+                          ? AppColors.syllableBlue
+                          : const Color(0xFFE5E7EB)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  done ? '✓' : '${idx + 1}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: (done || active)
+                        ? Colors.white
+                        : const Color(0xFF4B5563),
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 16),
           GestureDetector(
             onTap: () => ref.read(audioServiceProvider).speakWord(item.word),
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 40,
-                  vertical: 28,
+                  vertical: 24,
                 ),
                 child: Column(
                   children: [
@@ -122,8 +158,10 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.volume_up_rounded,
-                            color: AppColors.syllableBlue),
+                        const Icon(
+                          Icons.volume_up_rounded,
+                          color: AppColors.syllableBlue,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           item.word,
@@ -139,12 +177,12 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
           const Text(
             'Tippe auf den richtigen Waggon:',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Row(
             children: [
               _TrainWagonButton(
@@ -217,6 +255,11 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
   }
 
   Widget _buildAnlautGrid(List<AnlautEntry> entries) {
+    final showCrowns = ref.watch(progressProvider).settings.showVowelCrowns;
+    final filtered = _selectedCategory == null
+        ? entries
+        : entries.where((e) => e.category == _selectedCategory).toList();
+
     return Column(
       children: [
         Padding(
@@ -226,6 +269,40 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
             message: 'Tippe auf ein Bild, um den Anlaut zu hören!',
           ),
         ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          child: Row(
+            children: [
+              _FilterChipButton(
+                label: 'Alle (${entries.length})',
+                selected: _selectedCategory == null,
+                onTap: () => setState(() => _selectedCategory = null),
+              ),
+              const SizedBox(width: 8),
+              _FilterChipButton(
+                label: 'Silbenkönige 👑',
+                selected: _selectedCategory == AnlautCategory.vowel,
+                onTap: () =>
+                    setState(() => _selectedCategory = AnlautCategory.vowel),
+              ),
+              const SizedBox(width: 8),
+              _FilterChipButton(
+                label: 'Mitlaute',
+                selected: _selectedCategory == AnlautCategory.consonant,
+                onTap: () => setState(
+                    () => _selectedCategory = AnlautCategory.consonant),
+              ),
+              const SizedBox(width: 8),
+              _FilterChipButton(
+                label: 'Sch / Ei / Au …',
+                selected: _selectedCategory == AnlautCategory.digraph,
+                onTap: () =>
+                    setState(() => _selectedCategory = AnlautCategory.digraph),
+              ),
+            ],
+          ),
+        ),
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.all(16),
@@ -233,11 +310,11 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
               maxCrossAxisExtent: 140,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 0.9,
+              childAspectRatio: 0.88,
             ),
-            itemCount: entries.length,
+            itemCount: filtered.length,
             itemBuilder: (context, index) {
-              final entry = entries[index];
+              final entry = filtered[index];
               return InkWell(
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {
@@ -246,47 +323,62 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
                       .speakPhoneme('${entry.phoneme}. ${entry.word}');
                 },
                 child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              entry.letter,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.syllableBlue,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              entry.lowercase,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.syllableRed,
-                              ),
-                            ),
-                          ],
+                  child: Stack(
+                    children: [
+                      if (showCrowns && entry.isVowel)
+                        const Positioned(
+                          top: 6,
+                          right: 8,
+                          child: Text('👑', style: TextStyle(fontSize: 14)),
                         ),
-                        const SizedBox(height: 6),
-                        Text(entry.emoji, style: const TextStyle(fontSize: 34)),
-                        const SizedBox(height: 4),
-                        Text(
-                          entry.word,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    entry.letter,
+                                    style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.syllableBlue,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    entry.lowercase,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.syllableRed,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                entry.emoji,
+                                style: const TextStyle(fontSize: 34),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                entry.word,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -294,6 +386,35 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _FilterChipButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChipButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ChoiceChip(
+      label: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w700,
+          color: selected ? Colors.white : const Color(0xFF1F2937),
+        ),
+      ),
+      selected: selected,
+      selectedColor: AppColors.syllableBlue,
+      backgroundColor: Colors.white,
+      onSelected: (_) => onTap(),
     );
   }
 }

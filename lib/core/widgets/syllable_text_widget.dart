@@ -1,10 +1,12 @@
 import 'package:material_ui/material_ui.dart';
+import '../curriculum/curriculum_models.dart';
 import '../theme/app_theme.dart';
 
 class SyllableTextWidget extends StatelessWidget {
   final List<String> syllables;
   final double fontSize;
   final bool showArcs;
+  final bool showVowelCrowns;
   final int? highlightedIndex;
   final ValueChanged<int>? onSyllableTap;
 
@@ -13,6 +15,7 @@ class SyllableTextWidget extends StatelessWidget {
     required this.syllables,
     this.fontSize = 40,
     this.showArcs = true,
+    this.showVowelCrowns = false,
     this.highlightedIndex,
     this.onSyllableTap,
   });
@@ -27,6 +30,7 @@ class SyllableTextWidget extends StatelessWidget {
         final color =
             isEven ? AppColors.syllableBlue : AppColors.syllableRed;
         final isHighlighted = highlightedIndex == index;
+        final hasVowel = SyllableWord.containsVowel(syllables[index]);
 
         return GestureDetector(
           onTap: onSyllableTap != null ? () => onSyllableTap!(index) : null,
@@ -42,6 +46,11 @@ class SyllableTextWidget extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (showVowelCrowns && hasVowel)
+                  Text(
+                    '👑',
+                    style: TextStyle(fontSize: (fontSize * 0.34).clamp(11, 18)),
+                  ),
                 Text(
                   syllables[index],
                   style: TextStyle(

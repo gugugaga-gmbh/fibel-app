@@ -2,12 +2,16 @@ import 'dart:ui';
 
 enum SoundPosition { start, middle, end }
 
+enum AnlautCategory { vowel, consonant, digraph }
+
 class AnlautEntry {
   final String letter;
   final String lowercase;
   final String word;
   final String emoji;
   final String phoneme;
+  final bool isVowel;
+  final AnlautCategory category;
 
   const AnlautEntry({
     required this.letter,
@@ -15,15 +19,44 @@ class AnlautEntry {
     required this.word,
     required this.emoji,
     required this.phoneme,
+    this.isVowel = false,
+    this.category = AnlautCategory.consonant,
   });
 
   factory AnlautEntry.fromJson(Map<String, dynamic> json) {
+    final letter = json['letter'] as String;
+    final catStr = json['category'] as String?;
+    final defaultVowel = const {
+      'A',
+      'E',
+      'I',
+      'O',
+      'U',
+      'Ä',
+      'Ö',
+      'Ü',
+      'Ei',
+      'Au',
+      'Eu',
+    }.contains(letter);
+    final isVowel = (json['isVowel'] as bool?) ?? defaultVowel;
+    final category = switch (catStr) {
+      'vowel' => AnlautCategory.vowel,
+      'digraph' => AnlautCategory.digraph,
+      'consonant' => AnlautCategory.consonant,
+      _ => letter.length > 1
+          ? AnlautCategory.digraph
+          : (isVowel ? AnlautCategory.vowel : AnlautCategory.consonant),
+    };
+
     return AnlautEntry(
-      letter: json['letter'] as String,
+      letter: letter,
       lowercase: json['lowercase'] as String,
       word: json['word'] as String,
       emoji: json['emoji'] as String,
       phoneme: json['phoneme'] as String,
+      isVowel: isVowel,
+      category: category,
     );
   }
 }
@@ -39,6 +72,11 @@ class SyllableWord {
     this.emoji = '',
   });
 
+  /// Returns true if the syllable contains a German vowel (Silbenkönig).
+  static bool containsVowel(String syllable) {
+    return RegExp(r'[aeiouäöüyAEIOUÄÖÜY]').hasMatch(syllable);
+  }
+
   factory SyllableWord.fromJson(Map<String, dynamic> json) {
     return SyllableWord(
       fullWord: json['fullWord'] as String,
@@ -51,10 +89,14 @@ class SyllableWord {
 class SentenceItem {
   final String text;
   final List<SyllableWord> words;
+  final String emoji;
+  final List<String> distractorEmojis;
 
   const SentenceItem({
     required this.text,
     required this.words,
+    this.emoji = '📖',
+    this.distractorEmojis = const ['🎈', '⚽'],
   });
 
   factory SentenceItem.fromJson(Map<String, dynamic> json) {
@@ -63,6 +105,10 @@ class SentenceItem {
       words: (json['words'] as List<dynamic>)
           .map((e) => SyllableWord.fromJson(e as Map<String, dynamic>))
           .toList(),
+      emoji: (json['emoji'] as String?) ?? '📖',
+      distractorEmojis: (json['distractorEmojis'] as List<dynamic>?)
+              ?.cast<String>() ??
+          const ['🎈', '⚽'],
     );
   }
 }
@@ -97,11 +143,13 @@ class SoundQuizItem {
 class LessonUnit {
   final String id;
   final int order;
+  final int stage;
   final String letter;
   final String lowercase;
   final String phoneme;
   final String anchorWord;
   final String anchorEmoji;
+  final bool isVowel;
   final Color color;
   final List<List<Offset>> upperStrokes;
   final List<List<Offset>> lowerStrokes;
@@ -113,11 +161,13 @@ class LessonUnit {
   const LessonUnit({
     required this.id,
     required this.order,
+    required this.stage,
     required this.letter,
     required this.lowercase,
     required this.phoneme,
     required this.anchorWord,
     required this.anchorEmoji,
+    this.isVowel = false,
     required this.color,
     required this.upperStrokes,
     required this.lowerStrokes,
@@ -145,15 +195,40 @@ class LessonUnit {
     return Color(value);
   }
 
+  static int _defaultStageForOrder(int order) {
+    if (order <= 7) return 1;
+    if (order <= 19) return 2;
+    if (order <= 26) return 3;
+    return 4;
+  }
+
   factory LessonUnit.fromJson(Map<String, dynamic> json) {
+    final order = (json['order'] as num).toInt();
+    final letter = json['letter'] as String;
+    final defaultVowel = const {
+      'A',
+      'E',
+      'I',
+      'O',
+      'U',
+      'Ä',
+      'Ö',
+      'Ü',
+      'Ei',
+      'Au',
+      'Eu',
+    }.contains(letter);
+
     return LessonUnit(
       id: json['id'] as String,
-      order: (json['order'] as num).toInt(),
-      letter: json['letter'] as String,
+      order: order,
+      stage: (json['stage'] as num?)?.toInt() ?? _defaultStageForOrder(order),
+      letter: letter,
       lowercase: json['lowercase'] as String,
       phoneme: json['phoneme'] as String,
       anchorWord: json['anchorWord'] as String,
       anchorEmoji: json['anchorEmoji'] as String,
+      isVowel: (json['isVowel'] as bool?) ?? defaultVowel,
       color: _parseColor(json['colorHex'] as String),
       upperStrokes: _parseStrokes(json['upperStrokes'] as List<dynamic>),
       lowerStrokes: _parseStrokes(json['lowerStrokes'] as List<dynamic>),
@@ -176,20 +251,27 @@ class StickerItem {
   final String name;
   final String emoji;
   final int requiredStars;
+  final String category;
+  final String voiceText;
 
   const StickerItem({
     required this.id,
     required this.name,
     required this.emoji,
     required this.requiredStars,
+    this.category = 'Waldfreunde',
+    this.voiceText = '',
   });
 
   factory StickerItem.fromJson(Map<String, dynamic> json) {
+    final name = json['name'] as String;
     return StickerItem(
       id: json['id'] as String,
-      name: json['name'] as String,
+      name: name,
       emoji: json['emoji'] as String,
       requiredStars: (json['requiredStars'] as num).toInt(),
+      category: (json['category'] as String?) ?? 'Waldfreunde',
+      voiceText: (json['voiceText'] as String?) ?? 'Toll! Dein Sticker: $name!',
     );
   }
 }
@@ -206,6 +288,10 @@ class CurriculumData {
     required this.units,
     required this.stickers,
   });
+
+  List<LessonUnit> unitsForStage(int stage) {
+    return units.where((u) => u.stage == stage).toList();
+  }
 
   factory CurriculumData.fromJson(Map<String, dynamic> json) {
     final units = (json['units'] as List<dynamic>)

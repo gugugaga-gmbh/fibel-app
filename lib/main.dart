@@ -6,10 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'core/curriculum/curriculum_models.dart';
 import 'core/theme/app_theme.dart';
 import 'features/home/home_screen.dart';
+import 'features/parents/parent_dashboard_screen.dart';
 import 'features/phonics/anlaut_table_screen.dart';
 import 'features/reading/word_sentence_builder_screen.dart';
 import 'features/rewards/sticker_album_screen.dart';
 import 'features/syllables/syllable_practice_screen.dart';
+import 'features/writing/anlaut_keyboard_screen.dart';
 import 'features/writing/letter_tracing_screen.dart';
 
 void main() {
@@ -32,8 +34,16 @@ final _router = GoRouter(
       builder: (context, state) => const AnlautTableScreen(),
     ),
     GoRoute(
+      path: '/werkstatt',
+      builder: (context, state) => const AnlautKeyboardScreen(),
+    ),
+    GoRoute(
       path: '/stickers',
       builder: (context, state) => const StickerAlbumScreen(),
+    ),
+    GoRoute(
+      path: '/parents',
+      builder: (context, state) => const ParentDashboardScreen(),
     ),
     GoRoute(
       path: '/unit/:id/phonics',
