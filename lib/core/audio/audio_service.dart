@@ -203,6 +203,21 @@ class AudioService {
     } catch (_) {}
   }
 
+  /// Plays a festive 4-note major fanfare (C5 - E5 - G5 - C6) for stage certificates.
+  Future<void> playCelebrationFanfare() async {
+    if (!_settings.soundEnabled) return;
+    await _ensureInitialized();
+    if (_player == null) return;
+    try {
+      final wav = buildChimeWav(
+        frequencies: const [523.25, 659.25, 783.99, 1046.50],
+        noteDurationMs: 95,
+      );
+      await _player!.setAudioSource(_SynthesizedWavSource(wav));
+      await _player!.play();
+    } catch (_) {}
+  }
+
   Future<bool> _assetExists(String assetPath) async {
     try {
       await rootBundle.load(assetPath);

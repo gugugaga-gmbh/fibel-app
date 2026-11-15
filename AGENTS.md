@@ -42,21 +42,21 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
 
 ```
 lib/
-├── main.dart                     # ProviderScope + GoRouter (Routen)
+├── main.dart                     # ProviderScope + GoRouter (Routen, Kontrast & Schriftgröße)
 ├── core/
-│   ├── audio/                    # AudioService (just_audio + flutter_tts, de-DE, Offline-Chimes)
+│   ├── audio/                    # AudioService (just_audio + flutter_tts, de-DE, Offline-Chimes & Fanfare)
 │   ├── curriculum/               # Modelle + Laden von curriculum_de.json
-│   ├── storage/                  # ProgressRepository / ProgressNotifier (inkl. Fehler-Tracking & JSON-Backup)
-│   ├── theme/                    # AppColors, AppTheme (Andika)
-│   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog
+│   ├── storage/                  # ProgressRepository / ProgressNotifier (inkl. Fehler-Tracking, Lernbericht & JSON-Backup)
+│   ├── theme/                    # AppColors, AppTheme (Andika + High-Contrast-Option)
+│   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog, StageCertificateDialog
 └── features/
     ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel, Tour & Stufen-Filter
-    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Diagnose, Förderempfehlung, Backup)
-    ├── phonics/                  # Modul 1: Anlauttabelle & Laut-Zug
-    ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei, Links-/Rechtshänder) & Anlaut-Werkstatt
-    ├── syllables/                # Modul 3: Silbenbögen, Silbenteppich & Silben-Klatschen
+    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Diagnose, Förderempfehlung, Bericht, Backup)
+    ├── phonics/                  # Modul 1: Anlauttabelle, Laut-Zug & Reim-Detektiv (Minimalpaare)
+    ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei, Links-/Rechtshänder) & Anlaut-Werkstatt (inkl. Hör-Diktat)
+    ├── syllables/                # Modul 3: Silbenbögen, Silbenteppich, Silben-Klatschen & Silbenkönige
     ├── reading/                  # Modul 4: Silben-Puzzle, erste Sätze, Satz-Rätsel, Blitzlesen & Stufen-Geschichten
-    └── rewards/                  # Modul 5: Sticker-Album & Kategorien
+    └── rewards/                  # Modul 5: Sticker-Album, Kategorien & Lese-Urkunden (Stufen 1–4)
 ```
 
 - **State Management:** `flutter_riverpod` (2.x, `StateNotifierProvider`,
@@ -85,8 +85,8 @@ lib/
   Rot (`AppColors.syllableRed`) – nicht ändern.
 - **Laut-Quiz** (`soundQuiz.position`): nur `start`, `middle` oder `end`.
 - Nach Änderungen die Zählungen in `test/curriculum_and_stroke_test.dart`
-  anpassen (aktuell 33 Lektionen in 4 Stufen, 37 Anlaute, 20 Sticker,
-  4 Stufen-Geschichten).
+  anpassen (aktuell 33 Lektionen in 4 Stufen, 37 Anlaute, 24 Sticker,
+  4 Stufen-Geschichten, 8 Reim-/Minimalpaar-Aufgaben).
 
 ## 6. Tests
 

@@ -5,6 +5,7 @@ import '../../core/curriculum/curriculum_models.dart';
 import '../../core/curriculum/curriculum_repository.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/stage_certificate_dialog.dart';
 
 class ParentDashboardScreen extends ConsumerWidget {
   const ParentDashboardScreen({super.key});
@@ -237,10 +238,11 @@ class ParentDashboardScreen extends ConsumerWidget {
                       const SizedBox(height: 12),
                       for (final stage in [1, 2, 3, 4])
                         _buildStageControlTile(
+                          context: context,
                           ref: ref,
                           stage: stage,
                           progress: progress,
-                          allUnits: curriculum.units,
+                          curriculum: curriculum,
                         ),
                     ],
                   ),
@@ -263,6 +265,30 @@ class ParentDashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
+                      const Text(
+                        'Tägliches Lernziel (Übungen pro Tag):',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 8),
+                      SegmentedButton<int>(
+                        segments: const [
+                          ButtonSegment(value: 2, label: Text('2')),
+                          ButtonSegment(value: 3, label: Text('3')),
+                          ButtonSegment(value: 5, label: Text('5')),
+                          ButtonSegment(value: 7, label: Text('7')),
+                        ],
+                        selected: {
+                          const {2, 3, 5, 7}.contains(progress.dailyGoalTarget)
+                              ? progress.dailyGoalTarget
+                              : 3,
+                        },
+                        onSelectionChanged: (sel) {
+                          ref
+                              .read(progressProvider.notifier)
+                              .updateDailyGoalTarget(sel.first);
+                        },
+                      ),
+                      const SizedBox(height: 14),
                       const Text(
                         'Vorlese-Geschwindigkeit:',
                         style: TextStyle(fontWeight: FontWeight.w600),
@@ -346,6 +372,28 @@ class ParentDashboardScreen extends ConsumerWidget {
                                   settings.copyWith(leftHandedMode: v),
                                 ),
                       ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          'Größere Leseschrift (+15 % Barrierefreiheit)',
+                        ),
+                        value: settings.largeTextMode,
+                        onChanged: (v) =>
+                            ref.read(progressProvider.notifier).updateSettings(
+                                  settings.copyWith(largeTextMode: v),
+                                ),
+                      ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text(
+                          'Erhöhter Kontrast-Modus (Sehhilfe)',
+                        ),
+                        value: settings.highContrastMode,
+                        onChanged: (v) =>
+                            ref.read(progressProvider.notifier).updateSettings(
+                                  settings.copyWith(highContrastMode: v),
+                                ),
+                      ),
                     ],
                   ),
                 ),
@@ -371,6 +419,12 @@ class ParentDashboardScreen extends ConsumerWidget {
                         spacing: 12,
                         runSpacing: 8,
                         children: [
+                          ElevatedButton.icon(
+                            onPressed: () =>
+                                _showReportDialog(context, ref, curriculum),
+                            icon: const Icon(Icons.assignment_turned_in_rounded),
+                            label: const Text('Lernbericht & Urkunde erstellen'),
+                          ),
                           OutlinedButton.icon(
                             onPressed: () =>
                                 _showExportDialog(context, ref),
@@ -545,15 +599,92 @@ class ParentDashboardScreen extends ConsumerWidget {
     );
   }
 
+  void _showReportDialog(
+    BuildContext context,
+    WidgetRef ref,
+    CurriculumData curriculum,
+  ) {
+    final progress = ref.read(progressProvider);
+    final report = progress.generateParentReport(curriculum);
+    Clipboard.setData(ClipboardData(text: report));
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Lernbericht & Lese-Pass'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Der Bericht wurde in die Zwischenablage kopiert (ideal zum Ausdrucken oder für Elterngespräche):',
+              style: TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: SingleChildScrollView(
+                child: SelectableText(
+                  report,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Stufen-Urkunden direkt öffnen:',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [1, 2, 3, 4].map((stage) {
+                return OutlinedButton.icon(
+                  onPressed: () {
+                    StageCertificateDialog.show(
+                      ctx,
+                      stage: stage,
+                      story: curriculum.storyForStage(stage),
+                      progress: progress,
+                      allUnits: curriculum.units,
+                    );
+                  },
+                  icon: const Text('🏆'),
+                  label: Text('Stufe $stage'),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Fertig'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStageControlTile({
+    required BuildContext context,
     required WidgetRef ref,
     required int stage,
     required ChildProgress progress,
-    required List<LessonUnit> allUnits,
+    required CurriculumData curriculum,
   }) {
+    final allUnits = curriculum.units;
     final stats = progress.stageProgress(stage, allUnits);
     final unlocked = progress.isStageUnlocked(stage, allUnits);
     final manualOverride = progress.unlockedStagesOverride.contains(stage);
+    final certEarned = progress.isStageCertificateEarned(stage, allUnits);
     final pct = (stats.ratio * 100).round();
 
     return Padding(
@@ -581,8 +712,24 @@ class ParentDashboardScreen extends ConsumerWidget {
               ],
             ),
           ),
+          IconButton(
+            tooltip: 'Urkunde Stufe $stage ansehen',
+            icon: Icon(
+              Icons.emoji_events_rounded,
+              color: certEarned ? AppColors.starGold : const Color(0xFF9CA3AF),
+            ),
+            onPressed: () {
+              StageCertificateDialog.show(
+                context,
+                stage: stage,
+                story: curriculum.storyForStage(stage),
+                progress: progress,
+                allUnits: allUnits,
+              );
+            },
+          ),
           if (stage > 1) ...[
-            const SizedBox(width: 12),
+            const SizedBox(width: 4),
             FilterChip(
               label: Text(manualOverride ? 'Manuell frei' : 'Freischalten'),
               selected: manualOverride,

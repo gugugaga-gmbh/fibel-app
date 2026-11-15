@@ -28,14 +28,22 @@ class _SyllablePracticeScreenState
   bool? _clapCorrect;
   bool _clapQuizFinished = false;
 
+  // Silbenkönig-Krone bonus quiz state
+  int _kingQuizIdx = 0;
+  bool? _kingCorrect;
+  bool _kingQuizFinished = false;
+
+  static const _vowelPool = ['A', 'E', 'I', 'O', 'U', 'Ä', 'Ö', 'Ü', 'Ei', 'Au', 'Eu'];
+
   @override
   Widget build(BuildContext context) {
     final unit = widget.unit;
     final progress = ref.watch(progressProvider);
     final bonusEarned = progress.isBonusCompleted('syllable_clap:${unit.id}');
+    final kingBonusEarned = progress.isBonusCompleted('vowel_king:${unit.id}');
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Silben schwingen: ${unit.letter} ${unit.lowercase}'),
@@ -54,6 +62,15 @@ class _SyllablePracticeScreenState
                 ),
                 text: 'Silben klatschen ⭐',
               ),
+              Tab(
+                icon: Icon(
+                  kingBonusEarned
+                      ? Icons.stars_rounded
+                      : Icons.workspace_premium_rounded,
+                  color: kingBonusEarned ? AppColors.starGold : null,
+                ),
+                text: 'Silbenkönige 👑⭐',
+              ),
             ],
           ),
         ),
@@ -61,6 +78,7 @@ class _SyllablePracticeScreenState
           children: [
             _buildCarpetTab(unit, progress),
             _buildClapQuizTab(unit, bonusEarned),
+            _buildVowelKingTab(unit),
           ],
         ),
       ),
@@ -387,6 +405,193 @@ class _SyllablePracticeScreenState
       await ref.read(audioServiceProvider).playGentleHintChime();
       await ref.read(progressProvider.notifier).recordMistake(unit.id);
       await ref.read(audioServiceProvider).speakWord(target.fullWord);
+    }
+  }
+
+  Widget _buildVowelKingTab(LessonUnit unit) {
+    if (unit.words.isEmpty) {
+      return const Center(child: Text('Keine Wörter vorhanden.'));
+    }
+
+    if (_kingQuizFinished) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('👑🌟', style: TextStyle(fontSize: 68)),
+              const SizedBox(height: 16),
+              const Text(
+                'Alle Silbenkönige gekrönt! Du hast den Bonus-Stern gewonnen! ⭐',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _kingQuizIdx = 0;
+                    _kingCorrect = null;
+                    _kingQuizFinished = false;
+                  });
+                },
+                icon: const Icon(Icons.replay_rounded),
+                label: const Text('Noch einmal spielen'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final target = unit.words[_kingQuizIdx % unit.words.length];
+    final firstSyllable = target.syllables.first;
+    final rawKing = SyllableWord.extractVowelKing(firstSyllable);
+    final normalizedKing = rawKing.isEmpty
+        ? 'A'
+        : '${rawKing[0].toUpperCase()}${rawKing.substring(1).toLowerCase()}';
+
+    final distractors = _vowelPool
+        .where((v) => v.toLowerCase() != normalizedKing.toLowerCase())
+        .toList();
+    final stepSeed = _kingQuizIdx + unit.order;
+    final d1 = distractors[stepSeed % distractors.length];
+    final d2 = distractors[(stepSeed + 3) % distractors.length];
+    final options = <String>[normalizedKing, d1, d2]..sort();
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          MascotBanner(
+            character: MascotCharacter.fina,
+            message:
+                'Jede Silbe hat einen Silbenkönig! Welcher König steckt in der ersten Silbe „$firstSyllable“ von „${target.fullWord}“?',
+            onTap: () =>
+                ref.read(audioServiceProvider).speakSyllable(firstSyllable),
+          ),
+          const SizedBox(height: 20),
+          GestureDetector(
+            onTap: () =>
+                ref.read(audioServiceProvider).speakWord(target.fullWord),
+            child: Card(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 36, vertical: 24),
+                child: Column(
+                  children: [
+                    Text(target.emoji, style: const TextStyle(fontSize: 68)),
+                    const SizedBox(height: 12),
+                    SyllableTextWidget(
+                      syllables: target.syllables,
+                      fontSize: 40,
+                      highlightedIndex: 0,
+                      showVowelCrowns: _kingCorrect == true,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 22),
+          Text(
+            'Welcher Silbenkönig 👑 klingt in „$firstSyllable“?',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: options.map((king) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        _onSelectVowelKing(unit, target, normalizedKing, king),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF1F2937),
+                      side: const BorderSide(
+                        color: AppColors.starGold,
+                        width: 2.5,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Column(
+                      children: [
+                        const Text('👑', style: TextStyle(fontSize: 24)),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$king / ${king.toLowerCase()}',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.syllableBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          if (_kingCorrect != null)
+            Text(
+              _kingCorrect!
+                  ? 'Richtig! „$normalizedKing“ ist der Silbenkönig in „$firstSyllable“! 👑⭐'
+                  : 'Hör dir die Silbe „$firstSyllable“ noch einmal genau an!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: _kingCorrect!
+                    ? AppColors.successGreen
+                    : AppColors.syllableRed,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _onSelectVowelKing(
+    LessonUnit unit,
+    SyllableWord target,
+    String expectedKing,
+    String chosenKing,
+  ) async {
+    final isRight = chosenKing.toLowerCase() == expectedKing.toLowerCase();
+    setState(() => _kingCorrect = isRight);
+
+    if (isRight) {
+      await ref.read(audioServiceProvider).playSuccessChime();
+      await ref
+          .read(audioServiceProvider)
+          .speakWord('Silbenkönig $expectedKing in ${target.fullWord}');
+      if (_kingQuizIdx + 1 < unit.words.length) {
+        Future.delayed(const Duration(milliseconds: 900), () {
+          if (!mounted) return;
+          setState(() {
+            _kingQuizIdx++;
+            _kingCorrect = null;
+          });
+        });
+      } else {
+        await ref
+            .read(progressProvider.notifier)
+            .awardBonusStar('vowel_king:${unit.id}');
+        if (mounted) {
+          setState(() => _kingQuizFinished = true);
+        }
+      }
+    } else {
+      await ref.read(audioServiceProvider).playGentleHintChime();
+      await ref.read(progressProvider.notifier).recordMistake(unit.id);
+      await ref
+          .read(audioServiceProvider)
+          .speakSyllable(target.syllables.first);
     }
   }
 }

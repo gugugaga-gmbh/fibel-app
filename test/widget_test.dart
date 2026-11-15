@@ -2,7 +2,9 @@ import 'package:fibel_app/core/theme/app_theme.dart';
 import 'package:fibel_app/core/widgets/parental_gate_dialog.dart';
 import 'package:fibel_app/core/widgets/syllable_text_widget.dart';
 import 'package:fibel_app/features/parents/parent_dashboard_screen.dart';
+import 'package:fibel_app/features/phonics/anlaut_table_screen.dart';
 import 'package:fibel_app/features/reading/stage_story_screen.dart';
+import 'package:fibel_app/features/rewards/sticker_album_screen.dart';
 import 'package:fibel_app/features/writing/anlaut_keyboard_screen.dart';
 import 'package:fibel_app/main.dart';
 import 'package:material_ui/material_ui.dart';
@@ -65,7 +67,8 @@ void main() {
     expect(find.textContaining('Maus'), findsOneWidget);
   });
 
-  testWidgets('AnlautKeyboardScreen allows typing with Anlaut keys',
+  testWidgets(
+      'AnlautKeyboardScreen allows typing and includes Wort-Rätsel & Hör-Diktat tabs',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(
@@ -81,10 +84,32 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Anlaut-Werkstatt'), findsOneWidget);
+    expect(find.text('Wort-Rätsel ⭐'), findsOneWidget);
+    expect(find.text('Hör-Diktat 🎧⭐'), findsOneWidget);
     expect(find.text('A a'), findsOneWidget);
     await tester.tap(find.text('A a'));
     await tester.pumpAndSettle();
     expect(find.text('A'), findsOneWidget);
+  });
+
+  testWidgets('AnlautTableScreen includes Reim-Detektiv tab', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          home: AnlautTableScreen(),
+        ),
+      ),
+    );
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 150)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Reim-Detektiv ⭐'), findsOneWidget);
+    await tester.tap(find.text('Reim-Detektiv ⭐'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Reim-Detektiv:'), findsOneWidget);
   });
 
   testWidgets('StageStoryScreen loads stage stories and toggles syllable help',
@@ -105,6 +130,25 @@ void main() {
     expect(find.text('Lesepass & Geschichten'), findsOneWidget);
     expect(find.textContaining('Mimi und Leo am See'), findsWidgets);
     expect(find.text('Silben-Hilfe'), findsOneWidget);
+  });
+
+  testWidgets('StickerAlbumScreen shows stage certificate chips and stickers',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          home: StickerAlbumScreen(),
+        ),
+      ),
+    );
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 150)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mein Sticker-Album'), findsOneWidget);
+    expect(find.text('Urkunde Stufe 1'), findsOneWidget);
   });
 
   testWidgets('ParentDashboardScreen renders profiles, stats and settings',
@@ -130,6 +174,14 @@ void main() {
     );
     expect(
       find.textContaining('Pädagogische Förderempfehlung'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('Tägliches Lernziel'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Lernbericht & Urkunde erstellen'),
       findsOneWidget,
     );
   });
