@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../curriculum/curriculum_models.dart';
+import '../i18n/app_localizations.dart';
 
 enum ModuleType { phonics, tracing, syllables, reading }
 
@@ -16,6 +17,8 @@ class AppSettings {
   final bool leftHandedMode;
   final bool highContrastMode;
   final bool largeTextMode;
+  final AppLanguage appLanguage;
+  final BridgeLanguage bridgeLanguage;
 
   const AppSettings({
     this.speechSpeed = SpeechSpeed.normal,
@@ -26,6 +29,8 @@ class AppSettings {
     this.leftHandedMode = false,
     this.highContrastMode = false,
     this.largeTextMode = false,
+    this.appLanguage = AppLanguage.de,
+    this.bridgeLanguage = BridgeLanguage.none,
   });
 
   double get wordRate => switch (speechSpeed) {
@@ -45,6 +50,8 @@ class AppSettings {
     bool? leftHandedMode,
     bool? highContrastMode,
     bool? largeTextMode,
+    AppLanguage? appLanguage,
+    BridgeLanguage? bridgeLanguage,
   }) {
     return AppSettings(
       speechSpeed: speechSpeed ?? this.speechSpeed,
@@ -55,6 +62,8 @@ class AppSettings {
       leftHandedMode: leftHandedMode ?? this.leftHandedMode,
       highContrastMode: highContrastMode ?? this.highContrastMode,
       largeTextMode: largeTextMode ?? this.largeTextMode,
+      appLanguage: appLanguage ?? this.appLanguage,
+      bridgeLanguage: bridgeLanguage ?? this.bridgeLanguage,
     );
   }
 
@@ -67,6 +76,8 @@ class AppSettings {
         'leftHandedMode': leftHandedMode,
         'highContrastMode': highContrastMode,
         'largeTextMode': largeTextMode,
+        'appLanguage': appLanguage.code,
+        'bridgeLanguage': bridgeLanguage.code,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic>? json) {
@@ -85,6 +96,9 @@ class AppSettings {
       leftHandedMode: (json['leftHandedMode'] as bool?) ?? false,
       highContrastMode: (json['highContrastMode'] as bool?) ?? false,
       largeTextMode: (json['largeTextMode'] as bool?) ?? false,
+      appLanguage: AppLanguage.fromCode(json['appLanguage'] as String?),
+      bridgeLanguage:
+          BridgeLanguage.fromCode(json['bridgeLanguage'] as String?),
     );
   }
 }
@@ -93,6 +107,12 @@ class ChildProfile {
   final String id;
   final String name;
   final String avatarEmoji;
+  final String themeColorHex;
+  final String groupName;
+  final String emojiPin;
+  final BridgeLanguage? profileBridgeLanguage;
+  final bool? profileLeftHandedMode;
+  final SpeechSpeed? profileSpeechSpeed;
   final int totalStars;
   final int bonusStars;
   final Map<String, Set<String>> completedModulesByUnit;
@@ -106,11 +126,18 @@ class ChildProfile {
   final String lastActiveDate;
   final int streakDays;
   final bool dailyGoalRewardedToday;
+  final Map<String, int> activityHistoryByDate;
 
   const ChildProfile({
     required this.id,
     this.name = 'Lese-Entdecker',
     this.avatarEmoji = '🦊',
+    this.themeColorHex = '#1E88E5',
+    this.groupName = '',
+    this.emojiPin = '',
+    this.profileBridgeLanguage,
+    this.profileLeftHandedMode,
+    this.profileSpeechSpeed,
     this.totalStars = 0,
     this.bonusStars = 0,
     this.completedModulesByUnit = const {},
@@ -124,12 +151,24 @@ class ChildProfile {
     this.lastActiveDate = '',
     this.streakDays = 0,
     this.dailyGoalRewardedToday = false,
+    this.activityHistoryByDate = const {},
   });
+
+  bool get hasEmojiPin => emojiPin.trim().isNotEmpty;
 
   ChildProfile copyWith({
     String? id,
     String? name,
     String? avatarEmoji,
+    String? themeColorHex,
+    String? groupName,
+    String? emojiPin,
+    BridgeLanguage? profileBridgeLanguage,
+    bool clearProfileBridgeLanguage = false,
+    bool? profileLeftHandedMode,
+    bool clearProfileLeftHandedMode = false,
+    SpeechSpeed? profileSpeechSpeed,
+    bool clearProfileSpeechSpeed = false,
     int? totalStars,
     int? bonusStars,
     Map<String, Set<String>>? completedModulesByUnit,
@@ -143,11 +182,24 @@ class ChildProfile {
     String? lastActiveDate,
     int? streakDays,
     bool? dailyGoalRewardedToday,
+    Map<String, int>? activityHistoryByDate,
   }) {
     return ChildProfile(
       id: id ?? this.id,
       name: name ?? this.name,
       avatarEmoji: avatarEmoji ?? this.avatarEmoji,
+      themeColorHex: themeColorHex ?? this.themeColorHex,
+      groupName: groupName ?? this.groupName,
+      emojiPin: emojiPin ?? this.emojiPin,
+      profileBridgeLanguage: clearProfileBridgeLanguage
+          ? null
+          : (profileBridgeLanguage ?? this.profileBridgeLanguage),
+      profileLeftHandedMode: clearProfileLeftHandedMode
+          ? null
+          : (profileLeftHandedMode ?? this.profileLeftHandedMode),
+      profileSpeechSpeed: clearProfileSpeechSpeed
+          ? null
+          : (profileSpeechSpeed ?? this.profileSpeechSpeed),
       totalStars: totalStars ?? this.totalStars,
       bonusStars: bonusStars ?? this.bonusStars,
       completedModulesByUnit:
@@ -165,6 +217,8 @@ class ChildProfile {
       streakDays: streakDays ?? this.streakDays,
       dailyGoalRewardedToday:
           dailyGoalRewardedToday ?? this.dailyGoalRewardedToday,
+      activityHistoryByDate:
+          activityHistoryByDate ?? this.activityHistoryByDate,
     );
   }
 
@@ -173,6 +227,15 @@ class ChildProfile {
       'id': id,
       'name': name,
       'avatarEmoji': avatarEmoji,
+      'themeColorHex': themeColorHex,
+      'groupName': groupName,
+      'emojiPin': emojiPin,
+      if (profileBridgeLanguage != null)
+        'profileBridgeLanguage': profileBridgeLanguage!.code,
+      if (profileLeftHandedMode != null)
+        'profileLeftHandedMode': profileLeftHandedMode,
+      if (profileSpeechSpeed != null)
+        'profileSpeechSpeed': profileSpeechSpeed!.name,
       'totalStars': totalStars,
       'bonusStars': bonusStars,
       'completedModulesByUnit': completedModulesByUnit.map(
@@ -190,6 +253,7 @@ class ChildProfile {
       'lastActiveDate': lastActiveDate,
       'streakDays': streakDays,
       'dailyGoalRewardedToday': dailyGoalRewardedToday,
+      'activityHistoryByDate': activityHistoryByDate,
     };
   }
 
@@ -206,12 +270,31 @@ class ChildProfile {
       return raw.map((k, v) => MapEntry(k, (v as num).toInt()));
     }
 
+    final rawBridge = json['profileBridgeLanguage'] as String?;
+    final rawSpeed = json['profileSpeechSpeed'] as String?;
+    SpeechSpeed? parsedSpeed;
+    if (rawSpeed != null) {
+      for (final s in SpeechSpeed.values) {
+        if (s.name == rawSpeed) {
+          parsedSpeed = s;
+          break;
+        }
+      }
+    }
+
     return ChildProfile(
       id: (json['id'] as String?) ?? 'default',
       name: (json['name'] as String?) ??
           (json['childName'] as String?) ??
           'Lese-Entdecker',
       avatarEmoji: (json['avatarEmoji'] as String?) ?? '🦊',
+      themeColorHex: (json['themeColorHex'] as String?) ?? '#1E88E5',
+      groupName: (json['groupName'] as String?) ?? '',
+      emojiPin: (json['emojiPin'] as String?) ?? '',
+      profileBridgeLanguage:
+          rawBridge != null ? BridgeLanguage.fromCode(rawBridge) : null,
+      profileLeftHandedMode: json['profileLeftHandedMode'] as bool?,
+      profileSpeechSpeed: parsedSpeed,
       totalStars: (json['totalStars'] as num?)?.toInt() ?? 0,
       bonusStars: (json['bonusStars'] as num?)?.toInt() ?? 0,
       completedModulesByUnit: parseSetMap('completedModulesByUnit'),
@@ -233,6 +316,7 @@ class ChildProfile {
       lastActiveDate: (json['lastActiveDate'] as String?) ?? '',
       streakDays: (json['streakDays'] as num?)?.toInt() ?? 0,
       dailyGoalRewardedToday: (json['dailyGoalRewardedToday'] as bool?) ?? false,
+      activityHistoryByDate: parseIntMap('activityHistoryByDate'),
     );
   }
 }
@@ -279,8 +363,23 @@ class ChildProgress {
     );
   }
 
+  /// Combines global settings with any per-child overrides configured on [activeProfile].
+  AppSettings get effectiveSettings {
+    final p = activeProfile;
+    return settings.copyWith(
+      leftHandedMode: p.profileLeftHandedMode ?? settings.leftHandedMode,
+      speechSpeed: p.profileSpeechSpeed ?? settings.speechSpeed,
+      bridgeLanguage: p.profileBridgeLanguage ?? settings.bridgeLanguage,
+    );
+  }
+
+  BridgeLanguage get effectiveBridgeLanguage =>
+      activeProfile.profileBridgeLanguage ?? settings.bridgeLanguage;
+
   String get childName => activeProfile.name;
   String get avatarEmoji => activeProfile.avatarEmoji;
+  String get themeColorHex => activeProfile.themeColorHex;
+  String get groupName => activeProfile.groupName;
   int get totalStars => activeProfile.totalStars;
   int get bonusStars => activeProfile.bonusStars;
   Map<String, Set<String>> get completedModulesByUnit =>
@@ -294,6 +393,19 @@ class ChildProgress {
   int get dailyGoalTarget => activeProfile.dailyGoalTarget;
   int get dailyCompletedCount => activeProfile.dailyCompletedCount;
   int get streakDays => activeProfile.streakDays;
+  Map<String, int> get activityHistoryByDate =>
+      activeProfile.activityHistoryByDate;
+
+  /// Returns all distinct non-empty group/class names across profiles.
+  List<String> get availableGroups {
+    final set = <String>{};
+    for (final p in profiles) {
+      final g = p.groupName.trim();
+      if (g.isNotEmpty) set.add(g);
+    }
+    final list = set.toList()..sort();
+    return list;
+  }
 
   bool isModuleCompleted(String unitId, ModuleType module) {
     return completedModulesByUnit[unitId]?.contains(module.name) ?? false;
@@ -366,9 +478,6 @@ class ChildProgress {
   }
 
   /// Returns true when the child can open units in [stage].
-  /// By default (`!settings.strictStageLock`), all stages are freely selectable
-  /// with a gentle recommendation badge. When `strictStageLock` is enabled in
-  /// the Parent Dashboard, `isStageUnlocked` is enforced.
   bool isStageAccessible(int stage, List<LessonUnit> allUnits) {
     if (!settings.strictStageLock) return true;
     return isStageUnlocked(stage, allUnits);
@@ -383,8 +492,14 @@ class ChildProgress {
   }
 
   /// Generates a human-readable, offline Markdown/text report of the active child's
-  /// learning progress, competencies, and earned stage certificates.
-  String generateParentReport(CurriculumData curriculum) {
+  /// learning progress, competencies, and earned stage certificates in [language]
+  /// (defaults to `settings.appLanguage`, which is `AppLanguage.de`).
+  String generateParentReport(
+    CurriculumData curriculum, {
+    AppLanguage? language,
+  }) {
+    final lang = language ?? settings.appLanguage;
+    final loc = AppLocalizations.of(lang);
     final p = activeProfile;
     final totalUnits = curriculum.units.length;
     final phonics = completedCountForModuleType(ModuleType.phonics);
@@ -394,33 +509,44 @@ class ChildProgress {
     final stories = completedStageStories.length;
 
     final buf = StringBuffer()
-      ..writeln('=== FIPS & FINA – LERNBERICHT & LESE-PASS ===')
-      ..writeln('Kind: ${p.avatarEmoji} ${p.name}')
+      ..writeln(loc.tr('report_header'))
+      ..writeln('${loc.tr('report_child')}: ${p.avatarEmoji} ${p.name}');
+    if (p.groupName.trim().isNotEmpty) {
+      buf.writeln('${loc.tr('report_group')}: ${p.groupName}');
+    }
+    if (effectiveBridgeLanguage.isEnabled) {
+      buf.writeln(
+        'DaZ-Wort-Brücke: ${effectiveBridgeLanguage.flagEmoji} ${effectiveBridgeLanguage.nativeName}',
+      );
+    }
+    buf
       ..writeln(
-        'Sterne gesamt: ${p.totalStars} ⭐ (davon ${p.bonusStars} Bonus-Sterne)',
+        '${loc.tr('report_stars')}: ${p.totalStars} ⭐ (${p.bonusStars} ${loc.tr('report_bonus')})',
       )
       ..writeln(
-        'Tagesziel: ${p.dailyCompletedCount}/${p.dailyGoalTarget} • Lernserie: ${p.streakDays} Tage 🔥',
+        '${loc.tr('report_daily')}: ${p.dailyCompletedCount}/${p.dailyGoalTarget} • ${loc.tr('report_streak')}: ${p.streakDays} ${loc.tr('report_days')} 🔥',
       )
       ..writeln('')
-      ..writeln('--- KOMPETENZBEREICHE ---')
-      ..writeln('1. Laute hören (Anlaut-Zug): $phonics / $totalUnits')
-      ..writeln('2. Schreiben (Linienhaus):   $tracing / $totalUnits')
-      ..writeln('3. Silben schwingen:         $syllables / $totalUnits')
-      ..writeln('4. Wörter & Sätze lesen:     $reading / $totalUnits')
+      ..writeln(loc.tr('report_competencies'))
+      ..writeln('${loc.tr('report_mod_phonics')}: $phonics / $totalUnits')
+      ..writeln('${loc.tr('report_mod_tracing')}:   $tracing / $totalUnits')
+      ..writeln('${loc.tr('report_mod_syllables')}:         $syllables / $totalUnits')
+      ..writeln('${loc.tr('report_mod_reading')}:     $reading / $totalUnits')
       ..writeln(
-        '5. Lesepass-Geschichten:     $stories / ${curriculum.stageStories.length}',
+        '${loc.tr('report_mod_stories')}:     $stories / ${curriculum.stageStories.length}',
       )
       ..writeln('')
-      ..writeln('--- STUFEN-FORTSCHRITT & URKUNDEN ---');
+      ..writeln(loc.tr('report_stages'));
 
     for (final stage in [1, 2, 3, 4]) {
       final st = stageProgress(stage, curriculum.units);
       final pct = (st.ratio * 100).round();
       final cert = isStageCertificateEarned(stage, curriculum.units)
-          ? '🏆 Urkunde erreicht'
-          : '⏳ In Arbeit';
-      buf.writeln('Stufe $stage: ${st.earned}/${st.max} ⭐ ($pct %) – $cert');
+          ? loc.tr('report_cert_earned')
+          : loc.tr('report_cert_in_progress');
+      buf.writeln(
+        '${loc.tr('report_stage')} $stage: ${st.earned}/${st.max} ⭐ ($pct %) – $cert',
+      );
     }
 
     final reviewIds = unitsNeedingReview();
@@ -437,7 +563,7 @@ class ChildProgress {
       if (letters.isNotEmpty) {
         buf
           ..writeln('')
-          ..writeln('Übungs-Empfehlung (Laute): ${letters.join(', ')}');
+          ..writeln('${loc.tr('report_review_rec')}: ${letters.join(', ')}');
       }
     }
     return buf.toString().trim();
@@ -483,7 +609,7 @@ class ChildProgress {
 
   Map<String, dynamic> toJson() {
     return {
-      'version': 2,
+      'version': 3,
       'activeProfileId': activeProfileId,
       'profiles': profiles.map((p) => p.toJson()).toList(),
       'settings': settings.toJson(),
@@ -527,26 +653,22 @@ class ChildProgress {
 class ProgressRepository {
   static const _storageKeyV1 = 'fibel_child_progress_v1';
   static const _storageKeyV2 = 'fibel_child_progress_v2';
+  static const _storageKeyV3 = 'fibel_child_progress_v3';
 
   Future<ChildProgress> loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
-    final rawV2 = prefs.getString(_storageKeyV2);
-    if (rawV2 != null && rawV2.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(rawV2) as Map<String, dynamic>;
-        return ChildProgress.fromJson(decoded);
-      } catch (_) {}
-    }
-
-    // Fallback & migrate from v1 if present
-    final rawV1 = prefs.getString(_storageKeyV1);
-    if (rawV1 != null && rawV1.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(rawV1) as Map<String, dynamic>;
-        final migrated = ChildProgress.fromJson(decoded);
-        await saveProgress(migrated);
-        return migrated;
-      } catch (_) {}
+    for (final key in const [_storageKeyV3, _storageKeyV2, _storageKeyV1]) {
+      final raw = prefs.getString(key);
+      if (raw != null && raw.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(raw) as Map<String, dynamic>;
+          final loaded = ChildProgress.fromJson(decoded);
+          if (key != _storageKeyV3) {
+            await saveProgress(loaded);
+          }
+          return loaded;
+        } catch (_) {}
+      }
     }
 
     return const ChildProgress();
@@ -555,12 +677,14 @@ class ProgressRepository {
   Future<void> saveProgress(ChildProgress progress) async {
     final prefs = await SharedPreferences.getInstance();
     final encoded = jsonEncode(progress.toJson());
+    await prefs.setString(_storageKeyV3, encoded);
     await prefs.setString(_storageKeyV2, encoded);
     await prefs.setString(_storageKeyV1, encoded);
   }
 
   Future<void> resetProgress() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_storageKeyV3);
     await prefs.remove(_storageKeyV2);
     await prefs.remove(_storageKeyV1);
   }
@@ -610,6 +734,9 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
       dailyCount += 1;
     }
 
+    final nextHistory = Map<String, int>.from(profile.activityHistoryByDate);
+    nextHistory[today] = dailyCount;
+
     int extraBonus = 0;
     if (dailyCount >= profile.dailyGoalTarget && !rewarded) {
       rewarded = true;
@@ -623,6 +750,7 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
       dailyGoalRewardedToday: rewarded,
       totalStars: profile.totalStars + extraBonus,
       bonusStars: profile.bonusStars + extraBonus,
+      activityHistoryByDate: nextHistory,
     );
   }
 
@@ -634,15 +762,44 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
     await _repo.saveProgress(state);
   }
 
-  Future<void> updateActiveProfile({String? name, String? avatarEmoji}) async {
+  Future<void> updateActiveProfile({
+    String? name,
+    String? avatarEmoji,
+    String? themeColorHex,
+    String? groupName,
+    String? emojiPin,
+    BridgeLanguage? profileBridgeLanguage,
+    bool clearProfileBridgeLanguage = false,
+    bool? profileLeftHandedMode,
+    bool clearProfileLeftHandedMode = false,
+    SpeechSpeed? profileSpeechSpeed,
+    bool clearProfileSpeechSpeed = false,
+  }) async {
     _mutated = true;
     state = state.updateActive(
       (p) => p.copyWith(
         name: (name != null && name.trim().isNotEmpty) ? name.trim() : p.name,
         avatarEmoji: avatarEmoji ?? p.avatarEmoji,
+        themeColorHex: themeColorHex ?? p.themeColorHex,
+        groupName: groupName != null ? groupName.trim() : p.groupName,
+        emojiPin: emojiPin != null ? emojiPin.trim() : p.emojiPin,
+        profileBridgeLanguage: profileBridgeLanguage,
+        clearProfileBridgeLanguage: clearProfileBridgeLanguage,
+        profileLeftHandedMode: profileLeftHandedMode,
+        clearProfileLeftHandedMode: clearProfileLeftHandedMode,
+        profileSpeechSpeed: profileSpeechSpeed,
+        clearProfileSpeechSpeed: clearProfileSpeechSpeed,
       ),
     );
     await _repo.saveProgress(state);
+  }
+
+  /// Verifies the optional 2-emoji child lock PIN for [profileId].
+  /// Returns true if the profile has no PIN or if [enteredPin] matches.
+  bool verifyEmojiPin(String profileId, String enteredPin) {
+    final match = state.profiles.where((p) => p.id == profileId).firstOrNull;
+    if (match == null || !match.hasEmojiPin) return true;
+    return match.emojiPin == enteredPin.trim();
   }
 
   Future<void> switchProfile(String profileId) async {
@@ -656,15 +813,28 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
   Future<void> addProfile({
     required String name,
     String avatarEmoji = '🦉',
+    String themeColorHex = '#1E88E5',
+    String groupName = '',
+    String emojiPin = '',
+    BridgeLanguage? profileBridgeLanguage,
+    bool? profileLeftHandedMode,
+    SpeechSpeed? profileSpeechSpeed,
   }) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
     _mutated = true;
-    final newId = 'child_${DateTime.now().millisecondsSinceEpoch}';
+    final newId =
+        'child_${DateTime.now().microsecondsSinceEpoch}_${state.profiles.length}';
     final newProfile = ChildProfile(
       id: newId,
       name: trimmed,
       avatarEmoji: avatarEmoji,
+      themeColorHex: themeColorHex,
+      groupName: groupName.trim(),
+      emojiPin: emojiPin.trim(),
+      profileBridgeLanguage: profileBridgeLanguage,
+      profileLeftHandedMode: profileLeftHandedMode,
+      profileSpeechSpeed: profileSpeechSpeed,
     );
     state = state.copyWith(
       activeProfileId: newId,
@@ -787,8 +957,7 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
     return allThreeDone;
   }
 
-  /// Awards bonus star(s) for completing optional challenges (e.g. Silben-Klatschen,
-  /// Satz-Rätsel, Blitzlesen, Anlaut-Werkstatt Wort-Rätsel). Returns true if newly awarded.
+  /// Awards bonus star(s) for completing optional challenges. Returns true if newly awarded.
   Future<bool> awardBonusStar(String bonusKey, {int stars = 1}) async {
     _mutated = true;
     bool newlyAwarded = false;
@@ -845,13 +1014,58 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
     return const JsonEncoder.withIndent('  ').convert(state.toJson());
   }
 
-  /// Imports profiles and settings from a JSON backup string (100% offline).
+  /// Exports only the currently active child profile as a standalone JSON object.
+  String exportActiveProfileJson() {
+    return const JsonEncoder.withIndent('  ')
+        .convert(state.activeProfile.toJson());
+  }
+
+  /// Imports profiles and settings from a JSON backup string (100% offline, replaces state).
   Future<bool> importProgressJson(String rawJson) async {
     try {
       final decoded = jsonDecode(rawJson) as Map<String, dynamic>;
       final imported = ChildProgress.fromJson(decoded);
       _mutated = true;
       state = imported;
+      await _repo.saveProgress(state);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Imports a single ChildProfile JSON (or all profiles from a full backup) and merges
+  /// them into the existing profile list without deleting other sibling/classroom profiles.
+  Future<bool> importAndMergeProfileJson(String rawJson) async {
+    try {
+      final decoded = jsonDecode(rawJson) as Map<String, dynamic>;
+      final incomingProfiles = <ChildProfile>[];
+      if (decoded.containsKey('profiles')) {
+        final full = ChildProgress.fromJson(decoded);
+        incomingProfiles.addAll(full.profiles);
+      } else {
+        incomingProfiles.add(ChildProfile.fromJson(decoded));
+      }
+      if (incomingProfiles.isEmpty) return false;
+
+      _mutated = true;
+      final existingById = {for (final p in state.profiles) p.id: p};
+      String lastMergedId = state.activeProfileId;
+
+      for (var inc in incomingProfiles) {
+        if (existingById.containsKey(inc.id) && inc.id == 'default') {
+          inc = inc.copyWith(
+            id: 'child_${DateTime.now().microsecondsSinceEpoch}_${existingById.length}',
+          );
+        }
+        existingById[inc.id] = inc;
+        lastMergedId = inc.id;
+      }
+
+      state = state.copyWith(
+        activeProfileId: lastMergedId,
+        profiles: existingById.values.toList(),
+      );
       await _repo.saveProgress(state);
       return true;
     } catch (_) {
@@ -866,6 +1080,12 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
         id: p.id,
         name: p.name,
         avatarEmoji: p.avatarEmoji,
+        themeColorHex: p.themeColorHex,
+        groupName: p.groupName,
+        emojiPin: p.emojiPin,
+        profileBridgeLanguage: p.profileBridgeLanguage,
+        profileLeftHandedMode: p.profileLeftHandedMode,
+        profileSpeechSpeed: p.profileSpeechSpeed,
       ),
     );
     await _repo.saveProgress(state);

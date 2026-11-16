@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/audio_service.dart';
 import '../../core/curriculum/curriculum_models.dart';
 import '../../core/curriculum/curriculum_repository.dart';
+import '../../core/i18n/daz_word_bridge.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
@@ -194,6 +195,7 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
                         ),
                       ],
                     ),
+                    DazWordBridgeChip(germanWord: item.word),
                   ],
                 ),
               ),
@@ -399,6 +401,10 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
+                              DazWordBridgeChip(
+                                germanWord: entry.word,
+                                compact: true,
+                              ),
                             ],
                           ),
                         ),
@@ -475,6 +481,7 @@ class _AnlautTableScreenState extends ConsumerState<AnlautTableScreen> {
                       showArcs: settings.showSyllableArcs,
                       showVowelCrowns: settings.showVowelCrowns,
                     ),
+                    DazWordBridgeChip(germanWord: item.targetWord),
                     const SizedBox(height: 8),
                     Row(
                       mainAxisSize: MainAxisSize.min,

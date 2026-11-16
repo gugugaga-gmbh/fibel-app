@@ -19,9 +19,11 @@ Login, ohne Werbung.
 | 5. Belohnung & Urkunden | Einstellbares Tagesziel & Lern-Serie 🔥, adaptives „Tägliches Training“, **24 sprechende Sticker** und **Lese-Urkunden 🏆** für jede gemeisterte Stufe |
 
 - **33 Lektionen in 4 Stufen:** Sanfte Stufen-Empfehlung (oder optional strikte 70-%-Regel) für alle Buchstaben A–Z, Umlaute (`Ä, Ö, Ü`) und Mehrgrapheme (`Ei, Au, Sch, Eu, Ch, St, Sp, Qu`)
+- **Mehrsprachigkeit & DaZ-Wort-Brücke 🌍:** 6 Sprachen (`de`, `en`, `tr`, `uk`, `ar`, `es`) für Elternbereich & Lernberichte sowie optionale **DaZ-Wort-Brücke** (Offline-Übersetzung & Vorlesen von Anker- und Übungswörtern in der Herkunftssprache bei lautgetreuer deutscher Phonetik)
+- **Mehrkind- & Klassen-Profil-Management:** 16 Tier-Avatare, Lieblingsfarben, Gruppen-/Klassen-Filter, individuelle Kind-Einstellungen (Linkshänder-Modus, Vorlesetempo, DaZ-Sprache), optionaler kindgerechter **2-Emoji-Schlüssel 🔑** sowie Einzel-Profil-Export & Merge-Import
 - **Schulschrift & Barrierefreiheit:** Andika (lokal eingebunden, kindgerechte `a`/`g`-Formen), optional vergrößerte Leseschrift (+15 %) und erhöhter Kontrast-Modus
 - **Sprachausgabe & Offline-Audio:** lautgetreue deutsche Phonetik-Abbildung, Offline-WAV-Chimes & Feier-Fanfare (Geschwindigkeit anpassbar)
-- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Mehrkind-Profile, Kompetenz-Diagnostik & Förderempfehlung, kopierbarer **Lernbericht & Lese-Pass**, Offline-JSON-Backup sowie Stufen-Freischaltung
+- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Geschwister-/Klassen-Vergleich, 7-Tage-Aktivitätsverlauf, Kompetenz-Diagnostik & Förderempfehlung, kopierbarer **mehrsprachiger Lernbericht & Lese-Pass**, Offline-JSON-Backup sowie Stufen-Freischaltung
 
 ## Schnellstart
 

@@ -24,8 +24,9 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
 - **Elternbereich:** Alles, was Daten löscht oder Einstellungen ändert, muss
   hinter dem `ParentalGateDialog` (Rechenaufgabe) liegen.
 - Fortschritt wird ausschließlich lokal über `shared_preferences` gespeichert
-  (`ProgressRepository`, Schlüssel `fibel_child_progress_v1`). Bei
-  Schemaänderungen den Schlüssel versionieren (`..._v2`) und migrieren.
+  (`ProgressRepository`, Schlüssel `fibel_child_progress_v3` mit automatischer
+  Migration von `v2` und `v1`). Bei Schemaänderungen den Schlüssel versionieren
+  und migrieren.
 
 ## 3. Marken- & Urheberrecht
 
@@ -44,14 +45,15 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
 lib/
 ├── main.dart                     # ProviderScope + GoRouter (Routen, Kontrast & Schriftgröße)
 ├── core/
-│   ├── audio/                    # AudioService (just_audio + flutter_tts, de-DE, Offline-Chimes & Fanfare)
+│   ├── audio/                    # AudioService (just_audio + flutter_tts, de-DE + DaZ-Brückensprachen, Offline-Chimes & Fanfare)
 │   ├── curriculum/               # Modelle + Laden von curriculum_de.json
-│   ├── storage/                  # ProgressRepository / ProgressNotifier (inkl. Fehler-Tracking, Lernbericht & JSON-Backup)
+│   ├── i18n/                     # AppLocalizations (de/en/tr/uk/ar/es) & DazWordBridge (Offline-Wörterbuch + DazWordBridgeChip)
+│   ├── storage/                  # ProgressRepository / ProgressNotifier (Schema v3, Mehrkind-Profile, Emoji-PIN, Einzel-Export/Merge)
 │   ├── theme/                    # AppColors, AppTheme (Andika + High-Contrast-Option)
 │   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog, StageCertificateDialog
 └── features/
-    ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel, Tour & Stufen-Filter
-    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Diagnose, Förderempfehlung, Bericht, Backup)
+    ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel, Tour, Stufen-Filter & ProfileSelectorSheet
+    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Mehrkind-/Klassen-Übersicht, DaZ, 7-Tage-Verlauf, mehrsprachige Berichte, Backup)
     ├── phonics/                  # Modul 1: Anlauttabelle, Laut-Zug & Reim-Detektiv (Minimalpaare)
     ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei, Links-/Rechtshänder) & Anlaut-Werkstatt (inkl. Hör-Diktat)
     ├── syllables/                # Modul 3: Silbenbögen, Silbenteppich, Silben-Klatschen & Silbenkönige

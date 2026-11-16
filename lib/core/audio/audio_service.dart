@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
+import '../i18n/app_localizations.dart';
 import '../storage/progress_repository.dart';
 
 /// In-memory WAV audio source for 100% offline acoustic feedback chimes via just_audio.
@@ -35,7 +36,7 @@ class AudioService {
   AudioService([this._ref]);
 
   AppSettings get _settings =>
-      _ref?.read(progressProvider).settings ?? const AppSettings();
+      _ref?.read(progressProvider).effectiveSettings ?? const AppSettings();
 
   /// Maps raw curriculum phoneme strings to lautgetreue German phonetic prompts
   /// so TTS engines pronounce true phonemes rather than letter names ("Be", "Zett").
@@ -166,10 +167,28 @@ class AudioService {
     await _ensureInitialized();
     try {
       await _tts?.stop();
+      await _tts?.setLanguage('de-DE');
       await _tts?.setSpeechRate(rate ?? _settings.wordRate);
       await _tts?.speak(text);
     } catch (e) {
       debugPrint('AudioService speak skipped: $e');
+    }
+  }
+
+  /// Speaks a translated word in the child's heritage/bridge language (DaZ-Wort-Brücke).
+  Future<void> speakBridgeWord(
+    String translatedText,
+    BridgeLanguage bridgeLanguage,
+  ) async {
+    if (!_settings.soundEnabled || !bridgeLanguage.isEnabled) return;
+    await _ensureInitialized();
+    try {
+      await _tts?.stop();
+      await _tts?.setLanguage(bridgeLanguage.ttsLocale);
+      await _tts?.setSpeechRate(_settings.wordRate);
+      await _tts?.speak(translatedText);
+    } catch (e) {
+      debugPrint('AudioService speakBridgeWord skipped: $e');
     }
   }
 

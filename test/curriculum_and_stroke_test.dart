@@ -1,6 +1,8 @@
 import 'package:fibel_app/core/audio/audio_service.dart';
 import 'package:fibel_app/core/curriculum/curriculum_models.dart';
 import 'package:fibel_app/core/curriculum/curriculum_repository.dart';
+import 'package:fibel_app/core/i18n/app_localizations.dart';
+import 'package:fibel_app/core/i18n/daz_word_bridge.dart';
 import 'package:fibel_app/core/storage/progress_repository.dart';
 import 'package:fibel_app/features/writing/stroke_validator.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -52,6 +54,46 @@ void main() {
       expect(SyllableWord.extractVowelKing('Son'), 'o');
       expect(SyllableWord.extractVowelKing('Tie'), 'ie');
       expect(SyllableWord.extractVowelKing('Bä'), 'ä');
+    });
+
+    test(
+        'DazWordBridge covers all curriculum anchor words, practice words and story titles across 5 bridge languages',
+        () async {
+      final data = await CurriculumRepository().loadCurriculum();
+      final bridgeLanguages = [
+        BridgeLanguage.en,
+        BridgeLanguage.tr,
+        BridgeLanguage.uk,
+        BridgeLanguage.ar,
+        BridgeLanguage.es,
+      ];
+
+      expect(DazWordBridge.translate('Maus', BridgeLanguage.none), isNull);
+      expect(DazWordBridge.coveredWordCount, greaterThanOrEqualTo(136));
+
+      for (final lang in bridgeLanguages) {
+        for (final unit in data.units) {
+          expect(
+            DazWordBridge.translate(unit.anchorWord, lang),
+            isNotNull,
+            reason: 'Missing ${lang.code} translation for ${unit.anchorWord}',
+          );
+          for (final w in unit.words) {
+            expect(
+              DazWordBridge.translate(w.fullWord, lang),
+              isNotNull,
+              reason: 'Missing ${lang.code} translation for ${w.fullWord}',
+            );
+          }
+        }
+        for (final story in data.stageStories) {
+          expect(
+            DazWordBridge.translate(story.title, lang),
+            isNotNull,
+            reason: 'Missing ${lang.code} translation for story ${story.title}',
+          );
+        }
+      }
     });
   });
 
@@ -186,11 +228,17 @@ void main() {
       expect(notifier.state.mistakeCountsByUnit['unit_02_a'], 1);
 
       // Stage story completion awards +2 bonus stars once and unlocks stage certificate
-      expect(notifier.state.isStageCertificateEarned(1, curriculum.units), isFalse);
+      expect(
+        notifier.state.isStageCertificateEarned(1, curriculum.units),
+        isFalse,
+      );
       expect(await notifier.completeStageStory(1), isTrue);
       expect(await notifier.completeStageStory(1), isFalse);
       expect(notifier.state.isStageStoryCompleted(1), isTrue);
-      expect(notifier.state.isStageCertificateEarned(1, curriculum.units), isTrue);
+      expect(
+        notifier.state.isStageCertificateEarned(1, curriculum.units),
+        isTrue,
+      );
 
       // Customizable daily goal target & accessibility settings
       await notifier.updateDailyGoalTarget(5);
@@ -204,10 +252,23 @@ void main() {
       expect(notifier.state.settings.highContrastMode, isTrue);
       expect(notifier.state.settings.textScaleFactor, 1.15);
 
-      // Offline parent & teacher learning report
+      // Offline parent & teacher learning report (German default + localized)
       final report = notifier.state.generateParentReport(curriculum);
       expect(report, contains('FIPS & FINA – LERNBERICHT'));
       expect(report, contains('🏆 Urkunde erreicht'));
+
+      final reportEn = notifier.state.generateParentReport(
+        curriculum,
+        language: AppLanguage.en,
+      );
+      expect(reportEn, contains('LEARNING REPORT'));
+      expect(reportEn, contains('🏆 Certificate earned'));
+
+      final reportTr = notifier.state.generateParentReport(
+        curriculum,
+        language: AppLanguage.tr,
+      );
+      expect(reportTr, contains('ÖĞRENME RAPORU'));
 
       // Bonus star awarded once per key
       expect(await notifier.awardBonusStar('syllable_clap:unit_01_m'), isTrue);
@@ -226,6 +287,66 @@ void main() {
       expect(await notifier.importProgressJson(exported), isTrue);
       expect(notifier.state.profiles.length, 1);
       expect(notifier.state.isStageStoryCompleted(1), isTrue);
+    });
+
+    test(
+        'supports per-child settings, 2-emoji child lock, group filtering and single-profile merge import',
+        () async {
+      SharedPreferences.setMockInitialValues({});
+      final repo = ProgressRepository();
+      final notifier = ProgressNotifier(repo);
+
+      // Configure first child with Turkish bridge language and Class 1a
+      await notifier.updateActiveProfile(
+        name: 'Aylin',
+        avatarEmoji: '🦄',
+        themeColorHex: '#7E57C2',
+        groupName: 'Klasse 1a',
+        emojiPin: '🍎🚗',
+        profileBridgeLanguage: BridgeLanguage.tr,
+        profileLeftHandedMode: false,
+      );
+
+      expect(notifier.state.effectiveBridgeLanguage, BridgeLanguage.tr);
+      expect(notifier.state.effectiveSettings.leftHandedMode, isFalse);
+      expect(
+        notifier.verifyEmojiPin(notifier.state.activeProfileId, '🍎⚽'),
+        isFalse,
+      );
+      expect(
+        notifier.verifyEmojiPin(notifier.state.activeProfileId, '🍎🚗'),
+        isTrue,
+      );
+
+      // Export single profile for Aylin
+      final aylinJson = notifier.exportActiveProfileJson();
+
+      // Add second child with Ukrainian bridge language and left-handed mode
+      await notifier.addProfile(
+        name: 'Taras',
+        avatarEmoji: '🦁',
+        themeColorHex: '#00897B',
+        groupName: 'Klasse 1b',
+        profileBridgeLanguage: BridgeLanguage.uk,
+        profileLeftHandedMode: true,
+      );
+
+      expect(notifier.state.profiles.length, 2);
+      expect(notifier.state.effectiveBridgeLanguage, BridgeLanguage.uk);
+      expect(notifier.state.effectiveSettings.leftHandedMode, isTrue);
+      expect(notifier.state.availableGroups, ['Klasse 1a', 'Klasse 1b']);
+
+      // Merge-import Aylin into a fresh instance that only has a default child
+      SharedPreferences.setMockInitialValues({});
+      final repo2 = ProgressRepository();
+      final notifier2 = ProgressNotifier(repo2);
+      await notifier2.updateChildName('Noah');
+      expect(notifier2.state.profiles.length, 1);
+
+      expect(await notifier2.importAndMergeProfileJson(aylinJson), isTrue);
+      expect(notifier2.state.profiles.length, 2);
+      expect(notifier2.state.childName, 'Aylin');
+      expect(notifier2.state.effectiveBridgeLanguage, BridgeLanguage.tr);
     });
   });
 }

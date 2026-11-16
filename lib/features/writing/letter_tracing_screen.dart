@@ -258,6 +258,8 @@ class _LetterTracingScreenState extends ConsumerState<LetterTracingScreen>
                                 pulseValue: _pulseController.value,
                                 strokeColor: widget.unit.color,
                                 showGuidePath: _mode != _TracingMode.freehand,
+                                labelsOnRight:
+                                    progress.effectiveSettings.leftHandedMode,
                               ),
                             );
                           },
