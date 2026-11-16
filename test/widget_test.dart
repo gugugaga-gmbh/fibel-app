@@ -1,3 +1,6 @@
+import 'package:fibel_app/core/i18n/app_localizations.dart';
+import 'package:fibel_app/core/i18n/daz_word_bridge.dart';
+import 'package:fibel_app/core/storage/progress_repository.dart';
 import 'package:fibel_app/core/theme/app_theme.dart';
 import 'package:fibel_app/core/widgets/parental_gate_dialog.dart';
 import 'package:fibel_app/core/widgets/syllable_text_widget.dart';
@@ -168,6 +171,7 @@ void main() {
 
     expect(find.text('Eltern- & Lehrkräftebereich'), findsOneWidget);
     expect(find.text('Kinder-Profile'), findsOneWidget);
+    expect(find.text('Sprache & DaZ-Wort-Brücke'), findsOneWidget);
     expect(
       find.textContaining('Lernstufen & Lehrkraft-Freischaltung'),
       findsOneWidget,
@@ -184,5 +188,34 @@ void main() {
       find.text('Lernbericht & Urkunde erstellen'),
       findsOneWidget,
     );
+  });
+
+  testWidgets(
+      'DazWordBridgeChip is hidden when BridgeLanguage.none and visible when enabled',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: Scaffold(
+            body: DazWordBridgeChip(germanWord: 'Maus'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('fare'), findsNothing);
+
+    await container
+        .read(progressProvider.notifier)
+        .updateActiveProfile(profileBridgeLanguage: BridgeLanguage.tr);
+    await tester.pumpAndSettle();
+
+    expect(find.text('fare'), findsOneWidget);
+    expect(find.text('🇹🇷'), findsOneWidget);
   });
 }

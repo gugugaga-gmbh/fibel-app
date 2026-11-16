@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/audio_service.dart';
 import '../../core/curriculum/curriculum_models.dart';
+import '../../core/i18n/daz_word_bridge.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
@@ -200,6 +201,7 @@ class _WordSentenceBuilderScreenState
               child: Column(
                 children: [
                   Text(targetWord.emoji, style: const TextStyle(fontSize: 64)),
+                  DazWordBridgeChip(germanWord: targetWord.fullWord),
                   const SizedBox(height: 12),
                   Container(
                     constraints: const BoxConstraints(minHeight: 60),

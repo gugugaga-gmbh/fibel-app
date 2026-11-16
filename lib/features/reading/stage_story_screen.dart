@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/audio_service.dart';
 import '../../core/curriculum/curriculum_models.dart';
 import '../../core/curriculum/curriculum_repository.dart';
+import '../../core/i18n/daz_word_bridge.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
@@ -163,6 +164,7 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
               }
             },
           ),
+          DazWordBridgeChip(germanWord: story.title),
           const SizedBox(height: 16),
           // Progress dots (Sentences + Quiz star)
           Row(

@@ -4,10 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../core/audio/audio_service.dart';
 import '../../core/curriculum/curriculum_models.dart';
 import '../../core/curriculum/curriculum_repository.dart';
+import '../../core/i18n/app_localizations.dart';
+import '../../core/i18n/daz_word_bridge.dart';
 import '../../core/storage/progress_repository.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../../core/widgets/parental_gate_dialog.dart';
+import 'profile_selector_dialog.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +26,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final curriculumAsync = ref.watch(curriculumProvider);
     final progress = ref.watch(progressProvider);
+    final loc = AppLocalizations.of(progress.settings.appLanguage);
+    final bridge = progress.effectiveBridgeLanguage;
+    final profileColor =
+        ProfileSelectorSheet.parseProfileColor(progress.themeColorHex);
 
     return Scaffold(
       appBar: AppBar(
@@ -34,12 +41,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => _showOnboardingTourDialog(context, ref),
           ),
           ActionChip(
+            side: BorderSide(color: profileColor, width: 2),
             avatar: Text(
               progress.avatarEmoji,
               style: const TextStyle(fontSize: 16),
             ),
             label: Text(
-              progress.childName,
+              bridge.isEnabled
+                  ? '${progress.childName} ${bridge.flagEmoji}'
+                  : progress.childName,
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -79,8 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                 child: MascotBanner(
                   character: MascotCharacter.fips,
-                  message:
-                      'Hallo ${progress.childName}! Wähle einen Buchstaben zum Lernen aus.',
+                  message: loc.welcomeChild(progress.childName),
                   onTap: () => ref
                       .read(audioServiceProvider)
                       .speakWord('Hallo! Wähle einen Buchstaben zum Lernen aus.'),
@@ -687,76 +696,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _openProfileSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (ctx) {
-        return Consumer(
-          builder: (ctx, sheetRef, _) {
-            final progress = sheetRef.watch(progressProvider);
-            return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Wer lernt gerade?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ...progress.profiles.map((prof) {
-                      final active = prof.id == progress.activeProfileId;
-                      return ListTile(
-                        leading: Text(
-                          prof.avatarEmoji,
-                          style: const TextStyle(fontSize: 30),
-                        ),
-                        title: Text(
-                          prof.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle:
-                            Text('${prof.totalStars} ⭐ • ${prof.streakDays} 🔥'),
-                        trailing: active
-                            ? const Icon(
-                                Icons.check_circle_rounded,
-                                color: AppColors.successGreen,
-                              )
-                            : null,
-                        onTap: () async {
-                          await sheetRef
-                              .read(progressProvider.notifier)
-                              .switchProfile(prof.id);
-                          if (ctx.mounted) Navigator.of(ctx).pop();
-                        },
-                      );
-                    }),
-                    const Divider(),
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        Navigator.of(ctx).pop();
-                        final allowed = await ParentalGateDialog.show(context);
-                        if (allowed && context.mounted) {
-                          context.push('/parents');
-                        }
-                      },
-                      icon: const Icon(Icons.lock_outline_rounded),
-                      label: const Text('Eltern- & Lehrkräftebereich'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+    ProfileSelectorSheet.show(context);
   }
 
   void _openUnitSheet(
@@ -788,6 +728,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                DazWordBridgeChip(germanWord: unit.anchorWord),
                 if (showRecommendationHint) ...[
                   const SizedBox(height: 8),
                   Container(
