@@ -111,7 +111,7 @@ class _ProfileSelectorSheetState extends ConsumerState<ProfileSelectorSheet> {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: visibleProfiles.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (ctx, idx) {
                   final prof = visibleProfiles[idx];
                   final active = prof.id == progress.activeProfileId;

@@ -232,6 +232,10 @@ class AppLocalizations {
       'report_cert_earned': '🏆 Urkunde erreicht',
       'report_cert_in_progress': '⏳ In Arbeit',
       'report_review_rec': 'Übungs-Empfehlung (Laute)',
+      'report_missions': 'Abenteuer-Runden geschafft',
+      'report_leitner': 'Lern-Schatzkiste (Spaced Repetition)',
+      'report_screen_time': 'Lernzeit heute',
+      'screen_time_title': 'Schlafenszeit-Pause mit Fips & Fina',
     },
     AppLanguage.en: {
       'who_is_learning': 'Who is learning right now?',
@@ -275,6 +279,10 @@ class AppLocalizations {
       'report_cert_earned': '🏆 Certificate earned',
       'report_cert_in_progress': '⏳ In progress',
       'report_review_rec': 'Recommended for review (Sounds)',
+      'report_missions': 'Adventure Missions completed',
+      'report_leitner': 'Memory Chest (Spaced Repetition)',
+      'report_screen_time': 'Learning time today',
+      'screen_time_title': 'Bedtime Pause with Fips & Fina',
     },
     AppLanguage.tr: {
       'who_is_learning': 'Şimdi kim öğreniyor?',
@@ -318,6 +326,10 @@ class AppLocalizations {
       'report_cert_earned': '🏆 Sertifika kazanıldı',
       'report_cert_in_progress': '⏳ Devam ediyor',
       'report_review_rec': 'Tekrar Önerisi (Harfler)',
+      'report_missions': 'Tamamlanan Macera Turları',
+      'report_leitner': 'Hafıza Kutusu (Aralıklı Tekrar)',
+      'report_screen_time': 'Bugünkü öğrenme süresi',
+      'screen_time_title': 'Fips & Fina ile Dinlenme Molası',
     },
     AppLanguage.uk: {
       'who_is_learning': 'Хто зараз навчається?',
@@ -361,6 +373,10 @@ class AppLocalizations {
       'report_cert_earned': '🏆 Сертифікат отримано',
       'report_cert_in_progress': '⏳ У процесі',
       'report_review_rec': 'Рекомендовано повторити (Звуки)',
+      'report_missions': 'Пройдені пригодницькі раунди',
+      'report_leitner': 'Скринька пам’яті (інтервальне повторення)',
+      'report_screen_time': 'Час навчання сьогодні',
+      'screen_time_title': 'Перерва на відпочинок із Фіпсом і Фіною',
     },
     AppLanguage.ar: {
       'who_is_learning': 'من يتعلم الآن؟',
@@ -404,6 +420,10 @@ class AppLocalizations {
       'report_cert_earned': '🏆 تم الحصول على الشهادة',
       'report_cert_in_progress': '⏳ قيد العمل',
       'report_review_rec': 'توصية للمراجعة (الحروف)',
+      'report_missions': 'جولات المغامرة المكتملة',
+      'report_leitner': 'صندوق الذاكرة (المراجعة المتباعدة)',
+      'report_screen_time': 'وقت التعلم اليوم',
+      'screen_time_title': 'استراحة النوم مع فيبس وفينا',
     },
     AppLanguage.es: {
       'who_is_learning': '¿Quién aprende ahora?',
@@ -447,6 +467,10 @@ class AppLocalizations {
       'report_cert_earned': '🏆 Diploma obtenido',
       'report_cert_in_progress': '⏳ En progreso',
       'report_review_rec': 'Recomendación de repaso (Sonidos)',
+      'report_missions': 'Rondas de aventura completadas',
+      'report_leitner': 'Cofre de memoria (Repetición espaciada)',
+      'report_screen_time': 'Tiempo de aprendizaje hoy',
+      'screen_time_title': 'Pausa de descanso con Fips y Fina',
     },
   };
 }

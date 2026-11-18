@@ -6,7 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'core/curriculum/curriculum_models.dart';
 import 'core/storage/progress_repository.dart';
 import 'core/theme/app_theme.dart';
+import 'core/widgets/bedtime_pause_overlay.dart';
 import 'features/home/home_screen.dart';
+import 'features/mission/daily_mission_screen.dart';
 import 'features/parents/parent_dashboard_screen.dart';
 import 'features/phonics/anlaut_table_screen.dart';
 import 'features/reading/stage_story_screen.dart';
@@ -30,6 +32,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/mission',
+      builder: (context, state) => const DailyMissionScreen(),
     ),
     GoRoute(
       path: '/anlaut',
@@ -103,7 +109,9 @@ class FibelApp extends ConsumerWidget {
           data: mq.copyWith(
             textScaler: TextScaler.linear(settings.textScaleFactor),
           ),
-          child: child ?? const SizedBox.shrink(),
+          child: BedtimePauseWrapper(
+            child: child ?? const SizedBox.shrink(),
+          ),
         );
       },
     );

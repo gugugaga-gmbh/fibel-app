@@ -1,5 +1,5 @@
 {
-  "version": "2.0.0",
+  "version": "3.0.0",
   "anlautTable": [
     {
       "letter": "A",
@@ -333,6 +333,51 @@
       "phoneme": "Sss",
       "isVowel": false,
       "category": "consonant"
+    },
+    {
+      "letter": "Ie",
+      "lowercase": "ie",
+      "word": "Biene",
+      "emoji": "🐝",
+      "phoneme": "Iii",
+      "isVowel": true,
+      "category": "digraph"
+    },
+    {
+      "letter": "Pf",
+      "lowercase": "pf",
+      "word": "Pferd",
+      "emoji": "🐴",
+      "phoneme": "Pf",
+      "isVowel": false,
+      "category": "digraph"
+    },
+    {
+      "letter": "Ng",
+      "lowercase": "ng",
+      "word": "Ring",
+      "emoji": "💍",
+      "phoneme": "Ng",
+      "isVowel": false,
+      "category": "digraph"
+    },
+    {
+      "letter": "Ck",
+      "lowercase": "ck",
+      "word": "Socken",
+      "emoji": "🧦",
+      "phoneme": "K",
+      "isVowel": false,
+      "category": "digraph"
+    },
+    {
+      "letter": "Tz",
+      "lowercase": "tz",
+      "word": "Blitz",
+      "emoji": "⚡",
+      "phoneme": "Zzz",
+      "isVowel": false,
+      "category": "digraph"
     }
   ],
   "units": [
@@ -7242,6 +7287,1475 @@
           ]
         }
       ]
+    },
+    {
+      "id": "unit_34_ie",
+      "order": 34,
+      "stage": 5,
+      "letter": "Ie",
+      "lowercase": "ie",
+      "phoneme": "Iii",
+      "anchorWord": "Biene",
+      "anchorEmoji": "🐝",
+      "isVowel": true,
+      "colorHex": "#F9A825",
+      "upperStrokes": [
+        [
+          [
+            0.28,
+            0.12
+          ],
+          [
+            0.28,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.46,
+            0.5
+          ],
+          [
+            0.72,
+            0.5
+          ],
+          [
+            0.68,
+            0.36
+          ],
+          [
+            0.52,
+            0.35
+          ],
+          [
+            0.44,
+            0.48
+          ],
+          [
+            0.5,
+            0.64
+          ],
+          [
+            0.7,
+            0.62
+          ]
+        ]
+      ],
+      "lowerStrokes": [
+        [
+          [
+            0.28,
+            0.35
+          ],
+          [
+            0.28,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.28,
+            0.22
+          ],
+          [
+            0.29,
+            0.23
+          ]
+        ],
+        [
+          [
+            0.46,
+            0.5
+          ],
+          [
+            0.72,
+            0.5
+          ],
+          [
+            0.68,
+            0.36
+          ],
+          [
+            0.52,
+            0.35
+          ],
+          [
+            0.44,
+            0.48
+          ],
+          [
+            0.5,
+            0.64
+          ],
+          [
+            0.7,
+            0.62
+          ]
+        ]
+      ],
+      "syllableCombos": [
+        "Bie",
+        "Lie",
+        "Sie",
+        "Mie",
+        "Tie"
+      ],
+      "soundQuiz": [
+        {
+          "word": "Biene",
+          "emoji": "🐝",
+          "position": "middle"
+        },
+        {
+          "word": "Knie",
+          "emoji": "🦵",
+          "position": "end"
+        },
+        {
+          "word": "Brief",
+          "emoji": "✉️",
+          "position": "middle"
+        }
+      ],
+      "words": [
+        {
+          "fullWord": "Biene",
+          "syllables": [
+            "Bie",
+            "ne"
+          ],
+          "emoji": "🐝"
+        },
+        {
+          "fullWord": "Wiese",
+          "syllables": [
+            "Wie",
+            "se"
+          ],
+          "emoji": "🌼"
+        },
+        {
+          "fullWord": "Brief",
+          "syllables": [
+            "Brief"
+          ],
+          "emoji": "✉️"
+        }
+      ],
+      "sentences": [
+        {
+          "text": "Die Biene fliegt über die Wiese.",
+          "emoji": "🐝",
+          "distractorEmojis": [
+            "🚂",
+            "⛄"
+          ],
+          "words": [
+            {
+              "fullWord": "Die",
+              "syllables": [
+                "Die"
+              ]
+            },
+            {
+              "fullWord": "Biene",
+              "syllables": [
+                "Bie",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "fliegt",
+              "syllables": [
+                "fliegt"
+              ]
+            },
+            {
+              "fullWord": "über",
+              "syllables": [
+                "ü",
+                "ber"
+              ]
+            },
+            {
+              "fullWord": "die",
+              "syllables": [
+                "die"
+              ]
+            },
+            {
+              "fullWord": "Wiese.",
+              "syllables": [
+                "Wie",
+                "se."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Fina liest einen lieben Brief.",
+          "emoji": "✉️",
+          "distractorEmojis": [
+            "⚽",
+            "🍎"
+          ],
+          "words": [
+            {
+              "fullWord": "Fina",
+              "syllables": [
+                "Fi",
+                "na"
+              ]
+            },
+            {
+              "fullWord": "liest",
+              "syllables": [
+                "liest"
+              ]
+            },
+            {
+              "fullWord": "einen",
+              "syllables": [
+                "ei",
+                "nen"
+              ]
+            },
+            {
+              "fullWord": "lieben",
+              "syllables": [
+                "lie",
+                "ben"
+              ]
+            },
+            {
+              "fullWord": "Brief.",
+              "syllables": [
+                "Brief."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unit_35_pf",
+      "order": 35,
+      "stage": 5,
+      "letter": "Pf",
+      "lowercase": "pf",
+      "phoneme": "Pf",
+      "anchorWord": "Pferd",
+      "anchorEmoji": "🐴",
+      "isVowel": false,
+      "colorHex": "#8D6E63",
+      "upperStrokes": [
+        [
+          [
+            0.22,
+            0.12
+          ],
+          [
+            0.22,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.22,
+            0.12
+          ],
+          [
+            0.44,
+            0.16
+          ],
+          [
+            0.44,
+            0.34
+          ],
+          [
+            0.22,
+            0.38
+          ]
+        ],
+        [
+          [
+            0.72,
+            0.14
+          ],
+          [
+            0.6,
+            0.14
+          ],
+          [
+            0.58,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.5,
+            0.36
+          ],
+          [
+            0.7,
+            0.36
+          ]
+        ]
+      ],
+      "lowerStrokes": [
+        [
+          [
+            0.22,
+            0.35
+          ],
+          [
+            0.22,
+            0.9
+          ]
+        ],
+        [
+          [
+            0.22,
+            0.38
+          ],
+          [
+            0.42,
+            0.36
+          ],
+          [
+            0.44,
+            0.52
+          ],
+          [
+            0.22,
+            0.64
+          ]
+        ],
+        [
+          [
+            0.72,
+            0.14
+          ],
+          [
+            0.6,
+            0.14
+          ],
+          [
+            0.58,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.5,
+            0.36
+          ],
+          [
+            0.7,
+            0.36
+          ]
+        ]
+      ],
+      "syllableCombos": [
+        "Pfa",
+        "Pfe",
+        "Pfi",
+        "Pfo",
+        "Pfu"
+      ],
+      "soundQuiz": [
+        {
+          "word": "Pferd",
+          "emoji": "🐴",
+          "position": "start"
+        },
+        {
+          "word": "Apfel",
+          "emoji": "🍎",
+          "position": "middle"
+        },
+        {
+          "word": "Topf",
+          "emoji": "🍲",
+          "position": "end"
+        }
+      ],
+      "words": [
+        {
+          "fullWord": "Pferd",
+          "syllables": [
+            "Pferd"
+          ],
+          "emoji": "🐴"
+        },
+        {
+          "fullWord": "Pfote",
+          "syllables": [
+            "Pfo",
+            "te"
+          ],
+          "emoji": "🐾"
+        },
+        {
+          "fullWord": "Tropfen",
+          "syllables": [
+            "Trop",
+            "fen"
+          ],
+          "emoji": "💧"
+        }
+      ],
+      "sentences": [
+        {
+          "text": "Das Pferd trabt auf dem Pfad.",
+          "emoji": "🐴",
+          "distractorEmojis": [
+            "🐟",
+            "🎈"
+          ],
+          "words": [
+            {
+              "fullWord": "Das",
+              "syllables": [
+                "Das"
+              ]
+            },
+            {
+              "fullWord": "Pferd",
+              "syllables": [
+                "Pferd"
+              ]
+            },
+            {
+              "fullWord": "trabt",
+              "syllables": [
+                "trabt"
+              ]
+            },
+            {
+              "fullWord": "auf",
+              "syllables": [
+                "auf"
+              ]
+            },
+            {
+              "fullWord": "dem",
+              "syllables": [
+                "dem"
+              ]
+            },
+            {
+              "fullWord": "Pfad.",
+              "syllables": [
+                "Pfad."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Fips hebt die weiche Pfote.",
+          "emoji": "🐾",
+          "distractorEmojis": [
+            "🚀",
+            "🎩"
+          ],
+          "words": [
+            {
+              "fullWord": "Fips",
+              "syllables": [
+                "Fips"
+              ]
+            },
+            {
+              "fullWord": "hebt",
+              "syllables": [
+                "hebt"
+              ]
+            },
+            {
+              "fullWord": "die",
+              "syllables": [
+                "die"
+              ]
+            },
+            {
+              "fullWord": "weiche",
+              "syllables": [
+                "wei",
+                "che"
+              ]
+            },
+            {
+              "fullWord": "Pfote.",
+              "syllables": [
+                "Pfo",
+                "te."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unit_36_ng",
+      "order": 36,
+      "stage": 5,
+      "letter": "Ng",
+      "lowercase": "ng",
+      "phoneme": "Ng",
+      "anchorWord": "Ring",
+      "anchorEmoji": "💍",
+      "isVowel": false,
+      "colorHex": "#5C6BC0",
+      "upperStrokes": [
+        [
+          [
+            0.18,
+            0.65
+          ],
+          [
+            0.18,
+            0.12
+          ],
+          [
+            0.46,
+            0.65
+          ],
+          [
+            0.46,
+            0.12
+          ]
+        ],
+        [
+          [
+            0.78,
+            0.4
+          ],
+          [
+            0.64,
+            0.35
+          ],
+          [
+            0.56,
+            0.48
+          ],
+          [
+            0.64,
+            0.64
+          ],
+          [
+            0.78,
+            0.56
+          ]
+        ],
+        [
+          [
+            0.78,
+            0.35
+          ],
+          [
+            0.78,
+            0.85
+          ],
+          [
+            0.62,
+            0.9
+          ]
+        ]
+      ],
+      "lowerStrokes": [
+        [
+          [
+            0.2,
+            0.35
+          ],
+          [
+            0.2,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.2,
+            0.42
+          ],
+          [
+            0.34,
+            0.35
+          ],
+          [
+            0.44,
+            0.42
+          ],
+          [
+            0.44,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.78,
+            0.4
+          ],
+          [
+            0.64,
+            0.35
+          ],
+          [
+            0.56,
+            0.48
+          ],
+          [
+            0.64,
+            0.64
+          ],
+          [
+            0.78,
+            0.56
+          ]
+        ],
+        [
+          [
+            0.78,
+            0.35
+          ],
+          [
+            0.78,
+            0.85
+          ],
+          [
+            0.62,
+            0.9
+          ]
+        ]
+      ],
+      "syllableCombos": [
+        "ang",
+        "eng",
+        "ing",
+        "ong",
+        "ung"
+      ],
+      "soundQuiz": [
+        {
+          "word": "Ring",
+          "emoji": "💍",
+          "position": "end"
+        },
+        {
+          "word": "Zunge",
+          "emoji": "👅",
+          "position": "middle"
+        },
+        {
+          "word": "Schlange",
+          "emoji": "🐍",
+          "position": "middle"
+        }
+      ],
+      "words": [
+        {
+          "fullWord": "Ring",
+          "syllables": [
+            "Ring"
+          ],
+          "emoji": "💍"
+        },
+        {
+          "fullWord": "Schlange",
+          "syllables": [
+            "Schlan",
+            "ge"
+          ],
+          "emoji": "🐍"
+        },
+        {
+          "fullWord": "Zunge",
+          "syllables": [
+            "Zun",
+            "ge"
+          ],
+          "emoji": "👅"
+        }
+      ],
+      "sentences": [
+        {
+          "text": "Die Schlange liegt im Gras.",
+          "emoji": "🐍",
+          "distractorEmojis": [
+            "🚲",
+            "🍦"
+          ],
+          "words": [
+            {
+              "fullWord": "Die",
+              "syllables": [
+                "Die"
+              ]
+            },
+            {
+              "fullWord": "Schlange",
+              "syllables": [
+                "Schlan",
+                "ge"
+              ]
+            },
+            {
+              "fullWord": "liegt",
+              "syllables": [
+                "liegt"
+              ]
+            },
+            {
+              "fullWord": "im",
+              "syllables": [
+                "im"
+              ]
+            },
+            {
+              "fullWord": "Gras.",
+              "syllables": [
+                "Gras."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Der König trägt einen Ring.",
+          "emoji": "💍",
+          "distractorEmojis": [
+            "🪑",
+            "🪣"
+          ],
+          "words": [
+            {
+              "fullWord": "Der",
+              "syllables": [
+                "Der"
+              ]
+            },
+            {
+              "fullWord": "König",
+              "syllables": [
+                "Kö",
+                "nig"
+              ]
+            },
+            {
+              "fullWord": "trägt",
+              "syllables": [
+                "trägt"
+              ]
+            },
+            {
+              "fullWord": "einen",
+              "syllables": [
+                "ei",
+                "nen"
+              ]
+            },
+            {
+              "fullWord": "Ring.",
+              "syllables": [
+                "Ring."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unit_37_ck",
+      "order": 37,
+      "stage": 5,
+      "letter": "Ck",
+      "lowercase": "ck",
+      "phoneme": "K",
+      "anchorWord": "Socken",
+      "anchorEmoji": "🧦",
+      "isVowel": false,
+      "colorHex": "#00897B",
+      "upperStrokes": [
+        [
+          [
+            0.44,
+            0.18
+          ],
+          [
+            0.28,
+            0.12
+          ],
+          [
+            0.18,
+            0.38
+          ],
+          [
+            0.28,
+            0.65
+          ],
+          [
+            0.44,
+            0.58
+          ]
+        ],
+        [
+          [
+            0.58,
+            0.12
+          ],
+          [
+            0.58,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.78,
+            0.35
+          ],
+          [
+            0.58,
+            0.5
+          ],
+          [
+            0.8,
+            0.65
+          ]
+        ]
+      ],
+      "lowerStrokes": [
+        [
+          [
+            0.44,
+            0.4
+          ],
+          [
+            0.3,
+            0.35
+          ],
+          [
+            0.2,
+            0.5
+          ],
+          [
+            0.3,
+            0.65
+          ],
+          [
+            0.44,
+            0.6
+          ]
+        ],
+        [
+          [
+            0.58,
+            0.12
+          ],
+          [
+            0.58,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.78,
+            0.35
+          ],
+          [
+            0.58,
+            0.5
+          ],
+          [
+            0.8,
+            0.65
+          ]
+        ]
+      ],
+      "syllableCombos": [
+        "ack",
+        "eck",
+        "ick",
+        "ock",
+        "uck"
+      ],
+      "soundQuiz": [
+        {
+          "word": "Socken",
+          "emoji": "🧦",
+          "position": "middle"
+        },
+        {
+          "word": "Wecker",
+          "emoji": "⏰",
+          "position": "middle"
+        },
+        {
+          "word": "Rucksack",
+          "emoji": "🎒",
+          "position": "end"
+        }
+      ],
+      "words": [
+        {
+          "fullWord": "Socken",
+          "syllables": [
+            "So",
+            "cken"
+          ],
+          "emoji": "🧦"
+        },
+        {
+          "fullWord": "Wecker",
+          "syllables": [
+            "We",
+            "cker"
+          ],
+          "emoji": "⏰"
+        },
+        {
+          "fullWord": "Schnecke",
+          "syllables": [
+            "Schne",
+            "cke"
+          ],
+          "emoji": "🐌"
+        }
+      ],
+      "sentences": [
+        {
+          "text": "Die Schnecke kriecht zum Stein.",
+          "emoji": "🐌",
+          "distractorEmojis": [
+            "🚁",
+            "🎸"
+          ],
+          "words": [
+            {
+              "fullWord": "Die",
+              "syllables": [
+                "Die"
+              ]
+            },
+            {
+              "fullWord": "Schnecke",
+              "syllables": [
+                "Schne",
+                "cke"
+              ]
+            },
+            {
+              "fullWord": "kriecht",
+              "syllables": [
+                "kriecht"
+              ]
+            },
+            {
+              "fullWord": "zum",
+              "syllables": [
+                "zum"
+              ]
+            },
+            {
+              "fullWord": "Stein.",
+              "syllables": [
+                "Stein."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Meine Socken sind schön warm.",
+          "emoji": "🧦",
+          "distractorEmojis": [
+            "🛸",
+            "🎺"
+          ],
+          "words": [
+            {
+              "fullWord": "Meine",
+              "syllables": [
+                "Mei",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "Socken",
+              "syllables": [
+                "So",
+                "cken"
+              ]
+            },
+            {
+              "fullWord": "sind",
+              "syllables": [
+                "sind"
+              ]
+            },
+            {
+              "fullWord": "schön",
+              "syllables": [
+                "schön"
+              ]
+            },
+            {
+              "fullWord": "warm.",
+              "syllables": [
+                "warm."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unit_38_tz",
+      "order": 38,
+      "stage": 5,
+      "letter": "Tz",
+      "lowercase": "tz",
+      "phoneme": "Zzz",
+      "anchorWord": "Blitz",
+      "anchorEmoji": "⚡",
+      "isVowel": false,
+      "colorHex": "#E53935",
+      "upperStrokes": [
+        [
+          [
+            0.16,
+            0.12
+          ],
+          [
+            0.46,
+            0.12
+          ]
+        ],
+        [
+          [
+            0.31,
+            0.12
+          ],
+          [
+            0.31,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.56,
+            0.35
+          ],
+          [
+            0.82,
+            0.35
+          ],
+          [
+            0.56,
+            0.65
+          ],
+          [
+            0.82,
+            0.65
+          ]
+        ]
+      ],
+      "lowerStrokes": [
+        [
+          [
+            0.28,
+            0.16
+          ],
+          [
+            0.28,
+            0.65
+          ]
+        ],
+        [
+          [
+            0.18,
+            0.35
+          ],
+          [
+            0.4,
+            0.35
+          ]
+        ],
+        [
+          [
+            0.56,
+            0.35
+          ],
+          [
+            0.82,
+            0.35
+          ],
+          [
+            0.56,
+            0.65
+          ],
+          [
+            0.82,
+            0.65
+          ]
+        ]
+      ],
+      "syllableCombos": [
+        "atz",
+        "etz",
+        "itz",
+        "otz",
+        "utz"
+      ],
+      "soundQuiz": [
+        {
+          "word": "Blitz",
+          "emoji": "⚡",
+          "position": "end"
+        },
+        {
+          "word": "Katze",
+          "emoji": "🐱",
+          "position": "middle"
+        },
+        {
+          "word": "Mütze",
+          "emoji": "🧢",
+          "position": "middle"
+        }
+      ],
+      "words": [
+        {
+          "fullWord": "Blitz",
+          "syllables": [
+            "Blitz"
+          ],
+          "emoji": "⚡"
+        },
+        {
+          "fullWord": "Tatze",
+          "syllables": [
+            "Tat",
+            "ze"
+          ],
+          "emoji": "🐾"
+        },
+        {
+          "fullWord": "Netz",
+          "syllables": [
+            "Netz"
+          ],
+          "emoji": "🕸️"
+        }
+      ],
+      "sentences": [
+        {
+          "text": "Die Katze putzt ihre Tatze.",
+          "emoji": "🐱",
+          "distractorEmojis": [
+            "🚂",
+            "🌵"
+          ],
+          "words": [
+            {
+              "fullWord": "Die",
+              "syllables": [
+                "Die"
+              ]
+            },
+            {
+              "fullWord": "Katze",
+              "syllables": [
+                "Kat",
+                "ze"
+              ]
+            },
+            {
+              "fullWord": "putzt",
+              "syllables": [
+                "putzt"
+              ]
+            },
+            {
+              "fullWord": "ihre",
+              "syllables": [
+                "ih",
+                "re"
+              ]
+            },
+            {
+              "fullWord": "Tatze.",
+              "syllables": [
+                "Tat",
+                "ze."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Die Spinne baut ein Netz.",
+          "emoji": "🕸️",
+          "distractorEmojis": [
+            "🍎",
+            "🚗"
+          ],
+          "words": [
+            {
+              "fullWord": "Die",
+              "syllables": [
+                "Die"
+              ]
+            },
+            {
+              "fullWord": "Spinne",
+              "syllables": [
+                "Spin",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "baut",
+              "syllables": [
+                "baut"
+              ]
+            },
+            {
+              "fullWord": "ein",
+              "syllables": [
+                "ein"
+              ]
+            },
+            {
+              "fullWord": "Netz.",
+              "syllables": [
+                "Netz."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unit_39_sz",
+      "order": 39,
+      "stage": 5,
+      "letter": "ß",
+      "lowercase": "ß",
+      "phoneme": "Sss",
+      "anchorWord": "Fuß",
+      "anchorEmoji": "🦶",
+      "isVowel": false,
+      "colorHex": "#7E57C2",
+      "upperStrokes": [
+        [
+          [
+            0.34,
+            0.65
+          ],
+          [
+            0.34,
+            0.22
+          ],
+          [
+            0.48,
+            0.12
+          ],
+          [
+            0.64,
+            0.2
+          ],
+          [
+            0.5,
+            0.38
+          ],
+          [
+            0.68,
+            0.52
+          ],
+          [
+            0.52,
+            0.65
+          ],
+          [
+            0.4,
+            0.62
+          ]
+        ]
+      ],
+      "lowerStrokes": [
+        [
+          [
+            0.34,
+            0.65
+          ],
+          [
+            0.34,
+            0.22
+          ],
+          [
+            0.48,
+            0.12
+          ],
+          [
+            0.64,
+            0.2
+          ],
+          [
+            0.5,
+            0.38
+          ],
+          [
+            0.68,
+            0.52
+          ],
+          [
+            0.52,
+            0.65
+          ],
+          [
+            0.4,
+            0.62
+          ]
+        ]
+      ],
+      "syllableCombos": [
+        "aß",
+        "ieß",
+        "oß",
+        "uß",
+        "üß"
+      ],
+      "soundQuiz": [
+        {
+          "word": "Fuß",
+          "emoji": "🦶",
+          "position": "end"
+        },
+        {
+          "word": "Straße",
+          "emoji": "🛣️",
+          "position": "middle"
+        },
+        {
+          "word": "groß",
+          "emoji": "🦒",
+          "position": "end"
+        }
+      ],
+      "words": [
+        {
+          "fullWord": "Fuß",
+          "syllables": [
+            "Fuß"
+          ],
+          "emoji": "🦶"
+        },
+        {
+          "fullWord": "Straße",
+          "syllables": [
+            "Stra",
+            "ße"
+          ],
+          "emoji": "🛣️"
+        },
+        {
+          "fullWord": "Soße",
+          "syllables": [
+            "So",
+            "ße"
+          ],
+          "emoji": "🥣"
+        }
+      ],
+      "sentences": [
+        {
+          "text": "Der Ball rollt auf die Straße.",
+          "emoji": "🛣️",
+          "distractorEmojis": [
+            "🌙",
+            "🌵"
+          ],
+          "words": [
+            {
+              "fullWord": "Der",
+              "syllables": [
+                "Der"
+              ]
+            },
+            {
+              "fullWord": "Ball",
+              "syllables": [
+                "Ball"
+              ]
+            },
+            {
+              "fullWord": "rollt",
+              "syllables": [
+                "rollt"
+              ]
+            },
+            {
+              "fullWord": "auf",
+              "syllables": [
+                "auf"
+              ]
+            },
+            {
+              "fullWord": "die",
+              "syllables": [
+                "die"
+              ]
+            },
+            {
+              "fullWord": "Straße.",
+              "syllables": [
+                "Stra",
+                "ße."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Der Elefant ist sehr groß.",
+          "emoji": "🐘",
+          "distractorEmojis": [
+            "🐜",
+            "🍓"
+          ],
+          "words": [
+            {
+              "fullWord": "Der",
+              "syllables": [
+                "Der"
+              ]
+            },
+            {
+              "fullWord": "Elefant",
+              "syllables": [
+                "E",
+                "le",
+                "fant"
+              ]
+            },
+            {
+              "fullWord": "ist",
+              "syllables": [
+                "ist"
+              ]
+            },
+            {
+              "fullWord": "sehr",
+              "syllables": [
+                "sehr"
+              ]
+            },
+            {
+              "fullWord": "groß.",
+              "syllables": [
+                "groß."
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "stickers": [
@@ -7436,6 +8950,38 @@
       "requiredStars": 115,
       "category": "Lese-Meister",
       "voiceText": "Du bist eine strahlende Sternen-Legende der ersten Klasse!"
+    },
+    {
+      "id": "sticker_25_bee",
+      "name": "Fleißige Biene",
+      "emoji": "🐝",
+      "requiredStars": 122,
+      "category": "Lese-Profis",
+      "voiceText": "Summ summ! Die fleißige Lese-Biene fliegt in dein Album!"
+    },
+    {
+      "id": "sticker_26_horse",
+      "name": "Starkes Wildpferd",
+      "emoji": "🐴",
+      "requiredStars": 130,
+      "category": "Lese-Profis",
+      "voiceText": "Hüa! Das schnelle Wildpferd galoppiert mit dir durch alle Wörter!"
+    },
+    {
+      "id": "sticker_27_lightning",
+      "name": "Schneller Blitz",
+      "emoji": "⚡",
+      "requiredStars": 140,
+      "category": "Lese-Profis",
+      "voiceText": "Zack! Du liest jetzt schon blitzschnell!"
+    },
+    {
+      "id": "sticker_28_graduate",
+      "name": "Großer Lese-Profi",
+      "emoji": "🎓",
+      "requiredStars": 150,
+      "category": "Lese-Profis",
+      "voiceText": "Fantastisch! Du bist ein echter Lese-Profi für die zweite Klasse!"
     }
   ],
   "stageStories": [
@@ -8256,6 +9802,259 @@
           "text": "Das Kamel"
         }
       ]
+    },
+    {
+      "id": "story_stage_5",
+      "stage": 5,
+      "title": "Die Reise der Lese-Profis",
+      "emoji": "🐝",
+      "sentences": [
+        {
+          "text": "Am Morgen klingelt der Wecker laut.",
+          "emoji": "⏰",
+          "distractorEmojis": [
+            "🛸",
+            "❄️"
+          ],
+          "words": [
+            {
+              "fullWord": "Am",
+              "syllables": [
+                "Am"
+              ]
+            },
+            {
+              "fullWord": "Morgen",
+              "syllables": [
+                "Mor",
+                "gen"
+              ]
+            },
+            {
+              "fullWord": "klingelt",
+              "syllables": [
+                "klin",
+                "gelt"
+              ]
+            },
+            {
+              "fullWord": "der",
+              "syllables": [
+                "der"
+              ]
+            },
+            {
+              "fullWord": "Wecker",
+              "syllables": [
+                "We",
+                "cker"
+              ]
+            },
+            {
+              "fullWord": "laut.",
+              "syllables": [
+                "laut."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Fips zieht warme Socken an den Fuß.",
+          "emoji": "🧦",
+          "distractorEmojis": [
+            "🌵",
+            "🎸"
+          ],
+          "words": [
+            {
+              "fullWord": "Fips",
+              "syllables": [
+                "Fips"
+              ]
+            },
+            {
+              "fullWord": "zieht",
+              "syllables": [
+                "zieht"
+              ]
+            },
+            {
+              "fullWord": "warme",
+              "syllables": [
+                "war",
+                "me"
+              ]
+            },
+            {
+              "fullWord": "Socken",
+              "syllables": [
+                "So",
+                "cken"
+              ]
+            },
+            {
+              "fullWord": "an",
+              "syllables": [
+                "an"
+              ]
+            },
+            {
+              "fullWord": "den",
+              "syllables": [
+                "den"
+              ]
+            },
+            {
+              "fullWord": "Fuß.",
+              "syllables": [
+                "Fuß."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Auf dem Pferd geht es über die große Wiese.",
+          "emoji": "🐴",
+          "distractorEmojis": [
+            "🚢",
+            "⛄"
+          ],
+          "words": [
+            {
+              "fullWord": "Auf",
+              "syllables": [
+                "Auf"
+              ]
+            },
+            {
+              "fullWord": "dem",
+              "syllables": [
+                "dem"
+              ]
+            },
+            {
+              "fullWord": "Pferd",
+              "syllables": [
+                "Pferd"
+              ]
+            },
+            {
+              "fullWord": "geht",
+              "syllables": [
+                "geht"
+              ]
+            },
+            {
+              "fullWord": "es",
+              "syllables": [
+                "es"
+              ]
+            },
+            {
+              "fullWord": "über",
+              "syllables": [
+                "ü",
+                "ber"
+              ]
+            },
+            {
+              "fullWord": "die",
+              "syllables": [
+                "die"
+              ]
+            },
+            {
+              "fullWord": "große",
+              "syllables": [
+                "gro",
+                "ße"
+              ]
+            },
+            {
+              "fullWord": "Wiese.",
+              "syllables": [
+                "Wie",
+                "se."
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Eine kleine Biene summt ein Lied für Fina.",
+          "emoji": "🐝",
+          "distractorEmojis": [
+            "🚒",
+            "🛷"
+          ],
+          "words": [
+            {
+              "fullWord": "Eine",
+              "syllables": [
+                "Ei",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "kleine",
+              "syllables": [
+                "klei",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "Biene",
+              "syllables": [
+                "Bie",
+                "ne"
+              ]
+            },
+            {
+              "fullWord": "summt",
+              "syllables": [
+                "summt"
+              ]
+            },
+            {
+              "fullWord": "ein",
+              "syllables": [
+                "ein"
+              ]
+            },
+            {
+              "fullWord": "Lied",
+              "syllables": [
+                "Lied"
+              ]
+            },
+            {
+              "fullWord": "für",
+              "syllables": [
+                "für"
+              ]
+            },
+            {
+              "fullWord": "Fina.",
+              "syllables": [
+                "Fi",
+                "na."
+              ]
+            }
+          ]
+        }
+      ],
+      "question": "Worüber reitet das Pferd mit Fips und Fina?",
+      "answerEmoji": "🌼",
+      "answerText": "Über die Wiese",
+      "distractorOptions": [
+        {
+          "emoji": "🧊",
+          "text": "Über das Eis"
+        },
+        {
+          "emoji": "🌙",
+          "text": "Auf den Mond"
+        }
+      ]
     }
   ],
   "rhymePairs": [
@@ -8263,120 +10062,260 @@
       "id": "rhyme_1_sonne_tonne",
       "stage": 1,
       "targetWord": "Sonne",
-      "targetSyllables": ["Son", "ne"],
+      "targetSyllables": [
+        "Son",
+        "ne"
+      ],
       "targetEmoji": "☀️",
       "matchingWord": "Tonne",
-      "matchingSyllables": ["Ton", "ne"],
+      "matchingSyllables": [
+        "Ton",
+        "ne"
+      ],
       "matchingEmoji": "🛢️",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "🍎", "text": "Apfel" },
-        { "emoji": "🐟", "text": "Fisch" }
+        {
+          "emoji": "🍎",
+          "text": "Apfel"
+        },
+        {
+          "emoji": "🐟",
+          "text": "Fisch"
+        }
       ]
     },
     {
       "id": "rhyme_1_hose_rose",
       "stage": 1,
       "targetWord": "Hose",
-      "targetSyllables": ["Ho", "se"],
+      "targetSyllables": [
+        "Ho",
+        "se"
+      ],
       "targetEmoji": "👖",
       "matchingWord": "Rose",
-      "matchingSyllables": ["Ro", "se"],
+      "matchingSyllables": [
+        "Ro",
+        "se"
+      ],
       "matchingEmoji": "🌹",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "🐭", "text": "Maus" },
-        { "emoji": "🚂", "text": "Lok" }
+        {
+          "emoji": "🐭",
+          "text": "Maus"
+        },
+        {
+          "emoji": "🚂",
+          "text": "Lok"
+        }
       ]
     },
     {
       "id": "rhyme_2_hund_mund",
       "stage": 2,
       "targetWord": "Hund",
-      "targetSyllables": ["Hund"],
+      "targetSyllables": [
+        "Hund"
+      ],
       "targetEmoji": "🐶",
       "matchingWord": "Mund",
-      "matchingSyllables": ["Mund"],
+      "matchingSyllables": [
+        "Mund"
+      ],
       "matchingEmoji": "👄",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "⚽", "text": "Ball" },
-        { "emoji": "🌳", "text": "Baum" }
+        {
+          "emoji": "⚽",
+          "text": "Ball"
+        },
+        {
+          "emoji": "🌳",
+          "text": "Baum"
+        }
       ]
     },
     {
       "id": "rhyme_2_hut_wut",
       "stage": 2,
       "targetWord": "Hut",
-      "targetSyllables": ["Hut"],
+      "targetSyllables": [
+        "Hut"
+      ],
       "targetEmoji": "🎩",
       "matchingWord": "Mut",
-      "matchingSyllables": ["Mut"],
+      "matchingSyllables": [
+        "Mut"
+      ],
       "matchingEmoji": "🦁",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "🐸", "text": "Frosch" },
-        { "emoji": "⛺", "text": "Zelt" }
+        {
+          "emoji": "🐸",
+          "text": "Frosch"
+        },
+        {
+          "emoji": "⛺",
+          "text": "Zelt"
+        }
       ]
     },
     {
       "id": "rhyme_3_maus_haus",
       "stage": 3,
       "targetWord": "Maus",
-      "targetSyllables": ["Maus"],
+      "targetSyllables": [
+        "Maus"
+      ],
       "targetEmoji": "🐭",
       "matchingWord": "Haus",
-      "matchingSyllables": ["Haus"],
+      "matchingSyllables": [
+        "Haus"
+      ],
       "matchingEmoji": "🏠",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "🦉", "text": "Eule" },
-        { "emoji": "🚢", "text": "Schiff" }
+        {
+          "emoji": "🦉",
+          "text": "Eule"
+        },
+        {
+          "emoji": "🚢",
+          "text": "Schiff"
+        }
       ]
     },
     {
       "id": "rhyme_3_fisch_tisch",
       "stage": 3,
       "targetWord": "Fisch",
-      "targetSyllables": ["Fisch"],
+      "targetSyllables": [
+        "Fisch"
+      ],
       "targetEmoji": "🐟",
       "matchingWord": "Tisch",
-      "matchingSyllables": ["Tisch"],
+      "matchingSyllables": [
+        "Tisch"
+      ],
       "matchingEmoji": "🪑",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "👑", "text": "Krone" },
-        { "emoji": "🍦", "text": "Eis" }
+        {
+          "emoji": "👑",
+          "text": "Krone"
+        },
+        {
+          "emoji": "🍦",
+          "text": "Eis"
+        }
       ]
     },
     {
       "id": "rhyme_4_zelt_welt",
       "stage": 4,
       "targetWord": "Zelt",
-      "targetSyllables": ["Zelt"],
+      "targetSyllables": [
+        "Zelt"
+      ],
       "targetEmoji": "⛺",
       "matchingWord": "Welt",
-      "matchingSyllables": ["Welt"],
+      "matchingSyllables": [
+        "Welt"
+      ],
       "matchingEmoji": "🌍",
       "isMinimalPair": true,
       "distractors": [
-        { "emoji": "🦓", "text": "Zebra" },
-        { "emoji": "🚀", "text": "Rakete" }
+        {
+          "emoji": "🦓",
+          "text": "Zebra"
+        },
+        {
+          "emoji": "🚀",
+          "text": "Rakete"
+        }
       ]
     },
     {
       "id": "rhyme_4_krone_bohne",
       "stage": 4,
       "targetWord": "Krone",
-      "targetSyllables": ["Kro", "ne"],
+      "targetSyllables": [
+        "Kro",
+        "ne"
+      ],
       "targetEmoji": "👑",
       "matchingWord": "Bohne",
-      "matchingSyllables": ["Boh", "ne"],
+      "matchingSyllables": [
+        "Boh",
+        "ne"
+      ],
       "matchingEmoji": "🫘",
       "isMinimalPair": false,
       "distractors": [
-        { "emoji": "🐧", "text": "Pinguin" },
-        { "emoji": "🏰", "text": "Schloss" }
+        {
+          "emoji": "🐧",
+          "text": "Pinguin"
+        },
+        {
+          "emoji": "🏰",
+          "text": "Schloss"
+        }
+      ]
+    },
+    {
+      "id": "rhyme_5_wiese_riese",
+      "stage": 5,
+      "targetWord": "Wiese",
+      "targetSyllables": [
+        "Wie",
+        "se"
+      ],
+      "targetEmoji": "🌼",
+      "matchingWord": "Riese",
+      "matchingSyllables": [
+        "Rie",
+        "se"
+      ],
+      "matchingEmoji": "🗿",
+      "isMinimalPair": true,
+      "distractors": [
+        {
+          "emoji": "🐴",
+          "text": "Pferd"
+        },
+        {
+          "emoji": "🧦",
+          "text": "Socken"
+        }
+      ]
+    },
+    {
+      "id": "rhyme_5_katze_tatze",
+      "stage": 5,
+      "targetWord": "Katze",
+      "targetSyllables": [
+        "Kat",
+        "ze"
+      ],
+      "targetEmoji": "🐱",
+      "matchingWord": "Tatze",
+      "matchingSyllables": [
+        "Tat",
+        "ze"
+      ],
+      "matchingEmoji": "🐾",
+      "isMinimalPair": true,
+      "distractors": [
+        {
+          "emoji": "⚡",
+          "text": "Blitz"
+        },
+        {
+          "emoji": "🐝",
+          "text": "Biene"
+        }
       ]
     }
   ]

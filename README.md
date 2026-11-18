@@ -12,18 +12,20 @@ Login, ohne Werbung.
 
 | Modul | Inhalt |
 | --- | --- |
-| 1. Laute hören | Interaktive Anlauttabelle (37 Laute, Filter nach Silbenkönigen 👑, Mitlauten & Mehrgraphemen), „Laut-Zug“ und **„Reim-Detektiv“** (Reimwörter & Minimalpaare) |
+| 1. Laute hören | Interaktive Anlauttabelle (42 Laute, Filter nach Silbenkönigen 👑, Mitlauten & Mehrgraphemen), „Laut-Zug“ und **„Reim-Detektiv“** (10 Reimwörter & Minimalpaare) |
 | 2. Nachspuren & Schreiben | 3-stufiges Schreiben im Dreilinien-Haus (Groß, Klein & Frei schreiben, inkl. Linkshänder-Modus) sowie **Anlaut-Werkstatt** (Freies Schreiben, Wort-Rätsel & akustisches **Hör-Diktat 🎧**) |
 | 3. Silben schwingen | Zweifarbige Silben (Blau/Rot) mit Silbenbögen, Silbenteppich, „Silben klatschen“ und **„Silbenkönige 👑“**-Training |
-| 4. Wörter, Sätze & Geschichten | Silben-Puzzle, erste Sätze, „Satz-Rätsel“, „Blitzlesen“ sowie **Lesepass & Stufen-Geschichten** (Stufen 1–4) |
-| 5. Belohnung & Urkunden | Einstellbares Tagesziel & Lern-Serie 🔥, adaptives „Tägliches Training“, **24 sprechende Sticker** und **Lese-Urkunden 🏆** für jede gemeisterte Stufe |
+| 4. Wörter, Sätze & Geschichten | Silben-Puzzle, erste Sätze, „Satz-Rätsel“, „Blitzlesen“ sowie **Lesepass & Stufen-Geschichten** (Stufen 1–5) |
+| 5. Belohnung & Urkunden | Einstellbares Tagesziel & Lern-Serie 🔥, geführte **„Abenteuer-Runde 🧭“**, **28 sprechende Sticker** und **Lese-Urkunden 🏆** für jede gemeisterte Stufe (1–5) |
 
-- **33 Lektionen in 4 Stufen:** Sanfte Stufen-Empfehlung (oder optional strikte 70-%-Regel) für alle Buchstaben A–Z, Umlaute (`Ä, Ö, Ü`) und Mehrgrapheme (`Ei, Au, Sch, Eu, Ch, St, Sp, Qu`)
+- **39 Lektionen in 5 Stufen:** Sanfte Stufen-Empfehlung (oder optional strikte 70-%-Regel) für alle Buchstaben A–Z, Umlaute (`Ä, Ö, Ü`), Mehrgrapheme (`Ei, Au, Sch, Eu, Ch, St, Sp, Qu`) sowie **Stufe 5 „Lese-Profis“** (`Ie, Pf, Ng, Ck, Tz, ß`) für den Übergang in Klasse 2
+- **Geführte Tages-Mission & Spaced Repetition 🌱🌿🌳:** „Fips & Finas Abenteuer-Runde“ kombiniert in 3 Stationen (Hören, Silben, Lesen) fällige Wiederholungen nach dem Leitner-Schatzkisten-Prinzip (1 / 3 / 7 Tage) mit neuen Lerninhalten
+- **Sanfte „Schlafenszeit-Pause“ 🌙:** Optionales tägliches Lernzeit-Limit (10 / 15 / 20 / 30 Min., standardmäßig aus) mit liebevoller Ruhe-Szene von Fips & Fina und rechenaufgabengeschützter `+5 Min.`-Freigabe für Eltern
 - **Mehrsprachigkeit & DaZ-Wort-Brücke 🌍:** 6 Sprachen (`de`, `en`, `tr`, `uk`, `ar`, `es`) für Elternbereich & Lernberichte sowie optionale **DaZ-Wort-Brücke** (Offline-Übersetzung & Vorlesen von Anker- und Übungswörtern in der Herkunftssprache bei lautgetreuer deutscher Phonetik)
 - **Mehrkind- & Klassen-Profil-Management:** 16 Tier-Avatare, Lieblingsfarben, Gruppen-/Klassen-Filter, individuelle Kind-Einstellungen (Linkshänder-Modus, Vorlesetempo, DaZ-Sprache), optionaler kindgerechter **2-Emoji-Schlüssel 🔑** sowie Einzel-Profil-Export & Merge-Import
 - **Schulschrift & Barrierefreiheit:** Andika (lokal eingebunden, kindgerechte `a`/`g`-Formen), optional vergrößerte Leseschrift (+15 %) und erhöhter Kontrast-Modus
-- **Sprachausgabe & Offline-Audio:** lautgetreue deutsche Phonetik-Abbildung, Offline-WAV-Chimes & Feier-Fanfare (Geschwindigkeit anpassbar)
-- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Geschwister-/Klassen-Vergleich, 7-Tage-Aktivitätsverlauf, Kompetenz-Diagnostik & Förderempfehlung, kopierbarer **mehrsprachiger Lernbericht & Lese-Pass**, Offline-JSON-Backup sowie Stufen-Freischaltung
+- **Sprachausgabe & Offline-Audio:** lautgetreue deutsche Phonetik-Abbildung, Offline-WAV-Chimes, Feier-Fanfare & sanftes Schlafenszeit-Glockenspiel (Geschwindigkeit anpassbar)
+- **Eltern- & Lehrkräftebereich:** geschützt durch eine Rechenaufgabe; Geschwister-/Klassen-Vergleich (S1–S5), Spaced-Repetition-Schatzkiste, 7-Tage-Aktivitätsverlauf, Kompetenz-Diagnostik & Förderempfehlung, kopierbarer **mehrsprachiger Lernbericht & Lese-Pass**, Offline-JSON-Backup sowie Stufen-Freischaltung
 
 ## Schnellstart
 

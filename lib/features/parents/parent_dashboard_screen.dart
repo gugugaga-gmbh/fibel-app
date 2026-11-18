@@ -208,22 +208,14 @@ class ParentDashboardScreen extends ConsumerWidget {
                             profiles: [prof],
                             settings: settings,
                           );
-                          final s1 =
-                              (childView.stageProgress(1, curriculum.units).ratio *
-                                      100)
-                                  .round();
-                          final s2 =
-                              (childView.stageProgress(2, curriculum.units).ratio *
-                                      100)
-                                  .round();
-                          final s3 =
-                              (childView.stageProgress(3, curriculum.units).ratio *
-                                      100)
-                                  .round();
-                          final s4 =
-                              (childView.stageProgress(4, curriculum.units).ratio *
-                                      100)
-                                  .round();
+                          final stageSummary = curriculum.stages.map((st) {
+                            final pct = (childView
+                                        .stageProgress(st, curriculum.units)
+                                        .ratio *
+                                    100)
+                                .round();
+                            return 'S$st: $pct%';
+                          }).join(' • ');
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 3),
                             child: Row(
@@ -240,7 +232,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  'S1: $s1% • S2: $s2% • S3: $s3% • S4: $s4%',
+                                  stageSummary,
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Color(0xFF4B5563),
@@ -391,12 +383,55 @@ class ParentDashboardScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       _CompetenceRow(
-                        label: '5. Lesepass-Geschichten (Stufen 1–4)',
+                        label: '5. Lesepass-Geschichten (Stufen 1–5)',
                         done: progress.completedStageStories.length,
                         total: curriculum.stageStories.isEmpty
-                            ? 4
+                            ? 5
                             : curriculum.stageStories.length,
                         color: const Color(0xFF7E57C2),
+                      ),
+                      const Divider(height: 24),
+                      Builder(
+                        builder: (context) {
+                          final boxes = progress.masteryBoxCounts;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${loc.tr('report_leitner')} & Abenteuer-Runden',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 6,
+                                children: [
+                                  Chip(
+                                    label: Text('🌱 Üben: ${boxes.box1}'),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  Chip(
+                                    label: Text('🌿 Gefestigt: ${boxes.box2}'),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  Chip(
+                                    label: Text('🌳 Sicher: ${boxes.box3}'),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  Chip(
+                                    label: Text(
+                                      '🧭 Abenteuer: ${active.completedDailyMissions}',
+                                    ),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
                       ),
                       const Divider(height: 24),
                       Text(
@@ -456,7 +491,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      for (final stage in [1, 2, 3, 4])
+                      for (final stage in curriculum.stages)
                         _buildStageControlTile(
                           context: context,
                           ref: ref,
@@ -470,7 +505,7 @@ class ParentDashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
 
-              // 5. Didaktik- & Audio-Einstellungen
+              // 5. Didaktik-, Kinderschutz- & Audio-Einstellungen
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -508,6 +543,60 @@ class ParentDashboardScreen extends ConsumerWidget {
                               .updateDailyGoalTarget(sel.first);
                         },
                       ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          const Text('🌙 ', style: TextStyle(fontSize: 16)),
+                          Expanded(
+                            child: Text(
+                              loc.tr('screen_time_title'),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Heute aktiv: ${(progress.activeSecondsForToday() / 60).ceil()} Min.'
+                        '${settings.dailyScreenTimeLimitMinutes > 0 ? ' (Limit: ${progress.effectiveScreenTimeLimitMinutes()} Min.)' : ' (Kein Zeitlimit)'}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF4B5563),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SegmentedButton<int>(
+                        segments: const [
+                          ButtonSegment(value: 0, label: Text('Aus')),
+                          ButtonSegment(value: 10, label: Text('10m')),
+                          ButtonSegment(value: 15, label: Text('15m')),
+                          ButtonSegment(value: 20, label: Text('20m')),
+                          ButtonSegment(value: 30, label: Text('30m')),
+                        ],
+                        selected: {
+                          const {0, 10, 15, 20, 30}.contains(
+                            settings.dailyScreenTimeLimitMinutes,
+                          )
+                              ? settings.dailyScreenTimeLimitMinutes
+                              : 0,
+                        },
+                        onSelectionChanged: (sel) {
+                          ref
+                              .read(progressProvider.notifier)
+                              .updateScreenTimeLimitMinutes(sel.first);
+                        },
+                      ),
+                      if (settings.dailyScreenTimeLimitMinutes > 0) ...[
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          onPressed: () => ref
+                              .read(progressProvider.notifier)
+                              .grantExtraScreenTimeMinutes(5),
+                          icon: const Icon(Icons.more_time_rounded, size: 18),
+                          label: const Text('+5 Min. für heute schenken'),
+                        ),
+                      ],
                       const SizedBox(height: 14),
                       const Text(
                         'Vorlese-Geschwindigkeit:',
@@ -773,7 +862,7 @@ class ParentDashboardScreen extends ConsumerWidget {
   ) {
     if (reviewLetters.isNotEmpty) {
       return '🔁 Gezieltes Wiederholen empfohlen bei: ${reviewLetters.join(', ')}. '
-          'Das „Tägliche Training“ auf dem Startbildschirm wählt diese Laute automatisch bevorzugt aus.';
+          'Die geführte „Abenteuer-Runde“ auf dem Startbildschirm wählt diese Laute per Spaced Repetition automatisch bevorzugt aus.';
     }
 
     final phonics = progress.completedCountForModuleType(ModuleType.phonics);
@@ -988,7 +1077,7 @@ class ParentDashboardScreen extends ConsumerWidget {
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
-                      children: [1, 2, 3, 4].map((stage) {
+                      children: curriculum.stages.map((stage) {
                         return OutlinedButton.icon(
                           onPressed: () {
                             StageCertificateDialog.show(

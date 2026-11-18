@@ -69,7 +69,7 @@ class _StickerAlbumScreenState extends ConsumerState<StickerAlbumScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Row(
-                  children: [1, 2, 3, 4].map((stage) {
+                  children: curriculum.stages.map((stage) {
                     final earned = progress.isStageCertificateEarned(
                       stage,
                       curriculum.units,

@@ -13,23 +13,42 @@ void main() {
 
   group('CurriculumRepository', () {
     test(
-        'loads curriculum_de.json with 33 units across 4 stages, 37 anlaute, 24 stickers, 4 stage stories and 8 rhyme pairs',
+        'loads curriculum_de.json with 39 units across 5 stages, 42 anlaute, 28 stickers, 5 stage stories and 10 rhyme pairs',
         () async {
       final repo = CurriculumRepository();
       final data = await repo.loadCurriculum();
 
-      expect(data.units.length, 33);
+      expect(data.units.length, 39);
+      expect(data.stages, [1, 2, 3, 4, 5]);
       expect(data.units.first.letter, 'M');
       expect(data.unitsForStage(1).length, 7);
       expect(data.unitsForStage(2).length, 12);
       expect(data.unitsForStage(3).length, 7);
       expect(data.unitsForStage(4).length, 7);
-      expect(data.anlautTable.length, 37);
-      expect(data.stickers.length, 24);
-      expect(data.stageStories.length, 4);
-      expect(data.rhymePairs.length, 8);
+      expect(data.unitsForStage(5).length, 6);
+      expect(
+        data.unitsForStage(5).map((u) => u.letter).toList(),
+        ['Ie', 'Pf', 'Ng', 'Ck', 'Tz', 'ß'],
+      );
+      expect(data.anlautTable.length, 42);
+      expect(data.stickers.length, 28);
+      expect(data.stageStories.length, 5);
+      expect(data.rhymePairs.length, 10);
 
-      for (final stage in [1, 2, 3, 4]) {
+      for (final u in data.units) {
+        for (final w in u.words) {
+          expect(w.syllables.join(), w.fullWord);
+        }
+        for (final stroke in [...u.upperStrokes, ...u.lowerStrokes]) {
+          expect(stroke.length, greaterThanOrEqualTo(2));
+          for (final pt in stroke) {
+            expect(pt.dx, inInclusiveRange(0.0, 1.0));
+            expect(pt.dy, inInclusiveRange(0.0, 1.0));
+          }
+        }
+      }
+
+      for (final stage in [1, 2, 3, 4, 5]) {
         final story = data.storyForStage(stage);
         expect(story, isNotNull);
         expect(story!.sentences.length, greaterThanOrEqualTo(3));
@@ -69,7 +88,7 @@ void main() {
       ];
 
       expect(DazWordBridge.translate('Maus', BridgeLanguage.none), isNull);
-      expect(DazWordBridge.coveredWordCount, greaterThanOrEqualTo(136));
+      expect(DazWordBridge.coveredWordCount, greaterThanOrEqualTo(159));
 
       for (final lang in bridgeLanguages) {
         for (final unit in data.units) {
@@ -98,10 +117,14 @@ void main() {
   });
 
   group('AudioService', () {
-    test('normalizes single consonants and phrases to phonetic articulation',
+    test('normalizes single consonants, Stage 5 clusters and phrases to phonetic articulation',
         () {
       expect(AudioService.normalizePhonemeForSpeech('B'), 'bə');
       expect(AudioService.normalizePhonemeForSpeech('Z'), 'ts');
+      expect(AudioService.normalizePhonemeForSpeech('Ie'), 'iii');
+      expect(AudioService.normalizePhonemeForSpeech('ß'), 'sss');
+      expect(AudioService.normalizePhonemeForSpeech('Ck'), 'kə');
+      expect(AudioService.normalizePhonemeForSpeech('Tz'), 'ts');
       expect(
         AudioService.normalizePhonemeForSpeech('Mmm. Wie Maus'),
         'mmm. Wie Maus',
@@ -347,6 +370,85 @@ void main() {
       expect(notifier2.state.profiles.length, 2);
       expect(notifier2.state.childName, 'Aylin');
       expect(notifier2.state.effectiveBridgeLanguage, BridgeLanguage.tr);
+    });
+
+    test(
+        'migrates v3 to v4 and supports Spaced Repetition Leitner boxes, Daily Mission and Bedtime Screen-Time Pause',
+        () async {
+      // Simulate a v3-only SharedPreferences snapshot
+      SharedPreferences.setMockInitialValues({
+        'fibel_child_progress_v3':
+            '{"version":3,"activeProfileId":"default","profiles":[{"id":"default","name":"Emil","totalStars":9,"completedModulesByUnit":{"unit_01_m":["phonics","tracing"]}}],"settings":{"soundEnabled":true}}',
+      });
+      final repo = ProgressRepository();
+      final migrated = await repo.loadProgress();
+      expect(migrated.childName, 'Emil');
+      expect(migrated.totalStars, 9);
+      expect(migrated.settings.dailyScreenTimeLimitMinutes, 0);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('fibel_child_progress_v4'), isNotNull);
+
+      final notifier = ProgressNotifier(repo);
+      await notifier.updateChildName('Emil');
+
+      // Spaced Repetition (Leitner boxes 1..3)
+      await notifier.recordMistake('unit_34_ie');
+      expect(notifier.state.effectiveMasteryBox('unit_34_ie'), 1);
+      expect(notifier.state.unitsNeedingReview(), contains('unit_34_ie'));
+
+      // Mission step success resolves mistake and advances Leitner box
+      await notifier.recordMissionStepSuccess('unit_34_ie');
+      expect(notifier.state.mistakeCountsByUnit['unit_34_ie'], isNull);
+      expect(notifier.state.effectiveMasteryBox('unit_34_ie'), 2);
+
+      // Practiced today -> not overdue today, but due in 3 days (Box 2 interval = 3d)
+      final today = ChildProgress.todayIsoString();
+      expect(
+        notifier.state.unitsNeedingReview(referenceDateIso: today),
+        isNot(contains('unit_34_ie')),
+      );
+      final inTwoDays = DateTime.parse(today).add(const Duration(days: 2));
+      final inTwoDaysIso = '${inTwoDays.year.toString().padLeft(4, '0')}-'
+          '${inTwoDays.month.toString().padLeft(2, '0')}-'
+          '${inTwoDays.day.toString().padLeft(2, '0')}';
+      expect(
+        notifier.state.unitsNeedingReview(referenceDateIso: inTwoDaysIso),
+        isNot(contains('unit_34_ie')),
+      );
+      final inThreeDays = DateTime.parse(today).add(const Duration(days: 3));
+      final inThreeDaysIso = '${inThreeDays.year.toString().padLeft(4, '0')}-'
+          '${inThreeDays.month.toString().padLeft(2, '0')}-'
+          '${inThreeDays.day.toString().padLeft(2, '0')}';
+      expect(
+        notifier.state.unitsNeedingReview(referenceDateIso: inThreeDaysIso),
+        contains('unit_34_ie'),
+      );
+
+      // Completing Daily Mission awards +2 stars first time today, +1 on replay
+      final starsBefore = notifier.state.totalStars;
+      expect(notifier.state.isDailyMissionDoneToday(), isFalse);
+      final firstReward = await notifier.completeDailyMission();
+      expect(firstReward, 2);
+      expect(notifier.state.isDailyMissionDoneToday(), isTrue);
+      expect(notifier.state.completedDailyMissions, 1);
+      expect(notifier.state.totalStars, greaterThanOrEqualTo(starsBefore + 2));
+
+      final replayReward = await notifier.completeDailyMission();
+      expect(replayReward, 1);
+      expect(notifier.state.completedDailyMissions, 2);
+
+      // Bedtime Screen-Time Pause & +5 min parent override
+      expect(notifier.state.isBedtimePauseReached(), isFalse);
+      await notifier.updateScreenTimeLimitMinutes(10);
+      expect(notifier.state.effectiveScreenTimeLimitMinutes(), 10);
+      await notifier.recordActiveLearningSeconds(600); // 10 min
+      expect(notifier.state.isBedtimePauseReached(), isTrue);
+
+      await notifier.grantExtraScreenTimeMinutes(5);
+      expect(notifier.state.effectiveScreenTimeLimitMinutes(), 15);
+      expect(notifier.state.isBedtimePauseReached(), isFalse);
+      expect(notifier.state.remainingScreenTimeSeconds(), 300);
     });
   });
 }

@@ -160,7 +160,7 @@ class _AnlautKeyboardScreenState extends ConsumerState<AnlautKeyboardScreen> {
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Fehler: $e')),
           data: (curriculum) {
-            final unlockedStageSet = <int>{1, 2, 3, 4}
+            final unlockedStageSet = curriculum.stages
                 .where((s) => progress.isStageUnlocked(s, curriculum.units))
                 .toSet();
             final unlockedLetters = curriculum.units
