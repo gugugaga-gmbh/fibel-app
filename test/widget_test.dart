@@ -2,8 +2,10 @@ import 'package:fibel_app/core/i18n/app_localizations.dart';
 import 'package:fibel_app/core/i18n/daz_word_bridge.dart';
 import 'package:fibel_app/core/storage/progress_repository.dart';
 import 'package:fibel_app/core/theme/app_theme.dart';
+import 'package:fibel_app/core/widgets/bedtime_pause_overlay.dart';
 import 'package:fibel_app/core/widgets/parental_gate_dialog.dart';
 import 'package:fibel_app/core/widgets/syllable_text_widget.dart';
+import 'package:fibel_app/features/mission/daily_mission_screen.dart';
 import 'package:fibel_app/features/parents/parent_dashboard_screen.dart';
 import 'package:fibel_app/features/phonics/anlaut_table_screen.dart';
 import 'package:fibel_app/features/reading/stage_story_screen.dart';
@@ -50,7 +52,7 @@ void main() {
     expect(find.textContaining('= ?'), findsOneWidget);
   });
 
-  testWidgets('FibelApp loads HomeScreen with units, daily goal and stage chips',
+  testWidgets('FibelApp loads HomeScreen with units, Abenteuer-Runde and stage chips',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ProviderScope(child: FibelApp()));
@@ -60,11 +62,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Fips & Fina – Lese-Welt'), findsOneWidget);
+    expect(find.text('Abenteuer-Runde'), findsOneWidget);
     expect(find.text('Anlauttabelle'), findsOneWidget);
     expect(find.text('Werkstatt'), findsOneWidget);
     expect(find.text('Geschichten'), findsOneWidget);
     expect(find.text('Sticker'), findsOneWidget);
     expect(find.text('Stufe 1'), findsOneWidget);
+    expect(find.textContaining('Stufe 5'), findsOneWidget);
     expect(find.text('M'), findsOneWidget);
     expect(find.text('Maus'), findsNothing); // rendered as '🐭 Maus'
     expect(find.textContaining('Maus'), findsOneWidget);
@@ -115,13 +119,13 @@ void main() {
     expect(find.textContaining('Reim-Detektiv:'), findsOneWidget);
   });
 
-  testWidgets('StageStoryScreen loads stage stories and toggles syllable help',
+  testWidgets('StageStoryScreen loads Stage 1 and Stage 5 stories',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(
       const ProviderScope(
         child: MaterialApp(
-          home: StageStoryScreen(initialStage: 1),
+          home: StageStoryScreen(initialStage: 5),
         ),
       ),
     );
@@ -131,11 +135,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Lesepass & Geschichten'), findsOneWidget);
-    expect(find.textContaining('Mimi und Leo am See'), findsWidgets);
+    expect(find.textContaining('Die Reise der Lese-Profis'), findsWidgets);
     expect(find.text('Silben-Hilfe'), findsOneWidget);
   });
 
-  testWidgets('StickerAlbumScreen shows stage certificate chips and stickers',
+  testWidgets('StickerAlbumScreen shows stage certificate chips up to Stage 5',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(
@@ -152,9 +156,11 @@ void main() {
 
     expect(find.text('Mein Sticker-Album'), findsOneWidget);
     expect(find.text('Urkunde Stufe 1'), findsOneWidget);
+    expect(find.text('Urkunde Stufe 5'), findsOneWidget);
   });
 
-  testWidgets('ParentDashboardScreen renders profiles, stats and settings',
+  testWidgets(
+      'ParentDashboardScreen renders profiles, Leitner Schatzkiste, Stage 5 and Schlafenszeit-Pause',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(
@@ -172,22 +178,127 @@ void main() {
     expect(find.text('Eltern- & Lehrkräftebereich'), findsOneWidget);
     expect(find.text('Kinder-Profile'), findsOneWidget);
     expect(find.text('Sprache & DaZ-Wort-Brücke'), findsOneWidget);
-    expect(
-      find.textContaining('Lernstufen & Lehrkraft-Freischaltung'),
-      findsOneWidget,
+
+    final listScrollable = find.byType(Scrollable).first;
+
+    await tester.scrollUntilVisible(
+      find.textContaining('Pädagogische Förderempfehlung'),
+      250,
+      scrollable: listScrollable,
     );
     expect(
       find.textContaining('Pädagogische Förderempfehlung'),
       findsOneWidget,
     );
-    expect(
-      find.textContaining('Tägliches Lernziel'),
-      findsOneWidget,
+    expect(find.textContaining('🌱 Üben:'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.textContaining('Lernstufen & Lehrkraft-Freischaltung'),
+      250,
+      scrollable: listScrollable,
     );
     expect(
+      find.textContaining('Lernstufen & Lehrkraft-Freischaltung'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Stufe 5'), findsWidgets);
+
+    await tester.scrollUntilVisible(
+      find.textContaining('Schlafenszeit-Pause'),
+      250,
+      scrollable: listScrollable,
+    );
+    expect(find.textContaining('Schlafenszeit-Pause'), findsOneWidget);
+    expect(find.textContaining('Tägliches Lernziel'), findsOneWidget);
+
+    await tester.scrollUntilVisible(
       find.text('Lernbericht & Urkunde erstellen'),
-      findsOneWidget,
+      250,
+      scrollable: listScrollable,
     );
+    expect(find.text('Lernbericht & Urkunde erstellen'), findsOneWidget);
+  });
+
+  testWidgets('DailyMissionScreen renders 3-station guided adventure',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MaterialApp(
+          home: DailyMissionScreen(),
+        ),
+      ),
+    );
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 150)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Fips & Finas Abenteuer-Runde 🧭'), findsOneWidget);
+    expect(find.text('1. Hören'), findsOneWidget);
+    expect(find.text('2. Silben'), findsOneWidget);
+    expect(find.text('3. Lesen'), findsOneWidget);
+    expect(find.text('Schatz'), findsOneWidget);
+    expect(find.text('Anfang'), findsOneWidget);
+    expect(find.text('Mitte'), findsOneWidget);
+    expect(find.text('Ende'), findsOneWidget);
+  });
+
+  testWidgets(
+      'BedtimePauseWrapper shows gentle bedtime pause when limit reached and unlocks +5 min via parent keypad',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const MaterialApp(
+          home: BedtimePauseWrapper(
+            child: Scaffold(
+              body: Text('Lernwelt aktiv'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Lernwelt aktiv'), findsOneWidget);
+    expect(find.text('Schlafenszeit-Pause!'), findsNothing);
+
+    // Activate 10m limit and exhaust 10m today
+    final notifier = container.read(progressProvider.notifier);
+    await notifier.updateScreenTimeLimitMinutes(10);
+    await notifier.recordActiveLearningSeconds(600);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Schlafenszeit-Pause!'), findsOneWidget);
+    expect(find.text('Eltern: +5 Minuten freigeben'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Eltern: +5 Minuten freigeben'));
+    await tester.tap(find.text('Eltern: +5 Minuten freigeben'));
+    await tester.pumpAndSettle();
+
+    // Parse math prompt "Eltern-Aufgabe: A + B = ?"
+    final promptText = tester
+        .widget<Text>(find.textContaining('Eltern-Aufgabe:'))
+        .data!;
+    final match = RegExp(r'(\d+)\s*\+\s*(\d+)').firstMatch(promptText)!;
+    final sum = int.parse(match.group(1)!) + int.parse(match.group(2)!);
+    for (final ch in sum.toString().split('')) {
+      final btn = find.widgetWithText(OutlinedButton, ch);
+      await tester.ensureVisible(btn);
+      await tester.tap(btn);
+      await tester.pump();
+    }
+    final allowBtn = find.text('+5 Min. erlauben');
+    await tester.ensureVisible(allowBtn);
+    await tester.tap(allowBtn);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Schlafenszeit-Pause!'), findsNothing);
+    expect(find.text('Lernwelt aktiv'), findsOneWidget);
   });
 
   testWidgets(

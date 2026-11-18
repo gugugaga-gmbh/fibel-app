@@ -42,7 +42,8 @@ class StageCertificateDialog extends ConsumerWidget {
       1 => 'Silben-Starter (Stufe 1)',
       2 => 'Wörter-Baumeister (Stufe 2)',
       3 => 'Geheimzeichen-Entdecker (Stufe 3)',
-      _ => 'Lese-Meister der 1. Klasse (Stufe 4)',
+      4 => 'Lese-Meister der 1. Klasse (Stufe 4)',
+      _ => 'Großer Lese-Profi (Stufe 5)',
     };
   }
 

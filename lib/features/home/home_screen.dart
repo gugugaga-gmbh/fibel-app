@@ -81,7 +81,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           final visibleUnits = _selectedStage == null
               ? curriculum.units
               : curriculum.unitsForStage(_selectedStage!);
-          final reviewCount = progress.unitsNeedingReview().length;
+          final dueReviewIds = progress.unitsNeedingReview(limit: 12).toSet();
+          final reviewCount = dueReviewIds.length;
+          final missionDone = progress.isDailyMissionDoneToday();
 
           return Column(
             children: [
@@ -95,7 +97,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       .speakWord('Hallo! Wähle einen Buchstaben zum Lernen aus.'),
                 ),
               ),
-              // Daily goal & Adaptive Daily Training bar
+              // Daily goal & Guided Daily Mission ("Abenteuer-Runde") bar
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Container(
@@ -124,22 +126,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
-                            vertical: 4,
+                            vertical: 6,
                           ),
-                          minimumSize: const Size(48, 36),
+                          minimumSize: const Size(48, 44),
+                        ),
+                        onPressed: () => context.push('/mission'),
+                        icon: Icon(
+                          missionDone
+                              ? Icons.check_circle_rounded
+                              : Icons.explore_rounded,
+                          size: 20,
+                        ),
+                        label: Text(
+                          missionDone ? 'Abenteuer ✅' : 'Abenteuer-Runde',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Direkt-Training öffnen',
+                        icon: const Icon(
+                          Icons.play_circle_outline_rounded,
+                          size: 22,
                         ),
                         onPressed: () => _startDailyTraining(
                           context,
                           curriculum.units,
                           progress,
-                        ),
-                        icon: const Icon(
-                          Icons.play_circle_fill_rounded,
-                          size: 20,
-                        ),
-                        label: const Text(
-                          'Tägliches Training',
-                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -243,7 +255,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       onSelected: (_) =>
                           setState(() => _selectedStage = null),
                     ),
-                    for (final stage in [1, 2, 3, 4]) ...[
+                    for (final stage in curriculum.stages) ...[
                       const SizedBox(width: 8),
                       Builder(
                         builder: (context) {
@@ -298,8 +310,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       unit.stage,
                       curriculum.units,
                     );
-                    final needsReview =
-                        (progress.mistakeCountsByUnit[unit.id] ?? 0) > 0;
+                    final needsReview = dueReviewIds.contains(unit.id);
 
                     return InkWell(
                       borderRadius: BorderRadius.circular(24),

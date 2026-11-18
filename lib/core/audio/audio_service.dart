@@ -7,26 +7,6 @@ import 'package:just_audio/just_audio.dart';
 import '../i18n/app_localizations.dart';
 import '../storage/progress_repository.dart';
 
-/// In-memory WAV audio source for 100% offline acoustic feedback chimes via just_audio.
-class _SynthesizedWavSource extends StreamAudioSource {
-  final Uint8List _wavBytes;
-
-  _SynthesizedWavSource(this._wavBytes);
-
-  @override
-  Future<StreamAudioResponse> request([int? start, int? end]) async {
-    final s = start ?? 0;
-    final e = end ?? _wavBytes.length;
-    return StreamAudioResponse(
-      sourceLength: _wavBytes.length,
-      contentLength: e - s,
-      offset: s,
-      stream: Stream.value(_wavBytes.sublist(s, e)),
-      contentType: 'audio/wav',
-    );
-  }
-}
-
 class AudioService {
   final Ref? _ref;
   FlutterTts? _tts;
@@ -45,8 +25,10 @@ class AudioService {
     'aaa': 'aaa',
     'ooo': 'ooo',
     'iii': 'iii',
+    'ie': 'iii',
     'lll': 'lll',
     'sss': 'sss',
+    'ß': 'sss',
     'eee': 'eee',
     't': 'tə',
     'rrr': 'rrr',
@@ -57,27 +39,34 @@ class AudioService {
     'b': 'bə',
     'fff': 'fff',
     'k': 'kə',
+    'ck': 'kə',
     'g': 'gə',
     'www': 'www',
     'h': 'hə',
+    'hhh': 'hə',
     'ei': 'ei',
     'au': 'au',
     'sch': 'schsch',
+    'schhh': 'schsch',
     'ch': 'ch',
     'eu': 'eu',
     'st': 'scht',
     'sp': 'schp',
     'z': 'ts',
+    'zzz': 'ts',
+    'tz': 'ts',
     'jjj': 'jə',
     'v': 'fff',
     'äää': 'äh',
     'ööö': 'öh',
     'üüü': 'üh',
     'qu': 'kw',
+    'kw': 'kw',
     'x': 'ks',
     'y': 'ü',
     'c': 'kə',
     'pf': 'pf',
+    'ng': 'ng',
   };
 
   /// Converts a phoneme or phoneme+anchor phrase into a natural lautgetreue string.
@@ -104,6 +93,7 @@ class AudioService {
         .replaceAll('ä', 'ae')
         .replaceAll('ö', 'oe')
         .replaceAll('ü', 'ue')
+        .replaceAll('ß', 'sz')
         .replaceAll(RegExp(r'[^a-z0-9_]'), '');
   }
 
@@ -192,49 +182,57 @@ class AudioService {
     }
   }
 
+  Future<void> _playWavBytes(Uint8List wav) async {
+    if (_player == null) return;
+    try {
+      final dataUri = Uri.dataFromBytes(wav, mimeType: 'audio/wav');
+      await _player!.setAudioSource(AudioSource.uri(dataUri));
+      await _player!.play();
+    } catch (_) {}
+  }
+
   /// Plays a cheerful offline major-triad chime via just_audio when a child succeeds.
   Future<void> playSuccessChime() async {
     if (!_settings.soundEnabled) return;
     await _ensureInitialized();
-    if (_player == null) return;
-    try {
-      final wav = buildChimeWav(
-        frequencies: const [523.25, 659.25, 783.99], // C5 - E5 - G5
-        noteDurationMs: 75,
-      );
-      await _player!.setAudioSource(_SynthesizedWavSource(wav));
-      await _player!.play();
-    } catch (_) {}
+    final wav = buildChimeWav(
+      frequencies: const [523.25, 659.25, 783.99], // C5 - E5 - G5
+      noteDurationMs: 75,
+    );
+    await _playWavBytes(wav);
   }
 
   /// Plays a gentle two-tone hint sound when a child needs another try.
   Future<void> playGentleHintChime() async {
     if (!_settings.soundEnabled) return;
     await _ensureInitialized();
-    if (_player == null) return;
-    try {
-      final wav = buildChimeWav(
-        frequencies: const [392.00, 349.23], // G4 - F4 (soft & non-frustrating)
-        noteDurationMs: 80,
-      );
-      await _player!.setAudioSource(_SynthesizedWavSource(wav));
-      await _player!.play();
-    } catch (_) {}
+    final wav = buildChimeWav(
+      frequencies: const [392.00, 349.23], // G4 - F4 (soft & non-frustrating)
+      noteDurationMs: 80,
+    );
+    await _playWavBytes(wav);
   }
 
   /// Plays a festive 4-note major fanfare (C5 - E5 - G5 - C6) for stage certificates.
   Future<void> playCelebrationFanfare() async {
     if (!_settings.soundEnabled) return;
     await _ensureInitialized();
-    if (_player == null) return;
-    try {
-      final wav = buildChimeWav(
-        frequencies: const [523.25, 659.25, 783.99, 1046.50],
-        noteDurationMs: 95,
-      );
-      await _player!.setAudioSource(_SynthesizedWavSource(wav));
-      await _player!.play();
-    } catch (_) {}
+    final wav = buildChimeWav(
+      frequencies: const [523.25, 659.25, 783.99, 1046.50],
+      noteDurationMs: 95,
+    );
+    await _playWavBytes(wav);
+  }
+
+  /// Plays a calm, soothing descending lullaby chime (E5 - C5 - G4) for Fips & Fina bedtime pause.
+  Future<void> playBedtimeLullabyChime() async {
+    if (!_settings.soundEnabled) return;
+    await _ensureInitialized();
+    final wav = buildChimeWav(
+      frequencies: const [659.25, 523.25, 392.00],
+      noteDurationMs: 130,
+    );
+    await _playWavBytes(wav);
   }
 
   Future<bool> _assetExists(String assetPath) async {

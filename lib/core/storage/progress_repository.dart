@@ -19,6 +19,7 @@ class AppSettings {
   final bool largeTextMode;
   final AppLanguage appLanguage;
   final BridgeLanguage bridgeLanguage;
+  final int dailyScreenTimeLimitMinutes;
 
   const AppSettings({
     this.speechSpeed = SpeechSpeed.normal,
@@ -31,6 +32,7 @@ class AppSettings {
     this.largeTextMode = false,
     this.appLanguage = AppLanguage.de,
     this.bridgeLanguage = BridgeLanguage.none,
+    this.dailyScreenTimeLimitMinutes = 0,
   });
 
   double get wordRate => switch (speechSpeed) {
@@ -52,6 +54,7 @@ class AppSettings {
     bool? largeTextMode,
     AppLanguage? appLanguage,
     BridgeLanguage? bridgeLanguage,
+    int? dailyScreenTimeLimitMinutes,
   }) {
     return AppSettings(
       speechSpeed: speechSpeed ?? this.speechSpeed,
@@ -64,6 +67,8 @@ class AppSettings {
       largeTextMode: largeTextMode ?? this.largeTextMode,
       appLanguage: appLanguage ?? this.appLanguage,
       bridgeLanguage: bridgeLanguage ?? this.bridgeLanguage,
+      dailyScreenTimeLimitMinutes:
+          dailyScreenTimeLimitMinutes ?? this.dailyScreenTimeLimitMinutes,
     );
   }
 
@@ -78,6 +83,7 @@ class AppSettings {
         'largeTextMode': largeTextMode,
         'appLanguage': appLanguage.code,
         'bridgeLanguage': bridgeLanguage.code,
+        'dailyScreenTimeLimitMinutes': dailyScreenTimeLimitMinutes,
       };
 
   factory AppSettings.fromJson(Map<String, dynamic>? json) {
@@ -99,6 +105,9 @@ class AppSettings {
       appLanguage: AppLanguage.fromCode(json['appLanguage'] as String?),
       bridgeLanguage:
           BridgeLanguage.fromCode(json['bridgeLanguage'] as String?),
+      dailyScreenTimeLimitMinutes:
+          ((json['dailyScreenTimeLimitMinutes'] as num?)?.toInt() ?? 0)
+              .clamp(0, 180),
     );
   }
 }
@@ -120,13 +129,20 @@ class ChildProfile {
   final Set<String> completedBonuses;
   final Set<int> unlockedStagesOverride;
   final Map<String, int> mistakeCountsByUnit;
+  final Map<String, int> masteryBoxByUnit;
+  final Map<String, String> lastPracticedDateByUnit;
   final Set<int> completedStageStories;
+  final int completedDailyMissions;
+  final String lastDailyMissionDate;
   final int dailyGoalTarget;
   final int dailyCompletedCount;
   final String lastActiveDate;
   final int streakDays;
   final bool dailyGoalRewardedToday;
   final Map<String, int> activityHistoryByDate;
+  final int dailyActiveSeconds;
+  final String activeTimeDate;
+  final int bonusMinutesGrantedToday;
 
   const ChildProfile({
     required this.id,
@@ -145,13 +161,20 @@ class ChildProfile {
     this.completedBonuses = const {},
     this.unlockedStagesOverride = const {},
     this.mistakeCountsByUnit = const {},
+    this.masteryBoxByUnit = const {},
+    this.lastPracticedDateByUnit = const {},
     this.completedStageStories = const {},
+    this.completedDailyMissions = 0,
+    this.lastDailyMissionDate = '',
     this.dailyGoalTarget = 3,
     this.dailyCompletedCount = 0,
     this.lastActiveDate = '',
     this.streakDays = 0,
     this.dailyGoalRewardedToday = false,
     this.activityHistoryByDate = const {},
+    this.dailyActiveSeconds = 0,
+    this.activeTimeDate = '',
+    this.bonusMinutesGrantedToday = 0,
   });
 
   bool get hasEmojiPin => emojiPin.trim().isNotEmpty;
@@ -176,13 +199,20 @@ class ChildProfile {
     Set<String>? completedBonuses,
     Set<int>? unlockedStagesOverride,
     Map<String, int>? mistakeCountsByUnit,
+    Map<String, int>? masteryBoxByUnit,
+    Map<String, String>? lastPracticedDateByUnit,
     Set<int>? completedStageStories,
+    int? completedDailyMissions,
+    String? lastDailyMissionDate,
     int? dailyGoalTarget,
     int? dailyCompletedCount,
     String? lastActiveDate,
     int? streakDays,
     bool? dailyGoalRewardedToday,
     Map<String, int>? activityHistoryByDate,
+    int? dailyActiveSeconds,
+    String? activeTimeDate,
+    int? bonusMinutesGrantedToday,
   }) {
     return ChildProfile(
       id: id ?? this.id,
@@ -209,8 +239,14 @@ class ChildProfile {
       unlockedStagesOverride:
           unlockedStagesOverride ?? this.unlockedStagesOverride,
       mistakeCountsByUnit: mistakeCountsByUnit ?? this.mistakeCountsByUnit,
+      masteryBoxByUnit: masteryBoxByUnit ?? this.masteryBoxByUnit,
+      lastPracticedDateByUnit:
+          lastPracticedDateByUnit ?? this.lastPracticedDateByUnit,
       completedStageStories:
           completedStageStories ?? this.completedStageStories,
+      completedDailyMissions:
+          completedDailyMissions ?? this.completedDailyMissions,
+      lastDailyMissionDate: lastDailyMissionDate ?? this.lastDailyMissionDate,
       dailyGoalTarget: dailyGoalTarget ?? this.dailyGoalTarget,
       dailyCompletedCount: dailyCompletedCount ?? this.dailyCompletedCount,
       lastActiveDate: lastActiveDate ?? this.lastActiveDate,
@@ -219,6 +255,10 @@ class ChildProfile {
           dailyGoalRewardedToday ?? this.dailyGoalRewardedToday,
       activityHistoryByDate:
           activityHistoryByDate ?? this.activityHistoryByDate,
+      dailyActiveSeconds: dailyActiveSeconds ?? this.dailyActiveSeconds,
+      activeTimeDate: activeTimeDate ?? this.activeTimeDate,
+      bonusMinutesGrantedToday:
+          bonusMinutesGrantedToday ?? this.bonusMinutesGrantedToday,
     );
   }
 
@@ -247,13 +287,20 @@ class ChildProfile {
       'completedBonuses': completedBonuses.toList(),
       'unlockedStagesOverride': unlockedStagesOverride.toList(),
       'mistakeCountsByUnit': mistakeCountsByUnit,
+      'masteryBoxByUnit': masteryBoxByUnit,
+      'lastPracticedDateByUnit': lastPracticedDateByUnit,
       'completedStageStories': completedStageStories.toList(),
+      'completedDailyMissions': completedDailyMissions,
+      'lastDailyMissionDate': lastDailyMissionDate,
       'dailyGoalTarget': dailyGoalTarget,
       'dailyCompletedCount': dailyCompletedCount,
       'lastActiveDate': lastActiveDate,
       'streakDays': streakDays,
       'dailyGoalRewardedToday': dailyGoalRewardedToday,
       'activityHistoryByDate': activityHistoryByDate,
+      'dailyActiveSeconds': dailyActiveSeconds,
+      'activeTimeDate': activeTimeDate,
+      'bonusMinutesGrantedToday': bonusMinutesGrantedToday,
     };
   }
 
@@ -268,6 +315,11 @@ class ChildProfile {
     Map<String, int> parseIntMap(String field) {
       final raw = (json[field] as Map<String, dynamic>?) ?? {};
       return raw.map((k, v) => MapEntry(k, (v as num).toInt()));
+    }
+
+    Map<String, String> parseStringMap(String field) {
+      final raw = (json[field] as Map<String, dynamic>?) ?? {};
+      return raw.map((k, v) => MapEntry(k, v.toString()));
     }
 
     final rawBridge = json['profileBridgeLanguage'] as String?;
@@ -307,16 +359,25 @@ class ChildProfile {
               .map((e) => (e as num).toInt())
               .toSet(),
       mistakeCountsByUnit: parseIntMap('mistakeCountsByUnit'),
+      masteryBoxByUnit: parseIntMap('masteryBoxByUnit'),
+      lastPracticedDateByUnit: parseStringMap('lastPracticedDateByUnit'),
       completedStageStories:
           ((json['completedStageStories'] as List<dynamic>?) ?? [])
               .map((e) => (e as num).toInt())
               .toSet(),
+      completedDailyMissions:
+          (json['completedDailyMissions'] as num?)?.toInt() ?? 0,
+      lastDailyMissionDate: (json['lastDailyMissionDate'] as String?) ?? '',
       dailyGoalTarget: (json['dailyGoalTarget'] as num?)?.toInt() ?? 3,
       dailyCompletedCount: (json['dailyCompletedCount'] as num?)?.toInt() ?? 0,
       lastActiveDate: (json['lastActiveDate'] as String?) ?? '',
       streakDays: (json['streakDays'] as num?)?.toInt() ?? 0,
       dailyGoalRewardedToday: (json['dailyGoalRewardedToday'] as bool?) ?? false,
       activityHistoryByDate: parseIntMap('activityHistoryByDate'),
+      dailyActiveSeconds: (json['dailyActiveSeconds'] as num?)?.toInt() ?? 0,
+      activeTimeDate: (json['activeTimeDate'] as String?) ?? '',
+      bonusMinutesGrantedToday:
+          (json['bonusMinutesGrantedToday'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -389,12 +450,113 @@ class ChildProgress {
   Set<String> get completedBonuses => activeProfile.completedBonuses;
   Set<int> get unlockedStagesOverride => activeProfile.unlockedStagesOverride;
   Map<String, int> get mistakeCountsByUnit => activeProfile.mistakeCountsByUnit;
+  Map<String, int> get masteryBoxByUnit => activeProfile.masteryBoxByUnit;
+  Map<String, String> get lastPracticedDateByUnit =>
+      activeProfile.lastPracticedDateByUnit;
   Set<int> get completedStageStories => activeProfile.completedStageStories;
+  int get completedDailyMissions => activeProfile.completedDailyMissions;
+  String get lastDailyMissionDate => activeProfile.lastDailyMissionDate;
   int get dailyGoalTarget => activeProfile.dailyGoalTarget;
   int get dailyCompletedCount => activeProfile.dailyCompletedCount;
   int get streakDays => activeProfile.streakDays;
   Map<String, int> get activityHistoryByDate =>
       activeProfile.activityHistoryByDate;
+
+  static String todayIsoString() {
+    final now = DateTime.now();
+    return '${now.year.toString().padLeft(4, '0')}-'
+        '${now.month.toString().padLeft(2, '0')}-'
+        '${now.day.toString().padLeft(2, '0')}';
+  }
+
+  static int _daysBetweenIso(String fromIso, String toIso) {
+    final a = DateTime.tryParse(fromIso);
+    final b = DateTime.tryParse(toIso);
+    if (a == null || b == null) return 0;
+    final start = DateTime.utc(a.year, a.month, a.day);
+    final end = DateTime.utc(b.year, b.month, b.day);
+    return end.difference(start).inDays;
+  }
+
+  /// Returns true if the active child has already completed a guided Abenteuer-Runde today.
+  bool isDailyMissionDoneToday({String? todayIso}) {
+    final today = todayIso ?? todayIsoString();
+    return activeProfile.lastDailyMissionDate == today;
+  }
+
+  /// Active learning seconds accumulated today for the active profile.
+  int activeSecondsForToday({String? todayIso}) {
+    final today = todayIso ?? todayIsoString();
+    if (activeProfile.activeTimeDate != today) return 0;
+    return activeProfile.dailyActiveSeconds;
+  }
+
+  /// Effective daily screen-time limit in minutes (`0` means disabled/unlimited).
+  int effectiveScreenTimeLimitMinutes({String? todayIso}) {
+    final baseLimit = settings.dailyScreenTimeLimitMinutes;
+    if (baseLimit <= 0) return 0;
+    final today = todayIso ?? todayIsoString();
+    final extra = activeProfile.activeTimeDate == today
+        ? activeProfile.bonusMinutesGrantedToday
+        : 0;
+    return baseLimit + extra;
+  }
+
+  /// Remaining seconds before Fips & Fina's gentle bedtime pause (`-1` if limit is off).
+  int remainingScreenTimeSeconds({String? todayIso}) {
+    final limitMin = effectiveScreenTimeLimitMinutes(todayIso: todayIso);
+    if (limitMin <= 0) return -1;
+    final used = activeSecondsForToday(todayIso: todayIso);
+    return (limitMin * 60 - used).clamp(0, 86400);
+  }
+
+  /// True when a daily screen-time limit is active and today's allowance is used up.
+  bool isBedtimePauseReached({String? todayIso}) {
+    final limitMin = effectiveScreenTimeLimitMinutes(todayIso: todayIso);
+    if (limitMin <= 0) return false;
+    return activeSecondsForToday(todayIso: todayIso) >= limitMin * 60;
+  }
+
+  /// Counts of practiced units across Leitner Spaced-Repetition boxes (1 = 🌱, 2 = 🌿, 3 = 🌳).
+  ({int box1, int box2, int box3}) get masteryBoxCounts {
+    int b1 = 0;
+    int b2 = 0;
+    int b3 = 0;
+    final allTrackedIds = <String>{
+      ...completedModulesByUnit.keys,
+      ...mistakeCountsByUnit.keys,
+      ...masteryBoxByUnit.keys,
+    };
+    for (final id in allTrackedIds) {
+      final box = effectiveMasteryBox(id);
+      if (box <= 1) {
+        b1++;
+      } else if (box == 2) {
+        b2++;
+      } else {
+        b3++;
+      }
+    }
+    return (box1: b1, box2: b2, box3: b3);
+  }
+
+  /// Effective Leitner box (`1..3`) for [unitId]. Mistakes always pull a unit into Box 1.
+  int effectiveMasteryBox(String unitId) {
+    if ((mistakeCountsByUnit[unitId] ?? 0) > 0) return 1;
+    final stored = masteryBoxByUnit[unitId];
+    if (stored != null) return stored.clamp(1, 3);
+    final doneCount = completedCountForUnit(unitId);
+    if (doneCount >= 4) return 3;
+    if (doneCount >= 2) return 2;
+    return 1;
+  }
+
+  /// Required review interval in days for a given Leitner box (`1 -> 1d`, `2 -> 3d`, `3 -> 7d`).
+  static int reviewIntervalDaysForBox(int box) => switch (box) {
+        1 => 1,
+        2 => 3,
+        _ => 7,
+      };
 
   /// Returns all distinct non-empty group/class names across profiles.
   List<String> get availableGroups {
@@ -437,13 +599,56 @@ class ChildProgress {
     return count;
   }
 
-  /// Returns unit IDs sorted by mistake frequency (for adaptive practice & diagnostics).
-  List<String> unitsNeedingReview({int limit = 5}) {
-    final entries = mistakeCountsByUnit.entries
+  /// Returns unit IDs sorted by mistake frequency, followed by due Leitner Spaced-Repetition units.
+  List<String> unitsNeedingReview({
+    int limit = 5,
+    String? referenceDateIso,
+  }) {
+    final today = referenceDateIso ?? todayIsoString();
+    final mistakeEntries = mistakeCountsByUnit.entries
         .where((e) => e.value > 0)
         .toList()
       ..sort((a, b) => b.value.compareTo(a.value));
-    return entries.take(limit).map((e) => e.key).toList();
+
+    final result = <String>[];
+    for (final e in mistakeEntries) {
+      if (result.length >= limit) return result;
+      result.add(e.key);
+    }
+
+    // Spaced Repetition (Leitner boxes 1..3): include units whose review interval elapsed
+    final dueLeitner = <({String unitId, int box, int overdueDays})>[];
+    final candidateIds = <String>{
+      ...masteryBoxByUnit.keys,
+      ...lastPracticedDateByUnit.keys,
+    };
+    for (final unitId in candidateIds) {
+      if (result.contains(unitId)) continue;
+      final lastIso = lastPracticedDateByUnit[unitId];
+      if (lastIso == null || lastIso.isEmpty) continue;
+      final box = effectiveMasteryBox(unitId);
+      final interval = reviewIntervalDaysForBox(box);
+      final elapsed = _daysBetweenIso(lastIso, today);
+      if (elapsed >= interval) {
+        dueLeitner.add((
+          unitId: unitId,
+          box: box,
+          overdueDays: elapsed - interval,
+        ));
+      }
+    }
+
+    dueLeitner.sort((a, b) {
+      final boxCmp = a.box.compareTo(b.box);
+      if (boxCmp != 0) return boxCmp;
+      return b.overdueDays.compareTo(a.overdueDays);
+    });
+
+    for (final item in dueLeitner) {
+      if (result.length >= limit) break;
+      result.add(item.unitId);
+    }
+    return result;
   }
 
   /// Calculates (earnedCoreStars, maxCoreStars, ratio) for a given curriculum stage.
@@ -507,6 +712,8 @@ class ChildProgress {
     final syllables = completedCountForModuleType(ModuleType.syllables);
     final reading = completedCountForModuleType(ModuleType.reading);
     final stories = completedStageStories.length;
+    final boxes = masteryBoxCounts;
+    final todayMinutes = (activeSecondsForToday() / 60).ceil();
 
     final buf = StringBuffer()
       ..writeln(loc.tr('report_header'))
@@ -526,6 +733,12 @@ class ChildProgress {
       ..writeln(
         '${loc.tr('report_daily')}: ${p.dailyCompletedCount}/${p.dailyGoalTarget} • ${loc.tr('report_streak')}: ${p.streakDays} ${loc.tr('report_days')} 🔥',
       )
+      ..writeln(
+        '${loc.tr('report_missions')}: ${p.completedDailyMissions} 🧭 • ${loc.tr('report_screen_time')}: $todayMinutes Min.',
+      )
+      ..writeln(
+        '${loc.tr('report_leitner')}: 🌱 ${boxes.box1} • 🌿 ${boxes.box2} • 🌳 ${boxes.box3}',
+      )
       ..writeln('')
       ..writeln(loc.tr('report_competencies'))
       ..writeln('${loc.tr('report_mod_phonics')}: $phonics / $totalUnits')
@@ -538,7 +751,7 @@ class ChildProgress {
       ..writeln('')
       ..writeln(loc.tr('report_stages'));
 
-    for (final stage in [1, 2, 3, 4]) {
+    for (final stage in curriculum.stages) {
       final st = stageProgress(stage, curriculum.units);
       final pct = (st.ratio * 100).round();
       final cert = isStageCertificateEarned(stage, curriculum.units)
@@ -609,7 +822,7 @@ class ChildProgress {
 
   Map<String, dynamic> toJson() {
     return {
-      'version': 3,
+      'version': 4,
       'activeProfileId': activeProfileId,
       'profiles': profiles.map((p) => p.toJson()).toList(),
       'settings': settings.toJson(),
@@ -654,16 +867,22 @@ class ProgressRepository {
   static const _storageKeyV1 = 'fibel_child_progress_v1';
   static const _storageKeyV2 = 'fibel_child_progress_v2';
   static const _storageKeyV3 = 'fibel_child_progress_v3';
+  static const _storageKeyV4 = 'fibel_child_progress_v4';
 
   Future<ChildProgress> loadProgress() async {
     final prefs = await SharedPreferences.getInstance();
-    for (final key in const [_storageKeyV3, _storageKeyV2, _storageKeyV1]) {
+    for (final key in const [
+      _storageKeyV4,
+      _storageKeyV3,
+      _storageKeyV2,
+      _storageKeyV1,
+    ]) {
       final raw = prefs.getString(key);
       if (raw != null && raw.isNotEmpty) {
         try {
           final decoded = jsonDecode(raw) as Map<String, dynamic>;
           final loaded = ChildProgress.fromJson(decoded);
-          if (key != _storageKeyV3) {
+          if (key != _storageKeyV4) {
             await saveProgress(loaded);
           }
           return loaded;
@@ -677,6 +896,7 @@ class ProgressRepository {
   Future<void> saveProgress(ChildProgress progress) async {
     final prefs = await SharedPreferences.getInstance();
     final encoded = jsonEncode(progress.toJson());
+    await prefs.setString(_storageKeyV4, encoded);
     await prefs.setString(_storageKeyV3, encoded);
     await prefs.setString(_storageKeyV2, encoded);
     await prefs.setString(_storageKeyV1, encoded);
@@ -684,6 +904,7 @@ class ProgressRepository {
 
   Future<void> resetProgress() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_storageKeyV4);
     await prefs.remove(_storageKeyV3);
     await prefs.remove(_storageKeyV2);
     await prefs.remove(_storageKeyV1);
@@ -705,21 +926,17 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
     }
   }
 
-  static String _todayIso() {
-    final now = DateTime.now();
-    return '${now.year.toString().padLeft(4, '0')}-'
-        '${now.month.toString().padLeft(2, '0')}-'
-        '${now.day.toString().padLeft(2, '0')}';
-  }
+  static String _todayIso() => ChildProgress.todayIsoString();
 
-  ChildProfile _recordDailyActivity(ChildProfile profile) {
-    final today = _todayIso();
+  ChildProfile _recordDailyActivity(ChildProfile profile, {String? dateIso}) {
+    final today = dateIso ?? _todayIso();
     int streak = profile.streakDays;
     int dailyCount = profile.dailyCompletedCount;
     bool rewarded = profile.dailyGoalRewardedToday;
 
     if (profile.lastActiveDate != today) {
-      final yesterday = DateTime.now().subtract(const Duration(days: 1));
+      final parsedToday = DateTime.tryParse(today) ?? DateTime.now();
+      final yesterday = parsedToday.subtract(const Duration(days: 1));
       final yesterdayIso = '${yesterday.year.toString().padLeft(4, '0')}-'
           '${yesterday.month.toString().padLeft(2, '0')}-'
           '${yesterday.day.toString().padLeft(2, '0')}';
@@ -857,8 +1074,13 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
     await _repo.saveProgress(state);
   }
 
-  Future<void> completeModule(String unitId, ModuleType module) async {
+  Future<void> completeModule(
+    String unitId,
+    ModuleType module, {
+    String? dateIso,
+  }) async {
     _mutated = true;
+    final today = dateIso ?? _todayIso();
     state = state.updateActive((profile) {
       final currentMap = Map<String, Set<String>>.from(
         profile.completedModulesByUnit.map(
@@ -879,27 +1101,163 @@ class ProgressNotifier extends StateNotifier<ChildProgress> {
         }
       }
 
+      // Advance Spaced Repetition Leitner box (1 -> 2 -> 3) when no mistakes remain
+      final nextBoxes = Map<String, int>.from(profile.masteryBoxByUnit);
+      final prevBox = nextBoxes[unitId] ?? 1;
+      nextBoxes[unitId] = nextMistakes.containsKey(unitId)
+          ? 1
+          : (prevBox + 1).clamp(1, 3);
+
+      final nextPracticed =
+          Map<String, String>.from(profile.lastPracticedDateByUnit);
+      nextPracticed[unitId] = today;
+
       var updated = profile.copyWith(
         totalStars: isNew ? profile.totalStars + 1 : profile.totalStars,
         completedModulesByUnit: currentMap,
         mistakeCountsByUnit: nextMistakes,
+        masteryBoxByUnit: nextBoxes,
+        lastPracticedDateByUnit: nextPracticed,
       );
       if (isNew) {
-        updated = _recordDailyActivity(updated);
+        updated = _recordDailyActivity(updated, dateIso: today);
       }
       return updated;
     });
     await _repo.saveProgress(state);
   }
 
-  /// Records a mistake for adaptive review and diagnostic feedback in ParentDashboard.
-  Future<void> recordMistake(String unitId) async {
+  /// Records a mistake for adaptive Spaced Repetition (demotes to Box 1) and diagnostic feedback.
+  Future<void> recordMistake(String unitId, {String? dateIso}) async {
     _mutated = true;
+    final today = dateIso ?? _todayIso();
     state = state.updateActive((profile) {
       final next = Map<String, int>.from(profile.mistakeCountsByUnit);
       next[unitId] = (next[unitId] ?? 0) + 1;
-      return profile.copyWith(mistakeCountsByUnit: next);
+      final nextBoxes = Map<String, int>.from(profile.masteryBoxByUnit);
+      nextBoxes[unitId] = 1;
+      final nextPracticed =
+          Map<String, String>.from(profile.lastPracticedDateByUnit);
+      nextPracticed[unitId] = today;
+      return profile.copyWith(
+        mistakeCountsByUnit: next,
+        masteryBoxByUnit: nextBoxes,
+        lastPracticedDateByUnit: nextPracticed,
+      );
     });
+    await _repo.saveProgress(state);
+  }
+
+  /// Records a solved step inside the Guided Daily Mission („Abenteuer-Runde“),
+  /// reducing mistake count and advancing the unit's Spaced-Repetition Leitner box.
+  Future<void> recordMissionStepSuccess(
+    String unitId, {
+    String? dateIso,
+  }) async {
+    _mutated = true;
+    final today = dateIso ?? _todayIso();
+    state = state.updateActive((profile) {
+      final nextMistakes = Map<String, int>.from(profile.mistakeCountsByUnit);
+      if (nextMistakes.containsKey(unitId)) {
+        final decreased = nextMistakes[unitId]! - 1;
+        if (decreased <= 0) {
+          nextMistakes.remove(unitId);
+        } else {
+          nextMistakes[unitId] = decreased;
+        }
+      }
+      final nextBoxes = Map<String, int>.from(profile.masteryBoxByUnit);
+      final prevBox = nextBoxes[unitId] ?? 1;
+      nextBoxes[unitId] = nextMistakes.containsKey(unitId)
+          ? 1
+          : (prevBox + 1).clamp(1, 3);
+
+      final nextPracticed =
+          Map<String, String>.from(profile.lastPracticedDateByUnit);
+      nextPracticed[unitId] = today;
+
+      return profile.copyWith(
+        mistakeCountsByUnit: nextMistakes,
+        masteryBoxByUnit: nextBoxes,
+        lastPracticedDateByUnit: nextPracticed,
+      );
+    });
+    await _repo.saveProgress(state);
+  }
+
+  /// Completes a 3-station Guided Daily Mission („Abenteuer-Runde“), awarding
+  /// +2 bonus stars on the first round of the day (+1 star on extra replay rounds).
+  Future<int> completeDailyMission({String? dateIso}) async {
+    _mutated = true;
+    final today = dateIso ?? _todayIso();
+    int awarded = 1;
+    state = state.updateActive((profile) {
+      final firstToday = profile.lastDailyMissionDate != today;
+      awarded = firstToday ? 2 : 1;
+      var updated = profile.copyWith(
+        totalStars: profile.totalStars + awarded,
+        bonusStars: profile.bonusStars + awarded,
+        completedDailyMissions: profile.completedDailyMissions + 1,
+        lastDailyMissionDate: today,
+      );
+      updated = _recordDailyActivity(updated, dateIso: today);
+      return updated;
+    });
+    await _repo.saveProgress(state);
+    return awarded;
+  }
+
+  /// Tracks active learning seconds for the „Schlafenszeit-Pause“ child protection timer.
+  Future<void> recordActiveLearningSeconds(
+    int seconds, {
+    String? dateIso,
+  }) async {
+    if (seconds <= 0) return;
+    _mutated = true;
+    final today = dateIso ?? _todayIso();
+    final clamped = seconds.clamp(1, 600);
+    state = state.updateActive((profile) {
+      final sameDay = profile.activeTimeDate == today;
+      final nextSeconds = (sameDay ? profile.dailyActiveSeconds : 0) + clamped;
+      final nextBonusMin = sameDay ? profile.bonusMinutesGrantedToday : 0;
+      return profile.copyWith(
+        dailyActiveSeconds: nextSeconds,
+        activeTimeDate: today,
+        bonusMinutesGrantedToday: nextBonusMin,
+      );
+    });
+    await _repo.saveProgress(state);
+  }
+
+  /// Parent override behind ParentalGate: grants extra learning minutes for today.
+  Future<void> grantExtraScreenTimeMinutes(
+    int extraMinutes, {
+    String? dateIso,
+  }) async {
+    if (extraMinutes <= 0) return;
+    _mutated = true;
+    final today = dateIso ?? _todayIso();
+    state = state.updateActive((profile) {
+      final sameDay = profile.activeTimeDate == today;
+      final currentBonus = sameDay ? profile.bonusMinutesGrantedToday : 0;
+      final currentSec = sameDay ? profile.dailyActiveSeconds : 0;
+      return profile.copyWith(
+        activeTimeDate: today,
+        dailyActiveSeconds: currentSec,
+        bonusMinutesGrantedToday: currentBonus + extraMinutes.clamp(1, 60),
+      );
+    });
+    await _repo.saveProgress(state);
+  }
+
+  /// Updates the optional daily screen-time limit in minutes (`0` = off, `10/15/20/30`).
+  Future<void> updateScreenTimeLimitMinutes(int limitMinutes) async {
+    _mutated = true;
+    state = state.copyWith(
+      settings: state.settings.copyWith(
+        dailyScreenTimeLimitMinutes: limitMinutes.clamp(0, 180),
+      ),
+    );
     await _repo.saveProgress(state);
   }
 

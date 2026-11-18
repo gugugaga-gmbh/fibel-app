@@ -212,7 +212,8 @@ class LessonUnit {
     if (order <= 7) return 1;
     if (order <= 19) return 2;
     if (order <= 26) return 3;
-    return 4;
+    if (order <= 33) return 4;
+    return 5;
   }
 
   factory LessonUnit.fromJson(Map<String, dynamic> json) {
@@ -230,6 +231,7 @@ class LessonUnit {
       'Ei',
       'Au',
       'Eu',
+      'Ie',
     }.contains(letter);
 
     return LessonUnit(
@@ -413,6 +415,12 @@ class CurriculumData {
     this.stageStories = const [],
     this.rhymePairs = const [],
   });
+
+  /// Sorted list of distinct curriculum stages (e.g., `[1, 2, 3, 4, 5]`).
+  List<int> get stages {
+    final set = units.map((u) => u.stage).toSet().toList()..sort();
+    return set.isEmpty ? const [1, 2, 3, 4, 5] : set;
+  }
 
   List<LessonUnit> unitsForStage(int stage) {
     return units.where((u) => u.stage == stage).toList();

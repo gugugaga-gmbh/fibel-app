@@ -24,8 +24,8 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
 - **Elternbereich:** Alles, was Daten löscht oder Einstellungen ändert, muss
   hinter dem `ParentalGateDialog` (Rechenaufgabe) liegen.
 - Fortschritt wird ausschließlich lokal über `shared_preferences` gespeichert
-  (`ProgressRepository`, Schlüssel `fibel_child_progress_v3` mit automatischer
-  Migration von `v2` und `v1`). Bei Schemaänderungen den Schlüssel versionieren
+  (`ProgressRepository`, Schlüssel `fibel_child_progress_v4` mit automatischer
+  Migration von `v3`, `v2` und `v1`). Bei Schemaänderungen den Schlüssel versionieren
   und migrieren.
 
 ## 3. Marken- & Urheberrecht
@@ -43,38 +43,39 @@ in diesem Repository arbeiten, müssen diese Regeln einhalten.**
 
 ```
 lib/
-├── main.dart                     # ProviderScope + GoRouter (Routen, Kontrast & Schriftgröße)
+├── main.dart                     # ProviderScope + GoRouter + BedtimePauseWrapper (Routen, Kontrast & Schriftgröße)
 ├── core/
 │   ├── audio/                    # AudioService (just_audio + flutter_tts, de-DE + DaZ-Brückensprachen, Offline-Chimes & Fanfare)
 │   ├── curriculum/               # Modelle + Laden von curriculum_de.json
 │   ├── i18n/                     # AppLocalizations (de/en/tr/uk/ar/es) & DazWordBridge (Offline-Wörterbuch + DazWordBridgeChip)
-│   ├── storage/                  # ProgressRepository / ProgressNotifier (Schema v3, Mehrkind-Profile, Emoji-PIN, Einzel-Export/Merge)
+│   ├── storage/                  # ProgressRepository / ProgressNotifier (Schema v4, Mehrkind-Profile, Spaced Repetition, Lernzeit-Limit)
 │   ├── theme/                    # AppColors, AppTheme (Andika + High-Contrast-Option)
-│   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog, StageCertificateDialog
+│   └── widgets/                  # SyllableTextWidget, MascotBanner, ParentalGateDialog, StageCertificateDialog, BedtimePauseWrapper
 └── features/
-    ├── home/                     # Lernwelt mit Buchstaben-Karten, Tagesziel, Tour, Stufen-Filter & ProfileSelectorSheet
-    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Mehrkind-/Klassen-Übersicht, DaZ, 7-Tage-Verlauf, mehrsprachige Berichte, Backup)
+    ├── home/                     # Lernwelt mit Buchstaben-Karten, Abenteuer-Runde, Tagesziel, Tour, Stufen-Filter & ProfileSelectorSheet
+    ├── mission/                  # Geführte 3-Stationen-Tages-Mission („Abenteuer-Runde“) mit Spaced Repetition (Leitner-Boxen 1–3)
+    ├── parents/                  # Eltern- & Lehrkräfte-Dashboard (Mehrkind-/Klassen-Übersicht, DaZ, Schatzkiste, Lernzeit-Pause, Backup)
     ├── phonics/                  # Modul 1: Anlauttabelle, Laut-Zug & Reim-Detektiv (Minimalpaare)
     ├── writing/                  # Modul 2: Nachspuren (Groß/Klein/Frei, Links-/Rechtshänder) & Anlaut-Werkstatt (inkl. Hör-Diktat)
     ├── syllables/                # Modul 3: Silbenbögen, Silbenteppich, Silben-Klatschen & Silbenkönige
     ├── reading/                  # Modul 4: Silben-Puzzle, erste Sätze, Satz-Rätsel, Blitzlesen & Stufen-Geschichten
-    └── rewards/                  # Modul 5: Sticker-Album, Kategorien & Lese-Urkunden (Stufen 1–4)
+    └── rewards/                  # Modul 5: Sticker-Album, Kategorien & Lese-Urkunden (Stufen 1–5)
 ```
 
 - **State Management:** `flutter_riverpod` (2.x, `StateNotifierProvider`,
   `FutureProvider`).
 - **Navigation:** `go_router`. Lektionen werden als `extra` (`LessonUnit`) an
   die Modul-Routen `/unit/:id/{phonics|tracing|syllables|reading}` übergeben;
-  Stufen-Geschichten liegen unter `/stories`.
+  Stufen-Geschichten liegen unter `/stories`, die geführte Tages-Mission unter `/mission`.
 - **Imports:** In Flutter ≥ 3.47 ist `package:flutter/material.dart` veraltet.
   Immer `package:material_ui/material_ui.dart` verwenden.
 
 ## 5. Curriculum (`assets/data/curriculum_de.json`)
 
 - **Neue Inhalte immer hier pflegen, nicht im Dart-Code.**
-- Lektionen (`units`) werden nach `order` sortiert und in 4 Stufen (`stage: 1..4`)
+- Lektionen (`units`) werden nach `order` sortiert und in 5 Stufen (`stage: 1..5`)
   gegliedert. Die Reihenfolge folgt dem Silbenprinzip: zuerst Dauerlaute und
-  Vokale (`M, A, O, I, L, S, E …`), damit früh lesbare Silben/Wörter entstehen.
+  Vokale (`M, A, O, I, L, S, E …`), bis hin zu Stufe 5 („Lese-Profis“: `Ie, Pf, Ng, Ck, Tz, ß`).
 - **Schreibpfade** (`upperStrokes`/`lowerStrokes`): normierte Koordinaten
   `[x, y]` im Bereich `0.0–1.0`. Das Dreilinien-Haus liegt bei
   `y = 0.12` (Dach), `0.35` (Mittellinie), `0.65` (Grundlinie), `0.90` (Keller).
@@ -87,8 +88,8 @@ lib/
   Rot (`AppColors.syllableRed`) – nicht ändern.
 - **Laut-Quiz** (`soundQuiz.position`): nur `start`, `middle` oder `end`.
 - Nach Änderungen die Zählungen in `test/curriculum_and_stroke_test.dart`
-  anpassen (aktuell 33 Lektionen in 4 Stufen, 37 Anlaute, 24 Sticker,
-  4 Stufen-Geschichten, 8 Reim-/Minimalpaar-Aufgaben).
+  anpassen (aktuell 39 Lektionen in 5 Stufen, 42 Anlaute, 28 Sticker,
+  5 Stufen-Geschichten, 10 Reim-/Minimalpaar-Aufgaben).
 
 ## 6. Tests
 

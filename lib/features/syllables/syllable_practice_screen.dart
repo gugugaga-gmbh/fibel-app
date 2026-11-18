@@ -34,7 +34,20 @@ class _SyllablePracticeScreenState
   bool? _kingCorrect;
   bool _kingQuizFinished = false;
 
-  static const _vowelPool = ['A', 'E', 'I', 'O', 'U', 'Ä', 'Ö', 'Ü', 'Ei', 'Au', 'Eu'];
+  static const _vowelPool = [
+    'A',
+    'E',
+    'I',
+    'O',
+    'U',
+    'Ä',
+    'Ö',
+    'Ü',
+    'Ei',
+    'Au',
+    'Eu',
+    'Ie',
+  ];
 
   @override
   Widget build(BuildContext context) {

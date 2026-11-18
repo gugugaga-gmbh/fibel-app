@@ -94,7 +94,7 @@ class _StageStoryScreenState extends ConsumerState<StageStoryScreen> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: [1, 2, 3, 4].map((stage) {
+                    children: curriculum.stages.map((stage) {
                       final st = curriculum.storyForStage(stage);
                       final done = progress.isStageStoryCompleted(stage);
                       final selected = _selectedStage == stage;
